@@ -1,0 +1,37 @@
+<div id="form">
+    <div class="container">
+        <div class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-md-8 col-md-offset-2" style="margin-top: 10%;">
+            <div id="userform">
+                <ul class="nav nav-tabs nav-justified" role="tablist">
+                    <li class="active"><a href="#signup" role="tab" data-toggle="tab">Login Sebagai</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade active in">
+                        <div class="mrgn-30-top">
+                            <?php
+                            $session = new Zend_Session_Namespace('loggedInUser');
+                            $auth = $session->user;
+                                
+                           if ($auth->id_peserta) { ?>
+                                <a href="/pesertanonasn" class="btn btn-larger btn-block" style="margin-bottom: 10px;">Peserta</a>
+                            <?php } ?>
+                            
+                            
+                            <?php if ($auth->id_pengajar ) { ?>
+                                <a href="/pengajarnonasn" class="btn btn-larger btn-block">Pengajar</a>
+                            <?php } ?>
+
+                            <!-- <?php if ($auth->id_pengajar && $auth->id_peserta ) { ?>
+                                <a href="/pengajarnonasn" class="btn btn-larger btn-block">Pengajar</a>
+                            <?php } ?> -->
+
+
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</div>

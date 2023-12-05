@@ -1,0 +1,72 @@
+<script id="js">
+$(function(){
+	$("table")
+		.tablesorter({theme: 'blue', widthFixed: true, widgets: ['zebra', 'filter']})
+		.tablesorterPager({container: $(".pager"), 
+							output: '{startRow} - {endRow} / {filteredRows} ({totalRows})', 
+							fixedHeight: true, 
+							removeRows: false, 
+							cssGoto: '.gotoPage' });
+});
+</script>
+
+<div class="content-header"></div>
+	<div class="UI_Header_Title">
+		<h1><?=$this->avatar;?> Daftar Mata Pelatihan</h1>
+		<!-- <div class="header_nav_links"><span class="right context_menu"><a href="/admin/materi-silabus/add" class="UIlink-button small right">Tambah Silabus Mata Pelatihan</a></span>
+	</div> -->
+</div>
+<div class="clear"></div>
+<br>
+
+<? if (count($this->rows) > 0) { ?>
+	<?=$this->pager;?>
+
+	<table class="tablesorter">
+		 <thead>
+			 <tr>
+			 	<th width="5px">No.</th>
+				 <th>Nama Silabus</th>
+				 <th>Nama Mata Pelatihan</th>
+				 <th>Deskripsi Mata Pelatihan</th>
+				 <th>Isi Mata Pelatihan (Image)</th>
+				 <th>Isi Mata Pelatihan (Document)</th>
+				 <th>Isi Mata Pelatihan (Suara)</th>
+				 <th>Isi Mata Pelatihan (Video)</th>
+				<!-- <th>Aksi</th> -->
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+			$index = 1;
+			foreach($this->rows as $row) {
+				//var_dump($row);
+				$nama_silabus = '-';
+				foreach($this->rows2 as $item){
+					if ($item->id == $row->id_silabus) {
+						$nama_silabus = $item->nama_silabus;
+					}
+				}
+				echo '<tr>';
+				echo '<td align="center">'. $index++ .'.</td>';
+				echo '<td align="center">'.$nama_silabus.'</td>';
+				echo '<td align="center">'.$row->nama_materi.'</td>';
+				echo '<td align="center">'.$row->deskripsi_materi.'</td>';
+				echo '<td align="center"><img src="https://berkas.dpr.go.id/mooc/gambarmateri/'.$row->gambar_materi_uri.'" width="80px"></td>';
+				echo '<td align="center">'.$row->document_materi_uri.'</td>';
+				echo '<td align="center">'.$row->audio_materi_uri.'</td>';
+				echo '<td align="center">'.$row->video_materi_uri.'</td>';
+				//echo '<td align="center"><a href="/admin/materi-silabus/edit/id/'. $row->id .'">EDIT</a>';
+				// if ($this->getRole() == 'admin' || $this->getRole() == 'super') {
+					//echo '&nbsp;|&nbsp;<a href="/admin/materi-silabus/delete/id/'. $row->id .'" onclick="return confirmDelete();">DELETE</a>';
+				// }
+				echo '</td>';
+				echo '</tr>';
+			}
+			?>
+		</tbody>
+	</table>
+<? } else {
+	echo 'Data tidak ditemukan.';
+}
+?>

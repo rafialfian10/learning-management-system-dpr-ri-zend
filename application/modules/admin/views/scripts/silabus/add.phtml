@@ -1,0 +1,90 @@
+<script type="text/javascript">
+	var DecimalSeparator = ",";
+	var ThousandSeparator = ".";
+	var CurrencyDecimalDigits = 4;
+
+	$(document).ready(function () {
+		$("#compose").validate();
+		$("#tanggal").datepicker({
+			yearRange: "-100:+1",
+			changeYear: "true",
+			changeMonth: "true",
+			dateFormat: "dd-mm-yy",
+		});
+	});
+</script>
+<script>
+	$(document).ready(function() {
+		$('.tambah_silabus').click(function() {
+			let silabus = $(".sub_container_silabus").length + 1;
+			let deskripsi = $(".sub_container_deskripsi").length + 1;
+	
+			$('.container_silabus').append(
+				`<p class="sub_container_silabus" id="${silabus}" style="display:flex; flex-direction:row">	
+					<label class="left" id="label${silabus}" for="silabus${silabus}" style="margin-left: 24px;">Nama Agenda ${silabus}</label>
+					<input name="nama_silabus[]" id="text${silabus}" class="event-message" wrap="soft" style="overflow: hidden; display: block; width: 428px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; margin-right: -28px;">
+					
+					<label class="left-deskripsi" id="label${silabus}" for="deskripsi${deskripsi}">Pengampu ${silabus}</label>
+					<input name="deskripsi[]" id="text${silabus}" class="event-message" wrap="soft" style="overflow: hidden; display: block; width: 374px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+					
+					<button type="button" id="button${silabus}" class="hapus_silabus${silabus} border border-secondary fw-bold me-5" style="width:20px; margin-left:10px; display: block;"> x </button>
+
+				</p>`);
+
+			$(`.hapus_silabus${silabus}`).click(function() {
+				$(this).parent().remove();
+				$(".sub_container_silabus").each(function(key, item) {
+					$(this).find("label.left").text("Nama Agenda " + (key + 1));			
+					$(this).find("label.left-deskripsi").text("Deskripsi " + (key + 1));			
+				});
+			
+			
+			})
+		});	
+	});
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h3><?= $this->avatar; ?>Tambah Agenda</h3>
+	<div class="header_nav_links"><a href="/admin/pelatihan/edit/id/<?= $this->row->id ?>">Kembali ke Pelatihan <?= $this->row->nama_pelatihan ?></a></div>
+</div>
+<div class="clear"></div>
+<br>
+<div>
+	<div class="tab-content" id="pills-tabContent">
+		<div class="tab-pane fade show active" id="pills-silabus" role="tabpanel" aria-labelledby="pills-silabus-tab">
+			<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+				<div class="tabular">
+					<div class="container_silabus">
+						<p class="sub_container_pelatihan" id="id_pelatihan" style="display:flex; flex-direction:row;">
+							<label class="left" for="id_pelatihan">Nama Pelatihan</label>
+							<input id="id_pelatihan" type="hidden" class="id_pelatihan" wrap="soft" name="id_pelatihan" value="<?=$this->row->nama_pelatihan ?>" readonly>
+							<input id="id_pelatihan" class="id_pelatihan" wrap="soft" name="id_pelatihan" value="<?=$this->row->nama_pelatihan ?>" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" readonly>
+						</p>
+						
+						<p class="sub_container_silabus" id="silabus" style="display:flex; flex-direction:column; ">
+							<div style="display: flex; flex-direction: row; margin-bottom: 15px; margin-left: 44px; ">
+								<label class="left" for="nama_silabus" style="margin-right: 10px;">Nama Agenda 1</label>
+								<input id="nama_silabus" class="nama_silabus" name="nama_silabus[]" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+
+								<label class="left" for="deskripsi" style="margin-right: auto; margin-left: auto;">Pengampu 1</label>
+								<input id="deskripsi" class="deskripsi" name="deskripsi[]" style="overflow: hidden; display: block; width: 300px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+								<button type="button" class="tambah_silabus border border-secondary" style="margin-left:10px; width:20px; font-weight:bold;"> + </button>
+							</div>
+							<!-- <div style="display: flex; flex-direction: row; margin-bottom: 15px; margin-left: 70px; border: 1px solid red" >
+								<label class="left" for="deskripsi" style="margin-right: 10px;">Deskripsi 1</label>
+								<input id="deskripsi" class="deskripsi" name="deskripsi[]" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+							</div> -->
+						</p>
+					</div>
+	
+					<p class="savecancel">
+						<label class="UIbutton-small"><input type="submit" value="Simpan" class="" /></label><a href="/admin/pelatihan/edit/id/<?= $this->row->id ?>" class="UIbutton-small">Batal</a>
+					</p>
+				</div>
+			</form>
+		</div>
+	</div>
+	<br>
+<div style="clear: both"></div>

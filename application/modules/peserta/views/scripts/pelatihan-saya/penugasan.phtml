@@ -1,0 +1,485 @@
+<?php
+    function formatTime($getTime) {
+        $date = new DateTime($getTime);
+        $formattedDate = $date->format('d M Y H:i:s');
+
+        return $formattedDate;
+    }
+
+    $progress = explode("-", $this->progress->status_progress);
+?>
+
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<link rel="stylesheet" href="https://berkas.dpr.go.id/mooc/assets/css/penugasan.css">
+<link rel="stylesheet" href="https://berkas.dpr.go.id/mooc/assets/css/belajar-pelatihan-saya.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="area"></div>
+<nav class="main-menu" style="max-width: 100vw; margin-top: 85px; ">
+    <div id="mySidebar" class="sidebar background-content" style=" z-index: 999; margin-top: 85px; overflow-y: auto; max-height: calc(100vh - 85px); background-color: #E5E7E9; ">
+        <a style="color: #D4A216;" href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <div class="p-3">
+            <p class="fs-5">Table of Contents</p>
+            <hr>
+            <?php $progress = explode("-", $this->progress->status_progress);?>
+            <a <?= ($progress[0] == 'Pretest' ? ' style="pointer-events: none; cursor: default;" ' : '') ?> href="/peserta/pelatihan-saya/pretest/id/<?= $this->batch->id ?>">Pretest<br><i class="bi bi-check-circle-fill text-success"></i> Selesai</a>
+            <hr>
+            <div>
+                <?php
+                    $materi_idx = 'x';
+                    foreach ($this->silabus as $id => $silabus) {
+                        echo '<ul style="margin-left: -35px; ">';
+                        echo ' <a class=" collapsed dropdown-toggle" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#a' . $silabus->id . '" aria-expanded="false" aria-controls="collapseExample">' . $silabus->nama_silabus . ' </a>';
+                        echo '</ul>';
+
+                        echo ' <div class="collapse" id="a' . $silabus->id . '" >';
+                        echo '<ul >';
+
+                        $i = 1;
+                        foreach ($this->materi as $idx => $materi) {
+                            if ($materi->id_silabus == $silabus->id) {
+                                echo '<li> 
+                                            <a '.($this->progress->status_progress == 'Pretest' || $progress[0] == 'Materi' ? ' style="margin-left: -42px; pointer-events: none; cursor: default;"' : '').' style="margin-left: -42px;" href="/peserta/pelatihan-saya/belajar/id/' . $this->batch->id . '/silabus/' . ($id + 1) . '/materi/' . $i++ . '">' . $materi->nama_materi . ''.($this->progress->status_progress == 'Pretest' || $progress[0] == 'Materi' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '').''.($progress[0] == 'Penugasan' || $progress[0] == 'Penilaian' || $progress[0] == 'Postest' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai ' : '').'</a>
+                                    </li>';
+                            }
+                        }
+                        echo '</ul>';
+                        echo '</div>';
+                    }
+                ?>
+            </div>
+            <hr>
+                <a <?= ($progress[0] == 'Pretest' || $progress[0] == 'Materi' ? 'disabled="disabled" class="disabled"' : '') ?> href="/peserta/pelatihan-saya/postest/id/<?= $this->batch->id; ?>">
+                
+                Postest
+                
+                <?= ($progress[0] == 'Pretest' || $progress[0] == 'Materi' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '') ?>
+                <?=  ($progress[0] == 'Mentoring' || $progress[0] == 'Penugasan' || $progress[0] == 'Penilaian' || $progress[0] == 'Sertifikat' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') ?>
+                </a>
+                
+                <?php
+            if ($this->pelatihan->tipe_pelatihan == "nonclassical") {
+                echo "<hr>";
+                echo '<a ';
+                echo ($progress[0] == 'Materi' || $progress[0] == 'Pretest' || $progress[0] == 'Postest' ? 'disabled="disabled" class="disabled"' : '');
+                echo ' href="/peserta/pelatihan-saya/mentoring/id/' . $this->batch->id . '">';
+                echo 'Mentoring';
+                echo ($progress[0] == 'Materi' || $progress[0] == 'Pretest' || $progress[0] == 'Postest' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '');
+                echo ($progress[0] == 'Penugasan' || $progress[0] == 'Penilaian' || $progress[0] == 'Sertifikat' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '');
+                echo '</a>';
+            }
+            ?>
+
+               
+                <hr>
+                <a <?= ($progress[0] == 'Materi' || $progress[0] == 'Pretest' || $progress[0] == 'Postest' || $progress[0] == 'Mentoring' ? 'disabled="disabled" class="disabled"' : '') ?> href="/peserta/pelatihan-saya/penugasan/id/<?= $this->batch->id ?>">
+                
+                Tugas Akhir
+                
+                <?= ($progress[0] == 'Materi'  || $progress[0] == 'Postest' || $progress[0] == 'Mentoring' || $progress[0] == 'Pretest' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '') ?>
+                <?=  ($progress[0] == 'Penilaian' || $progress[0] == 'Sertifikat' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') ?>
+                </a>
+                
+                <hr>
+                <a <?= ($progress[0] !== 'Sertifikat' ? 'disabled="disabled" class="disabled"' : '') ?> href="/peserta/pelatihan-saya/sertifikat/id/<?= $this->batch->id ?>">Sertifikat
+                <?= ($progress[0] !== 'Sertifikat' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '') ?>
+                <?=  ($progress[0] == 'Sertifikat' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') ?>
+                </a>
+            <hr>
+            <div style="text-align: center;">
+                    <button class=" btn btn-outline-danger" onclick="menyerahClicked()"><i class="bi bi-x-circle"></i> Menyerah</button>
+                </div>
+            <hr>
+        </div>
+    </div>
+
+    <div id="main">
+        <button class="openbtn background-content" id="nav-icon" onclick="toggleNav()" style="z-index: 2; position: fixed; margin-left: -23px; display: flex; justify-content: center; align-items: center; color: #D4A216; background-color: #E5E7E9; font-size: 41px; padding: 10px 0px 15px 0;"> &#8250;</button>
+
+        <div class="row content-header mb-3">
+            <div class="col-1"></div>
+            <div class="sub-content-header col-10">
+                <div class="card rounded-4 background-content" style=" border:none; background-color: #E5E7E9; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">
+                    <div class="card-body" style="color: #808080; ">
+                        <a style="color: #808080;" class="text-decoration-none" href="/peserta">Belajar Saya</a>&nbsp &nbsp|&nbsp &nbsp
+                        <a style="color: #808080;" class="text-decoration-none" href="/peserta/pelatihan">Pelatihan</a>&nbsp &nbsp|&nbsp &nbsp
+                        <a style="color: #808080;" class="text-decoration-none" href="/peserta/pelatihan-saya/belajar/id/<?= $this->batch->id ?>/silabus/1/materi/1"><?= $this->pelatihan->nama_pelatihan ?></a>&nbsp &nbsp|&nbsp &nbsp
+                        <a class="text-dark text-decoration-none" href="">Penugasan</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-1"></div>
+        </div>
+
+        <!-- penugasan -->
+        <?php if ($this->penugasan != ''): ?>
+            <section class="container-penugasan m-auto rounded-4" style="max-width: 80vw;">
+                <div class="mb-1" style="width: 100%;">
+                    <p class="fs-3 fw-bold">Penugasan</p>
+                </div>
+                
+                <div class="content-deadline text-end mb-1" style="width: 100%; ">
+                    <p class="m-0 pe-1"> <span class="text-danger";>Deadline :</span>
+                        <?php
+                            echo formatTime($this->penugasan->deadline_tugas);
+                        ?>
+                    </p>
+                </div>
+
+                <div class="background-content d-flex flex-column justify-content-center rounded-4 p-3 mb-2" style="background-color: #E5E7E9; border: 1px solid #D4A216;">
+                    <p class="mb-1 fs-5" style="text-align: justify"><?= $this->penugasan->title ?></p>
+                    <?php
+                        if($this->penugasan->file_title) {
+                            echo'<div class="mb-1">
+                                    <p class="fw-bold"> 
+                                        <a href="https://berkas.dpr.go.id/mooc/penugasan/'. $this->penugasan->file_title .'" class="fw-normal text-dark text-decoration-none" target="_blank">'. $this->penugasan->file_title .' &nbsp &nbsp <i class="bi bi-download fs-5 fw-bold"></i></a> 
+                                    </p>
+                                </div>';
+                        } else {
+                            '';
+                        }
+                    ?>
+
+                    <form id="upload-form" method="post" action="" enctype="multipart/form-data">
+                        <?php
+                            if($this->progress->status_progress != "Sertifikat") {
+                                echo'<input type="text" name="deskripsi_tugas" class="div-text mb-2 ps-3 rounded-3 bg-transparent" style="width: 100%; height: 40px; border: 2px solid #555; outline: grey;" placeholder="Deskripsi Tugas...." required>';
+                            } else {
+                                echo'<input type="text" name="deskripsi_tugas" class="div-text mb-2 ps-3 rounded-3 bg-transparent" style="width: 100%; height: 40px; border: 2px solid #555; outline: grey;" placeholder="Deskripsi Tugas...." disabled>';
+                            }
+                        
+                        ?>
+                        <label for="penugasan" class="drop-container rounded-3">
+                            <span class="drop-title">Drop files here</span>
+                            or
+                            <div class="position-relative d-flex flex-column">
+                                <div class="d-flex flex-row mb-2">
+                                    <?php
+                                        if($this->progress->status_progress != "Sertifikat") {
+                                            echo'<input type="file" id="penugasan" name="file_tugas" class="sub-background-content div-text" style="width: 100%; background-color: #F4F6F6;" required>';
+                                        } else {
+                                            echo '<input type="file" id="penugasan" name="file_tugas" class="sub-background-content div-text" style="width: 100%; background-color: #F4F6F6;" disabled>';
+                                        }
+                                    ?>
+                                    <button type="button" id="btn-clear-file" class="position-absolute d-flex justify-content-center align-items-center rounded-circle border border-0 bg-transparent"style="width: 20px; height: 20px; right: 3.5%; top:15%; padding:15px;"><i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div id="progress-bar"class="progress-bar"></div>
+                                </div>
+                                <p id="progress-percentage" class="progress-percentage"></p>
+                            </div>
+                        </label>
+                        
+                        <?php
+                            if($this->progress->status_progress != "Sertifikat") {
+                                echo'<button type="submit" id="btn-submit" class="p-2 rounded-3 border border-0 text-center text-light fw-bold" style="width: 100%; background-color: #D4A216;">Upload File</button>';
+                            } else {
+                                echo'<div class="p-2 rounded-3 border border-0 text-center text-light fw-bold" style="width: 100%; background-color: #D4A216;">Tugas telah di nilai oleh mentor</div>';
+                            }
+                        ?>
+                    </form>
+                </div>
+                <p id="timer" class="mb-2"><span style="color: red;">Timer :</span><?= $time ?></p>
+                
+                <?php
+                    if($this->progress->status_progress != "Sertifikat") {
+                        if($this->penugasan->file_tugas != "") {
+                            echo'<div class="mb-5">
+                                    <p class="mb-2 fw-bold">File tugas yang di upload : </p>
+                                    <a href="https://berkas.dpr.go.id/mooc/penugasan/'. $this->penugasan->file_tugas .'" class="text-dark text-decoration-none" target="_blank"><i class="bi bi-download fs-5 fw-bold"></i> &nbsp '. $this->penugasan->file_tugas .'</a> 
+                                    &nbsp &nbsp &nbsp &nbsp
+                                    <button type="button" class="btn-delete-file border-0 bg-transparent" style="color: red !important;"><i class="bi bi-trash text-danger"></i> Hapus file</button>
+                                </div>';
+                        } else {
+                            echo'<div class="mb-5">
+                                    <p class="mb-2 fw-bold">File tugas yang di upload : </p>
+                                </div>';
+                        }
+                    } else {
+                        echo'<div class="mb-5">
+                                <p class="fw-bold">File tugas yang di upload : </p>
+                                <a href="https://berkas.dpr.go.id/mooc/penugasan/'. $this->penugasan->file_tugas .'" class="text-dark text-decoration-none" target="_blank"><i class="bi bi-download fs-5 fw-bold"></i> &nbsp '. $this->penugasan->file_tugas .'</a> 
+                                &nbsp &nbsp &nbsp &nbsp
+                            </div>';
+                    }
+                ?>
+            </section>
+            <!-- end penugasan -->
+            
+            <!-- content penugasan time out -->
+            <section class="container-timeout d-none flex-column m-auto mt-5 rounded-4" style="max-width: 80vw;">
+                <div class="mb-1" style="width: 100%;">
+                    <p class="fs-3 fw-bold">Penugasan</p>
+                </div>
+                
+                <div class="content-deadline text-end mb-1" style="width: 100%;">
+                    <p class="m-0 pe-1"> 
+                        <span style="color: red !important;">Deadlines :</span>
+                        <?= formatTime($this->penugasan->deadline_tugas) ?>
+                    </p>
+                </div>
+
+                <div class="background-content d-flex flex-column justify-content-center rounded-4 p-3 mb-3" style="width: 100%; border: 1px solid #D4A216;">
+                    <div class="d-flex flex-column justify-content-center rounded-3 p-3" style="border: 1px solid #555;">
+                        <p class="m-0 text-center fw-bold fs-2" style="color: #D4A216;">Time Out</p>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="fw-bold">File tugas yang di upload : 
+                        <a href="https://berkas.dpr.go.id/mooc/penugasan/<?= $this->penugasan->file_tugas ?>" class="fw-normal text-dark text-decoration-none"><?= $this->penugasan->file_tugas ?> &nbsp &nbsp <i class="bi bi-download fs-5 fw-bold"></i></a> 
+                    </p>
+                </div>
+            </section>
+        <?php else: ?>
+            <!-- penugasan belum tersedia -->
+            <section class="container-penugasan m-auto rounded-4" style="max-width: 80vw;">
+                <div class="mb-1" style="width: 100%;">
+                    <p class="fs-3 fw-bold">Penugasan</p>
+                    <div class="background-content d-flex flex-column justify-content-center rounded-4 p-3 mb-3" style="width: 100%; border: 1px solid #D4A216;">
+                        <div class="d-flex flex-column justify-content-center rounded-3 p-3" style="border: 1 px solid #555;">
+                            <p class="m-0 text-center fw-bold fs-2" style="color: #D4A216;">Penugasan Belum Tersedia</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- end penugasan belum tersedia -->
+        <?php endif; ?>
+        <!-- end penugasan time out -->
+    </div>
+</nav>
+
+<script>
+    // submit file & progress bar
+    $(document).ready(function() {
+        $("#upload-form").on("submit", function(event) {
+            event.preventDefault();
+
+            const form = $(this);
+            const progressBar = $("#progress-bar");
+            const progressPercentage = $("#progress-percentage");
+
+            $.ajax({
+                type: form.attr("method"),
+                url: form.attr("action"),
+                data: new FormData(this),
+                processData: false,
+                contentType: false,
+                xhr: function() {
+                    const xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function(event) {
+                        if (event.lengthComputable) {
+                            const percentComplete = (event.loaded / event.total) * 100;
+                            progressBar.css("width", percentComplete + "%");
+                            progressPercentage.text(percentComplete.toFixed(2) + "%");
+                        }
+                    });
+                    return xhr;
+                },
+                success: function(response) {
+                    Swal.fire(
+                        'Success!',
+                        'File berhasil diupload',
+                        'success'
+                    ).then(() => {
+                        form[0].reset();
+                        progressBar.css("width", "0%");
+                        progressPercentage.text("");
+                        window.location.href = '/peserta/pelatihan-saya/penugasan/id/<?= $this->batch->id ?>';
+                    });
+                },
+                error: function() {
+                    Swal.fire(
+                        'Error!',
+                        'Terjadi kesalahan saat mengupload file',
+                        'error'
+                    );
+                }
+            });
+        });
+    });
+
+    // delete file upload
+    let btnDeleteFile = document.querySelector(".btn-delete-file");
+    if (btnDeleteFile) {
+        btnDeleteFile.addEventListener("click", function () {
+            Swal.fire({
+                title: 'Anda yakin?',
+                text: "Anda tidak akan dapat mengembalikan ini!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Iya!',
+                confirmButtonColor: '#4CAF50',
+                cancelButtonText: 'Tidak',
+                cancelButtonColor: '#f44336',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Success!',
+                        'File telah berhasil dihapus',
+                        'success'
+                    ).then(() => {
+                        window.location.href = '/peserta/pelatihan-saya/delete-files/id/<?php echo $this->progress->id_batch ?>/file/<?php echo $this->penugasan->id ?>';
+                    });
+                } else {
+                    Swal.close();
+                }
+            });
+        });
+    }
+
+    // kosongkan file setelah hapus file di form
+    const inputFile = document.getElementById('penugasan');
+    const btnClearFile = document.getElementById('btn-clear-file');
+
+    btnClearFile.addEventListener('click', () => {
+        inputFile.value = '';
+    });
+
+    // fungsi timer
+    function timer() {
+        let timer = $("#timer");
+        let waktuSaatIni = new Date().getTime();
+        let deadline = new Date("<?= $this->penugasan->deadline_tugas ?>").getTime();
+        let waktuSisa = deadline - waktuSaatIni;
+
+        // Konversi
+        let detik = Math.floor((waktuSisa / 1000) % 60);
+        let menit = Math.floor((waktuSisa / 1000 / 60) % 60);
+        let jam = Math.floor((waktuSisa / (1000 * 60 * 60)) % 24);
+        let hari = Math.floor(waktuSisa / (1000 * 60 * 60 * 24));
+        let bulan = Math.floor(hari / 30);
+        let tahun = Math.floor(bulan / 12);
+
+        // Sisa hari setelah dihitung dalam bulan dan tahun
+        hari = hari % 30;
+        bulan = bulan % 12;
+
+        // kondisi
+        if (tahun == 0) {
+            tahun = "";
+        } else {
+            tahun += " tahun,";
+        }
+
+        if (bulan == 0) {
+            bulan = "";
+        } else {
+            bulan += " bulan,";
+        }
+
+        if (hari == 0) {
+            hari = "";
+        } else {
+            hari += " hari,";
+        }
+
+        if (jam < 10) {
+            jam = "0" + jam;
+        }
+
+        if (menit < 10) {
+            menit = "0" + menit;
+        } 
+
+        if (detik < 10) {
+            detik = "0" + detik;
+        }
+
+        let formatWaktu = `${tahun} ${bulan} ${hari} ${jam}:${menit}:${detik}`;
+        timer.html("<span style=\"color:red;\">Timer : </span>" + formatWaktu);
+
+        if (waktuSisa < 0) {
+            let timer = document.querySelector("#timer");
+            let penugasan = document.querySelector(".container-penugasan");
+            let timeout = document.querySelector(".container-timeout");
+
+            timer.style.display = "none";
+            penugasan.classList.add("penugasan");
+            timeout.classList.add("timeout");
+        }
+    }
+    setInterval(timer, 1);
+
+    //membuat button sidebar tetap ketika scroll
+    window.onscroll = function () { scrollFunction() };
+
+    function scrollFunction() {
+        var button = document.getElementById("nav-icon");
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            button.style.display = "flex";
+        } else {
+            button.style.display = "flex";
+        }
+    }
+
+    function toggleNav() {
+        var sidebar = document.getElementById("mySidebar");
+        var navIcon = document.getElementById("nav-icon");
+
+        if (window.innerWidth < 768) {
+            if (sidebar.style.width == "100%") {
+                sidebar.style.width = "0";
+                navIcon.innerHTML = "&#8250;";
+            } else {
+                sidebar.style.width = "100%";
+                navIcon.innerHTML = "&#8249;";
+            }
+        } else {
+            if (sidebar.style.width == "250px") {
+                sidebar.style.width = "0";
+                document.getElementById("main").style.marginLeft = "0";
+                navIcon.innerHTML = "&#8250;";
+            } else {
+                sidebar.style.width = "250px";
+                document.getElementById("main").style.marginLeft = "250px";
+                navIcon.innerHTML = "&#8249;";
+            }
+        }
+    }
+
+    function closeNav() {
+        document.getElementById("mySidebar").style.width = "0";
+        document.getElementById("main").style.marginLeft = "0";
+    }
+
+    function menyerahClicked() {
+        Swal.fire({
+            title: 'Konfirmasi',
+            text: 'Ketik "MENYERAH" (dengan huruf besar) untuk menyerah',
+            input: 'text',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            cancelButtonText: 'Batal',
+            inputValidator: (value) => {
+                if (value !== 'MENYERAH') {
+                    return 'Tulisan tidak cocok';
+                }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/peserta/pelatihan-saya/menyerah',
+                    type: 'POST',
+                    data: {
+                        id: '<?=$this->progress->id?>',
+                        id_peserta: '<?=$this->progress->id_peserta?>',
+                        id_batch: '<?=$this->progress->id_batch?>',
+                        status_progress: '<?=$this->progress->status_progress?>',
+                        status_riwayat: 'Menyerah',
+                            // status_progress: 'Menyerah',
+                    },
+                    success: function (response) {
+                        window.location.href = '/peserta/riwayat';
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log('Failed: ' + textStatus);
+                        console.log(errorThrown);
+                    }
+                });
+            }
+        });
+    }
+</script>

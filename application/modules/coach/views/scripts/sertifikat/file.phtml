@@ -1,0 +1,222 @@
+<?
+$this->BatchService = new BatchService();
+$this->PesertaService = new PesertaService();
+$this->PesertaBatchService = new PesertaBatchService();
+$this->PelatihanService = new PelatihanService();
+$this->SilabusService = new SilabusService();
+$this->MateriSilabusService = new MateriSilabusService();
+$this->PenugasanService = new PenugasanService();
+$this->SkorMentoringService = new SkorMentoringService();
+$this->SkorBelajarService = new SkorBelajarService();
+$this->SkorPretestService = new SkorPretestService();
+$this->PengajarService = new PengajarService();
+
+$nama_peserta = $this->PesertaService->getData($this->id_peserta)->nama;
+$batch = $this->BatchService->getData($this->id_batch);
+$pelatihan = $this->PelatihanService->getData($batch->id_pelatihan);
+$pengajar = $this->PengajarService->getData($pelatihan->id_pengajar);
+$penugasan = $this->PenugasanService->getDataSertifikat($this->id_batch, $this->id_peserta);
+$mentoring = $this->SkorMentoringService->getDataSertifikat($this->id_batch, $this->id_peserta);
+$belajar = $this->SkorBelajarService->getDataSertifikat($this->id_batch, $this->id_peserta);
+$pretest = $this->SkorPretestService->getDataSertifikat($this->id_batch, $this->id_peserta);
+$materi = $this->MateriSilabusService->getAllDataPelatihan($batch->id_pelatihan);
+$silabus = $this->SilabusService->getAllDataPelatihan($batch->id_pelatihan);
+
+$i=1;
+$isi_materi = '';
+$rowspan = 1;
+$jp = 0;
+
+// ini silabus ada jp nya
+foreach ($silabus as $key => $val) 
+{
+	$rowspan++;
+	$isi_materi .= ' <tr>
+						<td style="border: 1px solid black; padding: 10px; text-align: center;"> </td> <td style="border: 1px solid black; padding: 10px; text-align: center;">- '.$val->nama_silabus.'</td>
+						<td style="border: 1px solid black; padding: 10px; text-align: center;">'.$val->jumlah_jp.' JP</td>
+					</tr>';
+	$jp = $jp + $val->jumlah_jp;
+}
+
+
+if($pelatihan->tipe_pelatihan == 'classical' || $pelatihan->tipe_pelatihan == 'blended')
+{
+	$tgl_awal = explode(" ",$batch->tgl_awal);
+	$waktu_awal = explode("-",$tgl_awal[0]);
+	$bulan_awal = date('F', mktime(0, 0, 0, $waktu_awal[1], 10));
+
+	$tgl_akhir = explode(" ",$batch->tgl_akhir);
+	$waktu_akhir = explode("-",$tgl_akhir[0]);
+	$bulan_akhir = date('F', mktime(0, 0, 0, $waktu_akhir[1], 10));
+
+	$hari = $waktu_akhir[2]+1;
+} 
+else if($pelatihan->tipe_pelatihan == 'nonclassical')
+{
+	$tgl_awal = explode(" ",$pretest->tanggal_input);
+	$waktu_awal = explode("-",$tgl_awal[0]);
+	$bulan_awal = date('F', mktime(0, 0, 0, $waktu_awal[1], 10));
+	
+	$tgl_akhir = explode(" ",$penugasan->tanggal_update);
+	$waktu_akhir = explode("-",$tgl_akhir[0]);
+	$bulan_akhir = date('F', mktime(0, 0, 0, $waktu_akhir[1], 10));
+
+	$hari = $waktu_akhir[2]+1;
+}
+
+$isi_nilai = '  <tr>
+					<td style="border: 1px solid black; padding: 10px; text-align: center;">'.$i++.'</td> <td style="border: 1px solid black; padding: 10px; text-align: center;"><b> Pre-Test </b></td>
+					<td style="border: 1px solid black; padding: 10px; text-align: center;">77</td>
+					<td style="border: 1px solid black; padding: 10px; text-align: center;">2 JP</td>
+				</tr>
+				<tr>
+					<td style="border: 1px solid black; padding: 10px; text-align: center;">'.$i++.'</td> <td style="border: 1px solid black; padding: 10px; text-align: center;"><b> Belajar Mandiri </b></td>
+					<td rowspan="' . $rowspan . '" style="border: 1px solid black; padding: 10px; text-align: center;">'.$belajar->skor_akhir.'</td>
+					<td style="border: 1px solid black; padding: 10px; text-align: center;">-</td>
+				</tr>
+				'.$isi_materi.'
+				<tr>
+					<td style="border: 1px solid black; padding: 10px; text-align: center;">'.$i++.'</td>
+					<td style="border: 1px solid black; padding: 10px; text-align: center;"><b> Mentoring </b></td>
+					<td style="border: 1px solid black; padding: 10px; text-align: center;">'.$mentoring->skor_akhir.'</td>
+					<td style="border: 1px solid black; padding: 10px; text-align: center;">4 JP</td>
+				</tr>
+				<tr>
+					<td style="border: 1px solid black; padding: 10px; text-align: center;">'.$i++.'</td>
+					<td style="border: 1px solid black; padding: 10px; text-align: center;"><b> Penugasan </b></td>
+					<td style="border: 1px solid black; padding: 10px; text-align: center;">'.$penugasan->skor_akhir.'</td>
+					<td style="border: 1px solid black; padding: 10px; text-align: center;">10 JP</td>
+				</tr>';
+
+
+setlocale(LC_ALL, 'id_ID.UTF8', 'id_ID.UTF-8', 'id_ID.8859-1', 'id_ID', 'IND.UTF8', 'IND.UTF-8', 'IND.8859-1', 'IND', 'Indonesian.UTF8', 'Indonesian.UTF-8', 'Indonesian.8859-1', 'Indonesian', 'Indonesia', 'id', 'ID', 'en_US.UTF8', 'en_US.UTF-8', 'en_US.8859-1', 'en_US', 'American', 'ENG', 'English'); 
+
+$content = '<page backimg="https://berkas.dpr.go.id/mooc/assets/images/bgsertif1.jpg" orientation="l" style="font-family: Arial; font-size: 12px; line-height: 1.5;" backtop="20mm" backbottom="20mm" backleft="20mm" backright="20mm">
+<table style="width: 100%;">
+	<col style="width: 100%">
+	<tr><td align="center" style="font-size: 70px;">SERTIFIKAT</td></tr>
+	<tr><td align="center">Dengan bangga diberikan kepada</td></tr>
+</table>
+<br>
+<br>
+<br>
+<table style="width: 100%;">
+	<col style="width: 100%">
+	<tr><td align="center" style="font-size: 30px;"><b><u>'.$nama_peserta.'</u></b></td></tr>
+</table>
+<br>
+<br>
+
+
+<table style="width: 100%;">
+<col style="width: 100%">
+	<tr>
+		<td align="center">Telah Menyelesaikan:</td>
+	</tr>
+	<tr>
+		<td align="center" style="font-size: 20px;"><b><u>'.$pelatihan->nama_pelatihan.'</u></b></td>
+	</tr>
+	<tr>
+		<td>
+			<br><br>
+		</td>
+	</tr>
+	<tr>
+		<td align="center"> Pada Tanggal ('.$waktu_awal[2]. ' '.$bulan_awal . ' - '.$waktu_akhir[2]. ' '.$bulan_akhir . ' '.$waktu_akhir[0].')</td>
+	</tr>
+</table>
+<br>
+<br>
+<br>
+<table style="width: 100%">
+	<col style="width: 50%">
+	<col style="width: 50%">
+	<tr>
+		<td align="center">
+			<table style="width:100%;">
+				<col style="width: 100%">
+				<tr><td align="center">Kepala Pusat Pendidikan dan Pelatihan</td></tr>
+				<tr><td align="center"><br><br></td></tr>
+				<tr><td align="center"><br><br></td></tr>
+				<tr><td align="center"><u>Nama KAPUSDIKLAT</u></td></tr>
+				<tr><td align="center">NIP. ______</td></tr>
+			</table>
+		</td>
+		<td align="center">
+			<table style="width:100%;">
+				<col style="width: 100%">
+				<tr><td align="center">Jakarta, '.$hari. ' '.$bulan_akhir . ' '.$waktu_akhir[0]. '</td></tr>
+				<tr><td align="center">Pengajar,</td></tr>
+				<tr><td align="center"><br><br></td></tr>
+				<tr><td align="center"><br><br><br></td></tr>
+				<tr><td align="center"><u>'.$pengajar->nama_pengajar.'</u></td></tr>
+				<tr><td align="center">NIP/NIK.'.$pengajar->identitas_pengajar.' </td></tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+</page>
+
+<page backimg="https://berkas.dpr.go.id/mooc/assets/images/bg_sertif.jpg" orientation="l" style="font-family: Arial; font-size: 12px; line-height: 1.5;" backtop="20mm" backbottom="20mm" backleft="20mm" backright="20mm">
+<br>
+<table style="width: 100%;">
+	<col style="width: 100%">
+	<tr><td align="center" style="font-size: 40px;"><b>MATERI</b></td></tr>
+	<tr><td align="center" style="font-size: 20px;"><b><u>'.$pelatihan->nama_pelatihan.'</u></b></td></tr>
+</table>
+
+<br>
+<br>
+<br>
+
+<table style="border: 1px solid black; border-collapse: collapse;">
+	<col style="width: 5%">
+	<col style="width: 50%">
+	<col style="width: 20%">
+	<col style="width: 25%">
+	<col style="width: 5%">
+<thead>
+	<tr>
+		<th style="border: 1px solid black; padding: 10px; text-align: center;">No</th>
+		<th style="border: 1px solid black; padding: 10px; text-align: center;">Komponen</th>
+		<th style="border: 1px solid black; padding: 10px; text-align: center;">Nilai</th>
+		<th style="border: 1px solid black; padding: 10px; text-align: center;">Jam Pelajaran (JP)</th>
+	</tr>
+</thead>
+<tbody>
+	'. $isi_nilai .'
+</tbody>
+</table>
+<br>
+<br>
+<br>
+<table cellspacing="0" style="width:50%;">
+	<col style="width: 5%">
+	<col style="width: 50%">
+	<col style="width: 5%">
+	<col style="width: 15%">
+	<col style="width: 5%">
+	<tr>
+		<td align="center">1.</td>
+		<td><b>Nilai Akhir</b></td>
+		<td align="center">:</td>
+		<td align="right">' . (($this->FormatNumber($penugasan->skor_akhir) * 7 + $this->FormatNumber($mentoring->skor_akhir) * 2 + $this->FormatNumber($belajar->skor_akhir)) /10) . '</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td align="center">2.</td>
+		<td><b>Total Jam Pelajaran (JP)</b></td>
+		<td align="center">:</td>
+		<td align="right">' . ($jp + 16) . '</td>
+		<td></td>
+	</tr>
+</table>
+</page>';
+
+
+
+$html2pdf = new HTML2PDF('L','A4','en');
+$html2pdf->WriteHTML($content);
+$html2pdf->Output('Sertifikat LMS - '.$nama_peserta.'.pdf');
+?>

@@ -1,0 +1,55 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose_facebox").validate();
+	});
+</script>
+		<?
+		$struktur = array(
+			'1' => 'Hadir',
+			'2' => 'I. PENDAHULUAN',
+			'3' => 'II. KESIMPULAN / KEPUTUSAN',
+			'4' => 'III. PENUTUP'
+		);
+		?>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>  Edit Catatan Rapat (<?=$struktur[$this->row->judul];?>)</h1>
+	<div class="header_nav_links"><a href="/admin/catatan-rapat/edit/id/<?=$this->row->id_catatan_rapat;?>">Back to Edit Catatan Rapat</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose_facebox" name="compose_facebox" method="post" action="/admin/catatan-rapat/edit-data" enctype="multipart/form-data">
+	<div class="tabular">
+		<p><label>Urutan</label><select class="required" id="urutan" name="urutan">
+		<option value="">Pilih Urutan...</option>
+		<?
+		for($i=0; $i<=10; $i++)
+		{
+			$selected = ($this->row->urutan == $i) ? ' selected'  : '';
+			echo '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
+		}
+		?>
+		</select> <font color="red">*</font></p>
+		<p><label>Konten</label><div style="padding-left:150px;"><textarea name="konten" id="konten" cols="51" rows="6" wrap="soft" class="event-message"><?=$this->row->konten;?></textarea> <font color="red">*</font></div></p>
+	
+		<p class="savecancel">
+			<input type="hidden" id="id" name="id" value="<?=$this->id;?>">
+			<input type="hidden" id="id_catatan_rapat" name="id_catatan_rapat" value="<?=$this->row->id_catatan_rapat;?>">
+			<input type="hidden" id="judul" name="judul" value="<?=$this->row->judul;?>">
+			<label class="UIbutton-small"><input type="submit" value="Simpan" class=""/></label>
+			<a href="/admin/catatan-rapat/edit/id/<?=$this->row->id_catatan_rapat;?>" class="UIbutton-small">Batal</a>
+		</p>
+	</div>
+</form>
+<div style="clear:both"></div>
+
+<script type="text/javascript" src="/cxedit0r_ksap/ckeditor.js"></script>
+<script type="text/javascript">
+	CKEDITOR.replace( 'konten' ,{
+			filebrowserBrowseUrl: '/cxedit0r_ksap/kcfinder/browse.php?type=files',
+			filebrowserImageBrowseUrl: '/cxedit0r_ksap/kcfinder/browse.php?type=images',
+			filebrowserUploadUrl: '/cxedit0r_ksap/kcfinder/upload.php?type=files',
+			filebrowserImageUploadUrl: '/cxedit0r_ksap/kcfinder/upload.php?type=images'
+		});
+	
+</script>

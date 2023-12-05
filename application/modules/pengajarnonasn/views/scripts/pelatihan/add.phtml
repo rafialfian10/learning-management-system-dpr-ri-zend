@@ -1,0 +1,68 @@
+<script type="text/javascript">
+var DecimalSeparator = ",";
+var ThousandSeparator = ".";
+var CurrencyDecimalDigits = 4;
+
+	$(document).ready(function() {
+		$("#compose").validate();
+		$("#tanggal").datepicker({yearRange:"-100:+1",changeYear:"true",changeMonth:"true",dateFormat:"dd-mm-yy"});
+	})
+</script>
+
+<script>
+	function selectFields1(id, id, nama_pengajar) {
+		$('#id_pengajar').val(id);
+		$('#nama_pengajar').val(nama_pengajar);
+		$.facebox.close();
+	}
+
+	function ClearFields1() {
+		document.getElementById("id_pengajar").value = "";
+		document.getElementById("nama_pengajar").value = "";
+	}
+</script>
+
+<div class="content-header"></div>
+	<div class="UI_Header_Title">
+		<h1><?=$this->avatar;?>Tambah Pelatihan</h1>
+		<div class="header_nav_links"><a href="/pengajarnonasn/pelatihan/index">Back to Daftar Pelatihan</a></div>
+	</div>
+	<div class="clear"></div>
+	
+	<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+		<div class="tabular">
+			<p>
+				<label class="left" for="nama_pelatihan">Nama Pelatihan</label>
+				<input id="nama_pelatihan" class="event-message" wrap="soft" name="nama_pelatihan" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+			</p>
+			<p>
+				<label class="left" for="deskripsi">Deskripsi Pelatihan</label>
+				<textarea id="deskripsi" class="event-message" wrap="soft" rows="6" name="deskripsi" style="overflow: hidden; display: block; width: 350px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"></textarea>
+			</p>
+			<p>
+				<label>Tipe Pelatihan</label>
+				<select class="required" id="tipe_pelatihan" name="tipe_pelatihan">
+					<option value="" disabled>Pilih Tipe...</option>
+					<option value="classical">Classical</option>
+					<option value="nonclassical">Non Classical</option>
+					<option value="blended">Blended</option>
+				</select>  <font color="red">*</font></p>
+			<p>
+				
+			<p>
+				<label class="left" for="nama_pelatihan">Sampul Pelatihan</label> 
+				<input type="file" accept="image/*" id="file_name" name="file_name">
+			</P>
+
+			<p>
+				<label>Nama Pengajar</label>
+				<input readonly class="required" type="text" id="nama_pengajar" autocomplete="disable" name="nama_pengajar" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" />
+				<input class="required" type="hidden" id="id_pengajar" autocomplete="disable" name="id_pengajar" value="<?= $this->row->id_pengajar; ?>" />
+				<input type="button" value="..." id="btnpengajar" style="height:30px;" onclick="jQuery.facebox({ ajax: '/pengajarnonasn/pelatihan/search-pengajar'});">
+				<input type="button" style="height:30px;" onclick="ClearFields1();" value="Clear">
+				<font color="red">*</font>
+			</p>
+			<p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Simpan" class=""/></label><a href="/pengajarnonasn/pelatihan/index" class="UIbutton-small">Batal</a></p>
+		</div>
+	</form>
+<div style="clear:both"></div>

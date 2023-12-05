@@ -1,0 +1,869 @@
+<?php
+    $auth = Zend_Auth::getInstance()->getIdentity();
+
+    $nama_mentor = "-";
+    $id_peserta = "-";
+    $nama_peserta = "-";
+    $foto_peserta_uri = "";
+    $nama_pelatihan = "-";
+    $sampul_pelatihan = "-";
+
+    foreach ($this->peserta_batchs as $peserta_batch) {
+        if($peserta_batch->id_peserta == $auth->id_peserta) {
+            if ($peserta_batch->id_pelatihan == $this->pelatihan->id) {
+                $nama_pelatihan = $this->pelatihan->nama_pelatihan;
+                $sampul_pelatihan = $this->pelatihan->sampul_pelatihan;
+            }
+
+            foreach ($this->mentors as $mentor) {
+                if ($mentor->id == $peserta_batch->id_mentor) {
+                    $nama_mentor = $mentor->nama_mentor;
+                }
+            }
+
+            foreach ($this->pesertas as $peserta) {
+                if ($peserta->id == $peserta_batch->id_peserta) {
+                    $id_peserta = $peserta_batch->id_peserta;
+                    $nama_peserta = $peserta->nama;
+                    // $foto_peserta_uri = $peserta->foto_peserta_uri;
+                }
+            }
+        }
+    }
+    
+    // format time
+    function formatTime($time) {
+        $date = new DateTime($time);
+        $formattedDate = $date->format('d M Y');
+
+        return $formattedDate;
+    }
+    // end format time
+
+    // sertifikat
+    $i = 1;
+    $isi_materi = '';
+    $rowspan = 1;
+    $jp = 0;
+    $id_sertifikat = "-";
+    $id_batch = "-";
+
+    foreach ($this->sertifikats as $sertifikat) {
+        foreach ($this->batchs as $batch) {
+            if ($sertifikat->id_batch == $batch->id) {
+                $id_batch = $batch->id;
+            }
+        }
+
+        foreach ($this->pesertas as $peserta) {
+            if ($sertifikat->id_peserta == $peserta->id) {
+                $id_sertifikat = $sertifikat->id;
+            }
+        }
+    }
+    
+
+    foreach ($this->materi as $key => $val) {
+        $rowspan++;
+        $isi_materi .= '<tr>
+                            <td style="text-align: center; border: 1px solid black;"> </td> <td style="text-align: center; font-size: 11px; border: 1px solid black;">- ' . $val->nama_materi . '</td>
+                            <td style="text-align: center; font-size: 11px; border: 1px solid black;">' . $val->jumlah_jp . ' JP</td>
+                        </tr>';
+        $jp = $jp + $val->jumlah_jp;
+    }
+
+    if ($this->pelatihan->tipe_pelatihan == 'classical' || $this->pelatihan->tipe_pelatihan == 'blended') {
+        $tgl_awal = explode(" ", $this->batch->tgl_awal);
+        $waktu_awal = explode("-", $tgl_awal[0]);
+        $bulan_awal = date('F', mktime(0, 0, 0, $waktu_awal[1], 10));
+
+        $tgl_akhir = explode(" ", $this->batch->tgl_akhir);
+        $waktu_akhir = explode("-", $tgl_akhir[0]);
+        $bulan_akhir = date('F', mktime(0, 0, 0, $waktu_akhir[1], 10));
+
+        $hari = $waktu_akhir[2] + 1;
+    } else if ($this->pelatihan->tipe_pelatihan == 'nonclassical') {
+        $tgl_awal = explode(" ", $this->pretest->tanggal_input);
+        $waktu_awal = explode("-", $tgl_awal[0]);
+        $bulan_awal = date('F', mktime(0, 0, 0, $waktu_awal[1], 10));
+
+        $tgl_akhir = explode(" ", $this->penugasan->tanggal_update);
+        $waktu_akhir = explode("-", $tgl_akhir[0]);
+        $bulan_akhir = date('F', mktime(0, 0, 0, $waktu_akhir[1], 10));
+
+        $hari = $waktu_akhir[2] + 1;
+    }
+
+    $isi_nilai = '<tr class="border border-dark">
+                    <td style="text-align: center; font-size: 11px; border: 1px solid black;">' . $i++ . '</td> 
+                    <td style="text-align: center; font-size: 11px; border: 1px solid black;"><b> Pre-Test </b></td>
+                    <td style="text-align: center; font-size: 11px; border: 1px solid black;">' . $this->pretest->skor_akhir . '</td>
+                    <td style="text-align: center; font-size: 11px; border: 1px solid black;">1 JP</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; font-size: 11px; border: 1px solid black;">' . $i++ . '</td> 
+                    <td style="text-align: center; font-size: 11px; border: 1px solid black;"><b> Belajar Mandiri </b></td>
+                    <td rowspan="' . $rowspan . '" style="text-align: center; font-size: 11px; border: 1px solid black;">' . $this->belajar->skor_akhir . '</td>
+                    <td style="text-align: center; font-size: 11px; border: 1px solid black;">-</td>
+                </tr>
+                     ' . $isi_materi . '
+                <tr class="border border-dark">
+                     <td style="text-align: center; font-size: 11px; border: 1px solid black;">' . $i++ . '</td> 
+                     <td style="text-align: center; font-size: 11px; border: 1px solid black;"><b> Post-Test </b></td>
+                     <td style="text-align: center; font-size: 11px; border: 1px solid black;">' . $this->postest->skor_akhir . '</td>
+                     <td style="text-align: center; font-size: 11px; border: 1px solid black;">1 JP</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; font-size: 11px; border: 1px solid black;">' . $i++ . '</td>
+                    <td style="text-align: center; font-size: 11px; border: 1px solid black;"><b> Mentoring </b></td>
+                    <td style="text-align: center; font-size: 11px; border: 1px solid black;">' . $this->mentoring->skor_akhir . '</td>
+                    <td style="text-align: center; font-size: 11px; border: 1px solid black;">4 JP</td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; font-size: 11px; border: 1px solid black;">' . $i++ . '</td>
+                    <td style="text-align: center; font-size: 11px; border: 1px solid black;"><b> Penugasan </b></td>
+                    <td style="text-align: center; font-size: 11px; border: 1px solid black;">' . $this->penugasan->skor_akhir . '</td>
+                    <td style="text-align: center; font-size: 11px; border: 1px solid black;">10 JP</td>
+                </tr>';
+
+    setlocale(LC_ALL, 'id_ID.UTF8', 'id_ID.UTF-8', 'id_ID.8859-1', 'id_ID', 'IND.UTF8', 'IND.UTF-8', 'IND.8859-1', 'IND', 'Indonesian.UTF8', 'Indonesian.UTF-8', 'Indonesian.8859-1', 'Indonesian', 'Indonesia', 'id', 'ID', 'en_US.UTF8', 'en_US.UTF-8', 'en_US.8859-1', 'en_US', 'American', 'ENG', 'English');
+
+    $content1 = '<div class="m-auto position-relative" style="width: 100%; height: 100%;">
+                    <div class="position-absolute" style="width: 100%; height: 100%;">
+                        <img src="https://berkas.dpr.go.id/mooc/assets/images/bgsertif1.jpg" class="position-absolute" style="width: 100%; z-index: -10">
+                    </div>
+
+                    <div class="m-auto" style="width: 90%; padding-top: 60px;">
+                        <p class="text-center fw-bold m-0" style="font-size: 40px;">SERTIFIKAT</p>
+                        <p class="text-center fw-bold text-decoration-underline" style="font-size: 10px;">Dengan bangga diberikan kepada</p>
+                    </div>
+                    
+                    <table style="width: 100%;">
+                        <col style="width: 100%">
+                        <tr><td style="font-size: 20px; text-align: center"><b><u>' . $this->peserta->nama . '</u></b></td></tr>
+                    </table>
+                    <br>
+
+                    <table style="width: 100%;">
+                        <col style="width: 100%">
+                        <tr>
+                            <td style="font-size: 10px; text-align: center">Telah Menyelesaikan:</td>
+                        </tr>
+
+                        <tr>
+                            <td style="font-size: 16px; text-align: center;"><b><u>' . $pelatihan->nama_pelatihan . '</u></b></td>
+                        </tr>
+
+                        <tr>
+                            <td><br></td>
+                        </tr>
+                       
+                        <tr>
+                            <td style="font-size: 10px; text-align: center;"> Pada Tanggal (' . $waktu_awal[2] . ' ' . $bulan_awal . ' - ' . $waktu_akhir[2] . ' ' . $bulan_akhir . ' ' . $waktu_akhir[0] . ')</td>
+                        </tr>
+                    </table>
+                    <br>
+
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="font-size: 10px; text-align: center;">
+                                <table style="width: 100%;">
+                                    <col style="width: 100%">
+                                    <tr><td align="center">Jakarta, ' . $hari . ' ' . $bulan_akhir . ' ' . $waktu_akhir[0] . '</td></tr>
+                                    <tr><td align="center">Kepala Pusat Pendidikan dan Pelatihan</td></tr>
+                                    <tr><td align="center"><br><br></td></tr>
+                                    <tr><td align="center"><u>Nama KAPUSDIKLAT</u></td></tr>
+                                    <tr><td align="center">NIP. ______</td></tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>';
+
+    $content2 = '<div class="m-auto position-relative" style="width: 100%; height: 100%;">
+                    <div class="position-absolute" style="width: 100%; height: 100%;">
+                        <img src="https://berkas.dpr.go.id/mooc/assets/images/bgsertif1.jpg" class="position-absolute" style="width: 100%; z-index: -1000000">
+                    </div>
+
+                    <div class="m-auto" style="width: 90%; padding-top: 60px;">
+                        <p class="text-center fw-bold m-0" style="font-size: 26px;">MATERI</p>
+                        <p class="text-center fw-bold text-decoration-underline" style="font-size: 14px;">' . $pelatihan->nama_pelatihan . '</p>
+                    </div>
+
+                    <table class="m-auto mt-4" style="width: 80%;">
+                        <thead>
+                            <tr>
+                                <th style="font-size: 11px; text-align: center; border: 1px solid black;">No</th>
+                                <th style="font-size: 11px; text-align: center; border: 1px solid black;">Komponen</th>
+                                <th style="font-size: 11px; text-align: center; border: 1px solid black;">Nilai</th>
+                                <th style="font-size: 11px; text-align: center; border: 1px solid black;">Jam Pelajaran (JP)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="" style="width: 80%;">
+                            ' . $isi_nilai . '
+                        </tbody>
+                    </table>
+
+                    <table class="m-auto mt-4" style="width: 80%;">
+                        <tbody>
+                            <tr>
+                                <th scope="row" style="font-size: 11px;">1.</th>
+                                <td style="font-size: 11px;"><strong>Nilai Akhir</strong></td>
+                                <td style="font-size: 11px;">:</td>
+                                <td style="font-size: 11px;">' . (($this->FormatNumber($this->penugasan->skor_akhir) * 7 + $this->FormatNumber($this->mentoring->skor_akhir) * 2 + $this->FormatNumber($this->belajar->skor_akhir)) / 10) . '</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="width: 5%; font-size: 11px;">2.</th>
+                                <td style="width: 30%; font-size: 11px;"><strong>Total Jam Pelajaran (JP)</strong></td>
+                                <td style="width: 5%; font-size: 11px;">:</td>
+                                <td style="font-size: 11px;">' . ($jp + 16) . '</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>';
+
+    $suratKeterangan = '<div class="m-auto position-relative" style="width: 100%; height: 100%;">
+                            <div class="position-absolute" style="width: 100%; height: 100%;">
+                                <img src="https://berkas.dpr.go.id/mooc/assets/images/bgsertif1.jpg" class="position-absolute" style="width: 100%; z-index: -10">
+                            </div>
+
+                            <div class="m-auto" style="width: 90%; padding-top: 60px;">
+                                <h2 class="text-center fw-bold m-0" style="font-size: 40px;">SURAT KETERANGAN</h2>
+                                <h5 class="text-center fw-bold text-decoration-underline" style="font-size: 10px;">Dengan bangga diberikan kepada</h5>
+                            </div>
+                    
+                            <table style="width: 100%;">
+                                <col style="width: 100%">
+                                <tr><td style="font-size: 20px; text-align: center"><b><u>' . $this->peserta->nama . '</u></b></td></tr>
+                            </table>
+                            <br>
+
+                            <table style="width: 100%;">
+                                <col style="width: 100%">
+                                <tr>
+                                    <td style="font-size: 10px; text-align: center">Telah berpartisipasi :</td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size: 16px; text-align: center"><b><u>' . $pelatihan->nama_pelatihan . '</u></b></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <br>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size: 10px; text-align: center;"> Pada Tanggal (' . $waktu_awal[2] . ' ' . $bulan_awal . ' - ' . $waktu_akhir[2] . ' ' . $bulan_akhir . ' ' . $waktu_akhir[0] . ')</td>
+                                </tr>
+                            </table>
+                            <br>
+
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="font-size: 10px; text-align: center;">
+                                        <table style="width: 100%;">
+                                            <col style="width: 100%">
+                                            <tr><td align="center">Jakarta, ' . $hari . ' ' . $bulan_akhir . ' ' . $waktu_akhir[0] . '</td></tr>
+                                            <tr><td align="center">Kepala Pusat Pendidikan dan Pelatihan</td></tr>
+                                            <tr><td align="center"><br><br></td></tr>
+                                            <tr><td align="center"><u>Nama KAPUSDIKLAT</u></td></tr>
+                                            <tr><td align="center">NIP. ______</td></tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>';
+    // end sertifikat
+?>
+
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+<link rel="stylesheet" href="https://berkas.dpr.go.id/mooc/assets/css/belajar-pelatihan-saya.css">
+<link rel="stylesheet" href="https://berkas.dpr.go.id/mooc/assets/css/sertifikat.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.min.js"></script>
+
+<div class="area"></div>
+<nav class="main-menu" style="max-width: 100vw; margin-top: 85px; ">
+    <div id="mySidebar" class="sidebar background-content" style=" z-index: 999; margin-top: 85px; overflow-y: auto; max-height: calc(100vh - 85px); background-color: #E5E7E9;">
+        <a style="color: #D4A216;" href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <div class="p-3">
+                <p class="fs-5">Table of Contents</p>
+                <hr>
+                <?php
+                $progress = explode("-", $this->progress->status_progress);
+                ?>
+                <a <?= ($this->progress->status_progress == 'none' ? 'style="pointer-events: none; cursor: default;"' : '') ?>
+                    href="/peserta/pelatihan-saya/pretest/id/<?= $this->batch->id ?>">Pretest
+                    <?= ($this->progress->status_progress == 'none' ? '<i class="bi bi-lock-fill text-secondary"></i><br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') ?>
+                    <?= ($this->progress->status_progress == 'Sertifikat' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') ?>
+                </a>
+                <hr>
+                <div>
+                    <?php
+                    $materi_idx = 'x';
+                    foreach ($this->silabus as $id => $silabus) {
+                        echo '<ul style="margin-left: -35px; ">';
+                        echo ' <a class=" collapsed dropdown-toggle" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#a' . $silabus->id . '" aria-expanded="false" aria-controls="collapseExample">' . $silabus->nama_silabus . ' </a>';
+                        echo '</ul>';
+
+                        echo ' <div class="collapse" id="a' . $silabus->id . '" >';
+                        echo '<ul >';
+
+                        $i = 1;
+                        foreach ($this->materi as $idx => $materi) {
+                            if ($materi->id_silabus == $silabus->id) {
+                                echo '<li> 
+                                            <a ' . ($this->progress->status_progress == 'none' ? ' style="pointer-events: none; cursor: default;"' : '') . ' style="margin-left: -42px;" href="/peserta/pelatihan-saya/belajar/id/' . $this->batch->id . '/silabus/' . ($id + 1) . '/materi/' . $i++ . '">' . $materi->nama_materi . '
+                                            ' . ($this->progress->status_progress == 'Sertifikat' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') . '
+                                            </a>
+                                    </li>';
+                            }
+                        }
+                        echo '</ul>';
+                        echo '</div>';
+                    }
+
+                    ?>
+
+                </div>
+                <hr>
+                <a <?= ($progress[0] == 'Pretest' || $progress[0] == 'Materi' ? 'disabled="disabled" class="disabled"' : '') ?> href="/peserta/pelatihan-saya/postest/id/<?= $this->batch->id; ?>">
+                
+                Postest
+                
+                <?= ($progress[0] == 'Pretest' || $progress[0] == 'Materi' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '') ?>
+                <?=  ($progress[0] == 'Mentoring' || $progress[0] == 'Penugasan' || $progress[0] == 'Penilaian' || $progress[0] == 'Sertifikat' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') ?>
+                </a>
+                
+                <?php
+            if ($this->pelatihan->tipe_pelatihan == "nonclassical") {
+                echo "<hr>";
+                echo '<a ';
+                echo ($progress[0] == 'Materi' || $progress[0] == 'Pretest' || $progress[0] == 'Postest' ? 'disabled="disabled" class="disabled"' : '');
+                echo ' href="/peserta/pelatihan-saya/mentoring/id/' . $this->batch->id . '">';
+
+                echo 'Mentoring';
+
+                echo ($progress[0] == 'Materi' || $progress[0] == 'Pretest' || $progress[0] == 'Postest' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '');
+
+                echo ($progress[0] == 'Penugasan' || $progress[0] == 'Penilaian' || $progress[0] == 'Sertifikat' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '');
+
+                echo '</a>';
+            }
+            ?>
+
+                <hr>
+                <a <?= ($progress[0] == 'Materi' || $progress[0] == 'Pretest' || $progress[0] == 'Postest' || $progress[0] == 'Mentoring' ? 'disabled="disabled" class="disabled"' : '') ?> href="/peserta/pelatihan-saya/penugasan/id/<?= $this->batch->id ?>">
+                
+                Tugas Akhir
+                
+                <?= ($progress[0] == 'Materi'  || $progress[0] == 'Postest' || $progress[0] == 'Mentoring' || $progress[0] == 'Pretest' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '') ?>
+                <?=  ($progress[0] == 'Penilaian' || $progress[0] == 'Sertifikat' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') ?>
+                </a>
+                
+                
+                <hr>
+                <a <?= ($progress[0] !== 'Sertifikat' ? 'disabled="disabled" class="disabled"' : '') ?> href="/peserta/pelatihan-saya/sertifikat/id/<?= $this->batch->id ?>">Sertifikat
+                <?= ($progress[0] !== 'Sertifikat' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '') ?>
+                <?=  ($progress[0] == 'Sertifikat' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') ?>
+                </a>
+                <hr>
+
+                
+                
+            </div>
+    </div>
+
+    <!-- Tombol toggle sidebar -->
+    <button class="btn-sidebar">
+        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-left" class="svg-inline--fa fa-chevron-left text-dark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path fill="currentColor" d="M224 480c-8.188 0-16.38-3.125-22.62-9.375l-192-192c-12.5-12.5-12.5-32.75 0-45.25l192-192c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25L77.25 256l169.4 169.4c12.5 12.5 12.5 32.75 0 45.25C240.4 476.9 232.2 480 224 480z"></path>
+        </svg>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar"></div>
+    <div id="main">
+        <button class="openbtn background-content" id="nav-icon" onclick="toggleNav()" style="z-index: 2; position: fixed; margin-left: -23px; display: flex; justify-content: center; align-items: center; color: #D4A216; background-color: #E5E7E9; font-size: 41px; padding: 10px 0px 15px 0;">&#8250;</button>
+
+        <div class="row content-header mb-3">
+            <div class=" col-1"></div>
+            <div class="sub-content-header col-10">
+                <div class="card rounded-4 background-content" style=" border:none; background-color: #E5E7E9; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38); ">
+                    <div class="card-body" style=" color: #808080; ">
+                        <a style=" color: #808080;" class="text-decoration-none" href="/peserta">Belajar Saya</a>&nbsp &nbsp|&nbsp &nbsp
+                        <a style=" color: #808080;" class="text-decoration-none" href="/peserta/pelatihan">Pelatihan</a>&nbsp &nbsp|&nbsp &nbsp
+                        <a style=" color: #808080;" class="text-decoration-none" href="/peserta/pelatihan-saya/belajar/id/<?= $this->batch->id ?>/silabus/1/materi/1"><?= $nama_pelatihan ?></a>&nbsp &nbsp|&nbsp &nbsp
+                        <a class="text-dark text-decoration-none" href="">Klaim Sertifikat</a>
+                    </div>
+                </div>
+            </div>
+            <div class=" col-1"></div>
+        </div>
+
+        <section class="container-sertifikat m-auto" style="max-width: 80vw">
+            <div class="row sub-container-sertifikat d-flex flex-row mb-5">
+                <div class="content-sertifikat col-md-8 rounded-3" style="width: 70%;">
+                    <!-- sertifikat view -->
+                    <div class="rounded-4 mb-4 background-content" style="width: 100%; background-color: #E5E7E9; border: 1px solid #D4A216;">
+                        <section class="slider">
+                            <div class="slider__flex">
+                                <div class="slider__col content-thumb-sertifikat">
+                                    <!-- <div class="slider__prev">Prev</div> -->
+                                    <div class="slider__thumbs sub-content-thumb-sertifikat">
+                                        <div class="swiper-container">
+                                            <div class="swiper-wrapper">
+                                                <div class="swiper-slide">
+                                                    <div class="slider__image">
+                                                        <img src="https://berkas.dpr.go.id/mooc/assets/images/sertifikat-one.png" alt="" />
+                                                    </div>
+                                                </div>
+                                                <div class="swiper-slide">
+                                                    <div class="slider__image">
+                                                        <img src="https://berkas.dpr.go.id/mooc/assets/images/sertifikat-two.png" alt="" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="slider__next">Next</div> -->
+                                </div>
+
+                                <div class="slider__images content-view-sertifikat" style="width: 100%;">
+                                    <div class="swiper-container">
+                                        <div class="swiper-wrapper">
+                                            <?php
+                                                if ((($this->FormatNumber($this->penugasan->skor_akhir) * 7 + $this->FormatNumber($this->mentoring->skor_akhir) * 2 + $this->FormatNumber($this->belajar->skor_akhir)) / 10) < 75) {
+                                                    echo"<div class='swiper-slide'>
+                                                            <div class='slider__image' style='width: 100%;'>
+                                                                <div class='content1' style='width: 100%; height: 100%;'>$suratKeterangan</div>
+                                                            </div>
+                                                        </div>";
+                                                } else {
+                                                    echo"<div class='swiper-slide'>
+                                                            <div class='slider__image' style='width: 100%;'>
+                                                                <div class='content1' style='width: 100%; height: 100%;'>$content1</div>
+                                                            </div>
+                                                        </div>";
+                                                }
+                                            ?>
+                                            <div class="swiper-slide">
+                                                <div class="slider__image">
+                                                    <div class="content2" style="width: 100%; height: 100%;">
+                                                        <?= $content2 ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <!-- end sertifikat view -->
+                    <div class="mb-2">
+                        <p style="text-align: justify;">Sertifikat ini menegaskan bahwa <span style="color: #D4A216">
+                                <?= $nama_peserta ?>
+                            </span> telah berhasil menyelesaikan pelatihan <span style="color: #D4A216">
+                                <?= $nama_pelatihan ?>
+                            </span> yang diajarkan oleh <span style="color: #D4A216">
+                                <?= $nama_mentor ?>
+                            </span>, dengan tanggal penyelesaian pada tanggal <span style="color: #D4A216">
+                                <?= formatTime($this->penugasan->tanggal_input) ?>
+                            </span>. Sertifikat ini menunjukkan bahwa siswa telah menyelesaikan seluruh pelatihan,
+                            seperti yang terverifikasi dari catatan mereka. Durasi kursus mencakup total jam video pada
+                            saat penyelesaian terakhir.
+                        </p>
+                    </div>
+                    <div class="content-btn-rating m-auto d-flex flex-row justify-content-start p-0" style="width: 100%;">
+                        <?php
+                            if($this->rating == "") {
+                                echo'<button type="button" class="view-popup-rating m-1 border-0 fs-6 fw-bold text-center text-light rounded-3 m-0 p-2" style="width: 15%; background-color: #D4A216; outline: #D4A216;">Beri rating</button>';
+                            } else {
+                                echo '<button type="button" class="view-popup-rating-done m-1 border-0 fs-6 fw-bold text-center text-light rounded-3 m-0 p-2" style="width: 15%; background-color: #D4A216; outline: #D4A216;">Beri rating</button>';
+                            }
+                        ?>
+                        
+
+                        
+                        <?php if ($this->riwayat->status_riwayat !== 'Selesai') : ?>
+    <button onclick="selesaiClicked();" type="button" class="m-1 border-0 fs-6 fw-bold text-center text-light rounded-3 m-0 p-2" style="width: 15%; background-color: #D4A216; outline: #D4A216;">Selesai</button>
+                        <?php endif; ?>
+
+
+
+                    </div>
+                </div>
+
+                <div class="content-info-sertifikat col-md-4 d-flex flex-column mb-3" style="width: 30%;">
+                    <p class="fs-5 fw-bold">Penerima Sertifikat:</p>
+                    <div class="d-flex flex-row align-items-center mb-3">
+                        <div class="me-3 d-flex justify-content-center align-items-center bg-light border-0 rounded-circle" style="width: 60px; height: 60px; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">
+                            <?php
+                                if($foto_peserta_uri != "") {
+                                    echo '<img src="https://berkas.dpr.go.id/mooc/peserta/'. $foto_peserta_uri .'" alt="" style="width: 30px; height: 30px;">';
+                                } else {
+                                    echo '<img src="https://berkas.dpr.go.id/mooc/assets/images/username-orange.png" alt="" style="width: 30px; height: 30px;">';
+                                }
+                            ?>
+                        </div>
+                        <p class="m-0"><?= $nama_peserta ?></p>
+                    </div>
+
+                    <p class="fs-5 fw-bold">Tentang Pelatihan:</p>
+                    <div class="mb-3 content-sampul-pelatihan" style="width: 100%;">
+                        <img src="https://berkas.dpr.go.id/mooc/thumbkelas/<?= $sampul_pelatihan ?>" alt="" class="rounded-4 p-0 mb-3" style="width: 100%; height: 180px; object-fit: cover; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">
+                        <p class="fs-5 fw-bold m-0"><?= $nama_pelatihan ?></p>
+                        <p class><?= $nama_mentor ?></p>
+                    </div>
+
+                    <div class="content-btn d-flex justify-content-between" style="width: 100%;">
+                        <a href="/peserta/pelatihan-saya/file/id/<?= $id_sertifikat ?>/batch/<?= $this->batch->id ?>/peserta/<?= $auth->id_peserta ?>" class="btn-download rounded-3 p-2 text-light text-decoration-none d-flex justify-content-center align-items-center" style="width: 45%; background-color: #D4A216; border: 1px solid #D4A216; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);" target="blank">
+                            <img src="https://berkas.dpr.go.id/mooc/assets/images/download.png" alt="" class="me-1" style="width: 25px; height: 25px">Download
+                        </a>
+
+                        <button class="view-popup-share btn-share background-content rounded-3 p-2 border-0 d-flex justify-content-center align-items-center" style="width: 45%; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">
+                            <img src="https://berkas.dpr.go.id/mooc/assets/images/share.png" alt="" class="me-1" style="width: 20px; height: 20px">
+                            Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</nav>
+
+<!-- popup share -->
+<div class="popup-share">
+    <header>
+        <span></span>
+        <div class="close-popup-share"><i class="bi bi-x"></i></div>
+    </header>
+    <div class="content">
+        <p>Share this link via</p>
+        <ul class="icons m-0">
+            <!-- facebook -->
+            <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fexample.com%2F&amp;src=sdkpreparse"
+                target="blank"><i class="bi bi-facebook"></i></a>
+            <!-- twitter -->
+            <a href="https://twitter.com/intent/tweet?text=Check%20out%20this%20awesome%20page%20at%20https%3A%2F%2Fexample.com" target="blank"><i class="bi bi-twitter"></i></a>
+
+            <!-- instagram -->
+            <a href="https://instagram.com/" target="blank"><i class="bi bi-instagram"></i></a>
+
+            <!-- whatsapp -->
+            <a href="https://wa.me/<phone_number>?text=Check%20out%20this%20awesome%20page%20at%20https%3A%2F%2Fexample.com" target="blank"><i class="bi bi-whatsapp"></i></a>
+
+            <!-- telegram -->
+            <a href="https://t.me/share/url?url=https%3A%2F%2Fexample.com&amp;text=Check%20out%20this%20awesome%20page" target="blank"><i class="bi bi-telegram"></i></a>
+
+            <!-- linkedin -->
+            <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A%2F%2Fexample.com&amp;title=Check%20out%20this%20awesome%20page&amp;summary=This%20page%20is%20really%20cool&amp;source=Example.com" target="blank"><i class="bi bi-linkedin"></i></a>
+
+            <!-- pinterest -->
+            <a href="https://pinterest.com/pin/create/button/?url=https%3A%2F%2Fexample.com&amp;media=https%3A%2F%2Fexample.com%2Fimage.jpg&amp;description=Check%20out%20this%20awesome%20page" target="blank"><i class="bi bi-pinterest"></i></a>
+        </ul>
+        <p>Or copy link</p>
+        <div class="field pe-3">
+            <i class="bi bi-link-45deg fs-4"></i>
+            <input readonly type="text" value="https://belajar.dpr.go.id/peserta/sertifikat/file/id/<?= $id_sertifikat ?>/batch/<?= $id_batch ?>/peserta/<?= $auth->id_peserta ?>">
+            <button>Copy</button>
+        </div>
+    </div>
+</div>
+<!-- popup modal share -->
+
+<!-- popup rating -->
+<div class="popup-rating">
+    <header>
+        <span></span>
+        <div class="close-popup-rating"><i class="bi bi-x"></i></div>
+    </header>
+    <div class="content-rating d-flex flex-column">
+        <p class="title-rating">Yuk beri rating pada pelatihan <?= $nama_pelatihan ?></p>
+        <form id="rating-form" method="post" enctype="multipart/form-data" class="rating">
+            <input type="hidden" name="id_peserta" id="id_peserta" value="<?= $auth->id_peserta ?>">
+            <input type="hidden" name="id_batch" id="id_batch" value="<?= $this->batch->id ?>">
+            <input type="hidden" name="id_pelatihan" id="id_pelatihan" value="<?= $this->batch->id_pelatihan ?>">
+            
+            <div class="rating m-0 mb-5">
+                <label>
+                    <input type="radio" name="star" id="star" value="1" />
+                    <span class="icon">★</span>
+                </label>
+                <label>
+                    <input type="radio" name="star" id="star" value="2" />
+                    <span class="icon">★</span>
+                    <span class="icon">★</span>
+                </label>
+                <label>
+                    <input type="radio" name="star" id="star" value="3" />
+                    <span class="icon">★</span>
+                    <span class="icon">★</span>
+                    <span class="icon">★</span>   
+                </label>
+                <label>
+                    <input type="radio" name="star" id="star" value="4" />
+                    <span class="icon">★</span>
+                    <span class="icon">★</span>
+                    <span class="icon">★</span>
+                    <span class="icon">★</span>
+                </label>
+                <label>
+                    <input type="radio" name="star" id="star" value="5" />
+                    <span class="icon">★</span>
+                    <span class="icon">★</span>
+                    <span class="icon">★</span>
+                    <span class="icon">★</span>
+                    <span class="icon">★</span>
+                </label>
+            </div>
+            <div class="mb-5 d-flex flex-row justify-content-center p-0" style="width: 100%;">
+                <button type="submit" class="btn-rating border-0 fs-6 fw-bold text-center text-light rounded-3 p-0" style="width: 20%; background-color: #D4A216; outline: #D4A216;">Beri rating</button>
+            </div>
+            
+        </form>            
+    </div>
+</div>
+<!-- end popup rating -->
+
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<script>
+    function selesaiClicked() {
+        Swal.fire({
+            title: 'Selamat!',
+            text: 'Anda telah menyelesaikan pelatihan ini.',
+            icon: 'success',
+            confirmButtonColor: '#4CAF50',
+            confirmButtonText: 'Oke!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/peserta/pelatihan-saya/selesaipelatihan',
+                    type: 'POST',
+                    data: {
+                        id: '<?=$this->progress->id?>',
+                        id_peserta: '<?=$this->progress->id_peserta?>',
+                        id_batch: '<?=$this->progress->id_batch?>',
+                        status_progress: '<?=$this->progress->status_progress?>',
+                        status_riwayat: 'Selesai',
+                    },
+                    success: function (response) {
+                        window.location.href = '/peserta/riwayat';
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log('Failed: ' + textStatus);
+                        console.log(errorThrown);
+                    }
+                });
+            }
+        });
+    }
+
+    // submit rating
+    $('#rating-form').submit(function(event) {
+        let id_peserta = $('#id_peserta').val();
+        let id_batch = $('#id_batch').val();
+        let id_pelatihan = $('#id_pelatihan').val();
+        let star = $('#star').val();
+        
+        let form = new FormData();
+        form.append('id_peserta', id_peserta);
+        form.append('id_batch', id_batch);
+        form.append('id_pelatihan', id_pelatihan);
+        form.append('star', star);
+        
+        $.ajax({
+            url: `/peserta/pelatihan-saya/sertifikat/id${id_batch}`,
+            type: 'POST',
+            data: JSON.stringify(form),
+            processData: false,
+            contentType: false,
+            beforeSend: function(xhr) {
+                event.preventDefault(); // Mencegah perilaku pengiriman formulir default
+            },
+
+            success: function(response) {
+                Swal.fire({
+                    icon: 'success',
+					title: 'Success',
+					html: 'Terima Kasih',
+					confirmButtonColor: '#4CAF50',
+                    customClass: {
+                        popup: 'my-custom-popup-class',
+                        title: 'my-custom-title-class',
+                        content: 'my-custom-content-class',
+                        confirmButton: 'confirm-button-class'
+                    }
+                }).then(function(result) {
+                    if(result.isConfirmed) {
+                        $('#rating-form').off('submit').submit(); // Manually submit the form
+                    }
+                });
+            },
+            error: function(xhr, status, error) {
+                console.log('Rating submission failed');
+                console.log(xhr.responseText);
+            }
+        });
+    });
+    // end submit rating
+
+     // popup rating
+    const viewPopupRating = document.querySelector(".view-popup-rating");
+    const popupRating = document.querySelector(".popup-rating");
+    const closePopupRating = popupRating.querySelector(".close-popup-rating");
+
+    if(viewPopupRating) {
+        viewPopupRating.onclick = () => {
+            popupRating.classList.toggle("show");
+        }
+    }
+
+    closePopupRating.onclick = () => {
+        viewPopupRating.click();
+    }
+
+    $(':radio').change(function() {
+        console.log('New star rating: ' + this.value);
+    });
+    // end popup rating
+
+    //membuat button sidebar tetap ketika scroll
+    window.onscroll = function () { scrollFunction() };
+
+    function scrollFunction() {
+        var button = document.getElementById("nav-icon");
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            button.style.display = "flex";
+        } else {
+            button.style.display = "flex";
+        }
+    }
+
+    // sidebar
+    function toggleNav() {
+        var sidebar = document.getElementById("mySidebar");
+        var navIcon = document.getElementById("nav-icon");
+
+        if (window.innerWidth < 768) {
+            if (sidebar.style.width == "100%") {
+                sidebar.style.width = "0";
+                navIcon.innerHTML = "&#8250;";
+            } else {
+                sidebar.style.width = "100%";
+                navIcon.innerHTML = "&#8249;";
+            }
+        } else {
+            if (sidebar.style.width == "250px") {
+                sidebar.style.width = "0";
+                document.getElementById("main").style.marginLeft = "0";
+                navIcon.innerHTML = "&#8250;";
+            } else {
+                sidebar.style.width = "250px";
+                document.getElementById("main").style.marginLeft = "250px";
+                navIcon.innerHTML = "&#8249;";
+            }
+        }
+    }
+
+    function closeNav() {
+        document.getElementById("mySidebar").style.width = "0";
+        document.getElementById("main").style.marginLeft = "0";
+    }
+    // end sidebar
+
+    // swiper
+    const sliderThumbs = new Swiper('.slider__thumbs .swiper-container', {
+        direction: 'vertical',
+        slidesPerView: 3,
+        spaceBetween: 24,
+        navigation: {
+            nextEl: '.slider__next',
+            prevEl: '.slider__prev'
+        },
+
+        freeMode: true,
+        breakpoints: {
+            0: {
+                direction: 'horizontal',
+            },
+            768: {
+                direction: 'vertical',
+            }
+        }
+    });
+
+    const sliderImages = new Swiper('.slider__images .swiper-container', {
+        direction: 'vertical',
+        slidesPerView: 1,
+        spaceBetween: 32,
+        mousewheel: true,
+        navigation: {
+            nextEl: '.slider__next',
+            prevEl: '.slider__prev'
+        },
+
+        grabCursor: true,
+        thumbs: {
+            swiper: sliderThumbs
+        },
+
+        breakpoints: {
+            0: {
+                direction: 'horizontal',
+            },
+            768: {
+                direction: 'vertical',
+            }
+        }
+    });
+    // end swiper
+
+    // popup share
+    const viewPopupShare = document.querySelector(".view-popup-share");
+    const popupShare = document.querySelector(".popup-share");
+    const closePopupShare = popupShare.querySelector(".close-popup-share");
+    const field = popupShare.querySelector(".field");
+    const input = field.querySelector("input");
+    const copy = field.querySelector("button");
+
+    viewPopupShare.onclick = () => {
+        popupShare.classList.toggle("show");
+    }
+
+    closePopupShare.onclick = () => {
+        viewPopupShare.click();
+    }
+
+    copy.onclick = () => {
+        input.select();
+        if (document.execCommand("copy")) {
+            field.classList.add("active");
+            copy.innerText = "Copied";
+            setTimeout(() => {
+                window.getSelection().removeAllRanges();
+                field.classList.remove("active");
+                copy.innerText = "Copy";
+            }, 3000);
+        }
+    }
+    // end popup share
+
+    // popup rating done
+    const btnViewRatingDone = document.querySelector('.view-popup-rating-done');
+    if(btnViewRatingDone) {
+        btnViewRatingDone.addEventListener('click', function () {
+            Swal.fire({
+                title: 'Terima Kasih',
+                text: 'Anda telah memberikan rating pada pelatihan ini',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4CAF50',
+            });
+        });
+    }
+    // end popup rating done
+</script>

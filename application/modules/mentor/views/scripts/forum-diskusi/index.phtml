@@ -1,0 +1,88 @@
+<script id="js">
+$(function(){
+	$("table")
+		.tablesorter({theme: 'blue', widthFixed: true, widgets: ['zebra', 'filter']})
+		.tablesorterPager({container: $(".pager"), 
+			output: '{startRow} - {endRow} / {filteredRows} ({totalRows})', 
+			fixedHeight: true, 
+			removeRows: false, 
+			cssGoto: '.gotoPage' 
+		});
+});
+</script>
+
+<div class="content-header"></div>
+	<div class="UI_Header_Title">
+		<h1><?=$this->avatar;?> Daftar Forum Diskusi</h1>
+		
+		<!-- <div class="header_nav_links"><span class="right context_menu"><a href="/mentor/forum-diskusi/add" class="UIlink-button small right">Tambah Forum Diskusi</a></span>
+	</div> -->
+</div>
+<div class="clear"></div>
+<br>
+
+<? if (count($this->forums) > 0) { ?>
+	<?=$this->pager;?>
+
+	<table class="tablesorter">
+		 <thead>
+			 <tr>
+			 	<th width="5px" align="center">No.</th>
+				<th align="center">Title</th>
+				<th align="center">Nama Pelatihan</th>
+				<th align="center">Aksi</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+
+				$auth = Zend_Auth::getInstance()->getIdentity();
+				$nama_coach = "-";
+				$foto_coach = "-";
+				$index = 1;
+				
+				foreach($this->forums as $forum) {
+					foreach($this->mentor_batchs as $mentor_batch) {
+						$totalChat= 0;
+						$nama_pelatihan = "-";
+
+						foreach($this->coachs as $coach) {
+							if($coach->id == $forum->id_coach) {
+								$nama_coach = $coach->nama_coach;
+								$foto_coach = $coach->fotocoach_uri;
+								break;
+							}
+						}
+
+						foreach($this->chats as $chat) {
+							if($chat->id_forum == $forum->id) {
+								$totalChat++;
+							}
+						}
+			
+						if($mentor_batch->id_batch == $forum->id_batch && $mentor_batch->status == 1) {
+							foreach($this->pelatihans as $pelatihan) {
+								if($pelatihan->id == $mentor_batch->id_pelatihan && $mentor_batch->id_batch == $forum->id_batch) {
+									$nama_pelatihan = $pelatihan->nama_pelatihan;
+									break;
+								}
+							}
+
+				echo '<tr>';
+				echo '<td align="center">'. $index++ .'.</td>';
+				echo '<td align="center">'. $forum->title .'</td>';
+				echo '<td align="center">'. $nama_pelatihan .'</td>';
+				echo '<td align="center"><a href="/mentor/forum-diskusi/reply/id/'. $forum->id .'">VIEW</a>';
+				echo '</td>';
+				echo '</tr>';
+				break;
+			}
+		}
+	}
+			?>
+		</tbody>
+	</table>
+<? } else {
+	echo 'Data tidak ditemukan.';
+}
+?>

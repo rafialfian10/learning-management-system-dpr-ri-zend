@@ -1,0 +1,81 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+	})
+
+	function selectFields1(id, id, judul_batch) {
+		$('#id_batch').val(id);
+		$('#judul_batch').val(judul_batch);
+		$.facebox.close();
+	}
+
+	function ClearFields1() {
+		document.getElementById("id_batch").value = "";
+		document.getElementById("judul_batch").value = "";
+	}
+
+	function selectFields2(id, id, nama) {
+		$('#id_peserta').val(id);
+		$('#nama_peserta').val(nama);
+		$.facebox.close();
+	}
+
+	function ClearFields2() {
+		document.getElementById("id_peserta").value = "";
+		document.getElementById("nama_peserta").value = "";
+	}
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?= $this->avatar; ?>Tambah Manual Sertifikat</h1>
+	<div class="header_nav_links"><a href="/admin/sertifikat/index">Back to Daftar Sertifikat</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p><label>Batch</label>
+			<input readonly type="text" id="judul_batch" autocomplete="disable" name="judul_batch" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value=""/>
+			<input type="hidden" id="id_batch" autocomplete="disable" name="id_batch" />
+			<input type="button" value="..." id="btnbatch" style="height:30px;" onclick="jQuery.facebox({ ajax: '/admin/sertifikat/search-batch'});">
+			<input type="button" style="height:30px;" onclick="ClearFields1();" value="Clear">
+			<font color="red">*</font>
+		</p>
+
+		<p id="daftar-peserta" class="daftar-user">
+			<label>Nama Peserta</label>
+			<input readonly type="hidden" id="id_peserta" autocomplete="disable" name="id_peserta" style="height:30px; padding: 0px; padding-left: 10px; width: 400px; border: 1px solid grey; border-radius: 2px;" />
+			<input readonly type="text" id="nama_peserta" autocomplete="disable" name="nama_peserta" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" />
+			<input type="button" value="..." id="btnpeserta" style="height:30px;" onclick="jQuery.facebox({ ajax: '/admin/sertifikat/search-peserta/id/<?= $this->rows->id_batch; ?>'});">
+			<input type="button" style="height:30px;" onclick="ClearFields2();" value="Clear">
+			<font color="red">*</font>
+		</p>
+		<p>
+			<label class="left" for="title">Title</label>
+			<input type="text" id="title" class="event-message" wrap="soft" name="title" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<p>
+			<label class="left" for="skor_materi">Skor Materi</label>
+			<input type="number" id="skor_materi" class="event-message" wrap="soft" name="skor_materi" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<p>
+			<label class="left" for="skor_mentoring">Skor Mentoring</label>
+			<input type="number" id="skor_mentoring" class="event-message" wrap="soft" name="skor_mentoring" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<p>
+			<label class="left" for="skor_penugasan">Skor Penugasan</label>
+			<input type="number" id="skor_penugasan" class="event-message" wrap="soft" name="skor_penugasan" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<p>
+			<label class="left" for="skor_akhir">Skor Akhir</label>
+			<input type="number" id="skor_akhir" class="event-message" wrap="soft" name="skor_akhir" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Buat Sertifikat" class="" /></label><a href="/admin/sertifikat/index" class="UIbutton-small">Batal</a></p>
+	</div>
+</form>
+<div style="clear:both"></div>

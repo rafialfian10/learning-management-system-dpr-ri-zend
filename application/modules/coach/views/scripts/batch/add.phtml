@@ -1,0 +1,239 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+	});
+	$(function() {
+		$("#tgl_awal").datepicker({
+			yearRange: "-1:+5",
+			changeYear: "true",
+			changeMonth: "true",
+			dateFormat: "dd-mm-yy"
+		});
+		$("#tgl_akhir").datepicker({
+			yearRange: "-1:+5",
+			changeYear: "true",
+			changeMonth: "true",
+			dateFormat: "dd-mm-yy"
+		});
+	});	
+
+	$(function(){
+		$("table")
+			.tablesorter({theme: 'blue', widthFixed: true, widgets: ['zebra', 'filter']})
+			.tablesorterPager({container: $(".pager"), 
+				output: '{startRow} - {endRow} / {filteredRows} ({totalRows})', 
+				fixedHeight: true, 
+				removeRows: false, 
+				cssGoto: '.gotoPage' });
+	});
+	
+	function formatDate(date) {
+		var day = date.getDate();
+		var month = date.getMonth() + 1;
+		var year = date.getFullYear();
+		return (day < 10 ? '0' : '') + day + '-' + (month < 10 ? '0' : '') + month + '-' + year;
+	}
+
+	function selectFields1(id, id, nama_pelatihan, tipe_pelatihan) {
+		$('#id_pelatihan').val(id);
+		$('#nama_pelatihan').val(nama_pelatihan);
+		$('#tipe_pelatihan').val(tipe_pelatihan);
+		
+		// get the current date
+		var currentYear = new Date().getFullYear();
+
+		if(tipe_pelatihan == 'nonclassical'){
+			$('#kuota_peserta').attr('disabled', true).attr('readonly', true);
+			$('#tgl_awal').attr('readonly', true).val('01-01-'+ currentYear);
+			$('#tgl_akhir').attr('readonly', true).val('31-12-'+ currentYear);
+		} else {
+			$('#kuota_peserta').attr('disabled', false).attr('readonly', false);
+			$('#tgl_awal').attr('readonly', false);
+			$('#tgl_akhir').attr('readonly', false);
+	    }
+		$.facebox.close();
+	}
+
+	function ClearFields1() {
+		document.getElementById("id_pelatihan").value = "";
+		document.getElementById("nama_pelatihan").value = "";
+	}
+
+	function selectFields3() {
+		$('input[name="cbAdd[]"]:checked').each(function() {
+			var $this = $(this);
+			var dataArray = [];
+			
+			jQuery('.id_peserta').each(function(key,item) {
+				dataArray.push(item.value);
+			}); 
+			
+			if(!dataArray.includes($this.val())){
+				$('#daftar-peserta').append(`
+					<tr id="peserta_${$this.val()}">
+					<td align="center"> ${$this.val()}
+					<input class="id_peserta" type="hidden" id="id_peserta_${$this.val()}" readonly name="id_peserta[]" value="${$this.val()}" /> </td>
+					<td> ${$this.attr('data-nama')} </td>
+					<td> <input readonly class="required" type="text" id="nama_mentor_${$this.val()}" placeholder="Pilih Mentor untuk Peserta" autocomplete="disable" name="nama_mentor_${$this.val()}" />
+						<input type="hidden" id="id_mentor_${$this.val()}" autocomplete="disable" name="id_mentor[]" value="<?= $this->row->id_mentor; ?>" />
+						<input type="button" value="..." id="btnmentor_${$this.val()}" onclick="jQuery.facebox({ ajax: \' /coach/batch/search-mentor/${$this.val()}\' });">
+						<input type="button" onclick="ClearFields4(${$this.val()});" value="Clear">
+						<font color="red">*</font> </td>
+					<td align="center"> <a href="#" style="color:red;" onclick="removePeserta('peserta_${$this.val()}')">HAPUS</a></td> </td>
+					</tr>
+				`);
+			}
+		});
+		$.facebox.close();
+	}
+
+	function selectFields4(id, id, nama_mentor, id_peserta) {
+		$("#id_mentor_"+id_peserta).val(id);
+		$("#nama_mentor_"+id_peserta).val(nama_mentor);
+		$.facebox.close();
+	}
+
+	function ClearFields4(id_peserta) {
+		document.getElementById("id_mentor_"+id_peserta).value = "";
+		document.getElementById("nama_mentor_"+id_peserta).value = "";
+	}
+
+	function changeBatch() {
+		var tipe_batch = document.getElementById("tipe_batch").value;
+		if (tipe_batch == 1) {
+			// show tgl_awal and tgl_akhir
+			document.getElementById("tanggal_awal").style.display = "block";
+			document.getElementById("tanggal_akhir").style.display = "block";
+			document.getElementById("tgl_awal").style.display = "block";
+			document.getElementById("tgl_akhir").style.display = "block";
+
+		} else {
+			// hide tgl_awal and tgl_akhir
+			document.getElementById("tanggal_awal").style.display = "none";
+			document.getElementById("tanggal_akhir").style.display = "none";
+			document.getElementById("tgl_awal").style.display = "none";
+			document.getElementById("tgl_akhir").style.display = "none";
+		}
+	}
+
+	function openModal() {
+		jQuery.facebox(function($) {
+			console.log('sedang facebox');
+			jQuery.get('/coach/batch/search-peserta', function(data) { 
+				jQuery.facebox(data);
+				var dataArray = [];
+				jQuery('.id_peserta').each(function(key,item) {
+					jQuery("#cbAdd"+item.value).attr('checked',true);
+				}); 
+			})
+		})
+	}
+
+	function removePeserta(id) {
+		$("#"+id).remove();
+	}
+</script>
+
+<script src="<?= $this->url_statik; ?>/js/tinymce/tinymce.min.js"></script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?= $this->avatar; ?>Tambah Batch</h1>
+	<div class="header_nav_links"><a href="/coach/batch/index">Back to Daftar Batch</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p>
+			<label class="left" for="judul_batch">Judul Batch</label>
+			<input id="judul_batch" class="event-message" wrap="soft" name="judul_batch" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<p><label>Nama Pelatihan</label>
+			<input readonly type="text" id="nama_pelatihan" autocomplete="disable" name="nama_pelatihan" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" />
+			<input type="hidden" id="id_pelatihan" autocomplete="disable" name="id_pelatihan" value="<?= $this->row->id_pelatihan; ?>" />
+			<input type="hidden" id="tipe_pelatihan" autocomplete="disable" name="tipe_pelatihan" />
+			<input type="button" value="..." id="btnpelatihan" style="height:30px;" onclick="jQuery.facebox({ ajax: '/coach/batch/search-pelatihan'});">
+			<input type="button" style="height:30px;" onclick="ClearFields1();" value="Clear">
+			<font color="red">*</font>
+		</p>
+
+		<p><label>Peserta Batch</label>
+			<input readonly value="Daftar Peserta" type="text" id="tambah_peserta" autocomplete="disable" name="tambah_peserta" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" />
+			<input type="button" value="Tambah" id="btnpeserta" style="height:30px;" onclick="openModal()">
+		</p>
+
+		<p>
+			<label class="left" for="title">Judul Forum Diskusi </label>
+			<input id="title_diskusi" class="event-message" wrap="soft" name="title_diskusi" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+		<br>
+		<p>
+			<label class="left" for="file_forum">File Forum Diskusi </label>
+			<input type="file" accept="*/*" id="file_forum" name="file_forum">
+			<br><small class="form-text text-muted" style="color: red; margin-left: 150px;">JPG, PNG, PDF, DOC, PPT, Audio, Video (Max. 128 MB)</small>
+			<br><small class="form-text text-muted" style=" margin-left: 150px;">* Dapat Berupa Informasi Pelatihan</small>
+		</p>
+		<br>
+		<p>
+			<label class="left" for="title">Judul Forum Mentoring </label>
+			<input id="title" class="event-message" wrap="soft" name="title" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<br>
+		<p>
+			<label class="left" for="file_mentoring">File Forum Mentoring </label>
+			<input type="file" accept="*/*" id="file_mentoring" name="file_mentoring">
+			<br><small class="form-text text-muted" style="color: red; margin-left: 150px;">JPG, PNG, PDF, DOC, PPT, Audio, Video (Max. 128 MB)</small>
+			<br><small class="form-text text-muted" style=" margin-left: 150px;">* Dapat Berupa Ketentuan / Panduan / Contoh Tugas</small>
+		</p>
+		<br>
+
+		<p>
+			<label class="left" for="kuota_peserta">Kuota Peserta</label>
+			<input type="text" class="required" id="kuota_peserta" name="kuota_peserta" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"/> 
+		</p>
+
+		<p id="tanggal_awal"><label>Tanggal Awal</label>
+			<input type="text" id="tgl_awal" autocomplete="disable" name="tgl_awal" value="<?= date('d-m-Y'); ?>" style="width:350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" />
+			<font color="red">*</font>
+		</p>
+		<p id="tanggal_akhir"><label>Tanggal Akhir</label>
+			<input type="text" id="tgl_akhir" autocomplete="disable" name="tgl_akhir" value="<?= date('d-m-Y'); ?>" style="width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" />
+			<font color="red">*</font>
+		</p>
+
+		<br>
+		<p id="peserta"> <label>Tabel Peserta</label><br><br>
+
+		<!-- Tabel Peserta  -->
+		<? if (count($this->peserta) > 0) { ?>
+			<?=$this->pager;?>
+
+			<table class="tablesorter">
+				<thead>
+					<tr>
+						<th align="center">ID</th>
+						<th>Nama Peserta</th>
+						<th>Mentor</th>
+						<th align="center">Aksi</th>
+					</tr>
+				</thead>
+				<tbody id="daftar-peserta">
+				
+				</tbody>
+			</table>
+		<? } else {
+			echo 'Data tidak ditemukan.';
+		}
+		?>
+		<!-- End of Tabel Peserta  -->
+		
+	</p>
+		<p class="savecancel"><label class="UIbutton-small">
+			<input type="submit" value="Simpan" class="" /></label>
+			<a href="/coach/batch/index" class="UIbutton-small">Batal</a>
+		</p>
+	</div>
+</form>
+<div style="clear:both"></div>

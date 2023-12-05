@@ -1,0 +1,211 @@
+<script type="text/javascript">
+	$(document).ready(function () {
+		$("#compose").validate();
+	})
+
+	function selectFields1(id, id, username) {
+		$('#id_user').val(id);
+		$('#username').val(username);
+		$.facebox.close();
+	}
+
+	function ClearFields1() {
+		document.getElementById("id_user").value = "";
+		document.getElementById("username").value = "";
+	}
+
+	$(function () {
+		$("#tanggal_lahir").datepicker({
+			yearRange: "-100:+0",
+			changeYear: "true",
+			changeMonth: "true",
+			dateFormat: "dd-mm-yy"
+		});
+	});
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1>
+		<?= $this->avatar; ?>Biodata Pengajar
+	</h1>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p>
+			<label class="left" for="nama_pengajar">Nama Pengajar</label>
+			<input type="text" id="nama_pengajar" class="event-message" wrap="soft" name="nama_pengajar"
+				style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"
+				value="<?= $this->row->nama_pengajar; ?>">
+		</p>
+		<p>
+			<label>Jenis Kelamin</label>
+			<select class="required" id="jenis_kelamin" name="jenis_kelamin"
+				style="overflow: hidden; display: block; width: 360px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+				<option <?= ($this->row->jenis_kelamin == 'Pria' ? 'selected' : '') ?> value="Pria">Pria</option>
+				<option <?= ($this->row->jenis_kelamin == 'Wanita' ? 'selected' : '') ?> value="Wanita">Wanita</option>
+			</select>
+		</p>
+		<? $ttl = explode(", ", $this->row->ttl); ?>
+		<p>
+			<label class="left" for="tempat_lahir">Tempat Lahir</label>
+			<input type="text" id="tempat_lahir" class="event-message" wrap="soft" name="tempat_lahir"
+				style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"
+				value="<?= $ttl[0]; ?>">
+		</p>
+		<p>
+			<label>Tanggal Lahir</label>
+			<input class="required" type="text" id="tanggal_lahir" autocomplete="disable" name="tanggal_lahir"
+				value="<?= date('d-m-Y', strtotime($ttl[1])); ?>"
+				style="width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" />
+			<!-- <font color="red">*</font> -->
+		</p>
+		<p>
+			<label class="left" for="identitas_pengajar">NIP/NIK</label>
+			<input type="number" id="identitas_pengajar" class="event-message" wrap="soft" name="identitas_pengajar"
+				style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"
+				value="<?= $this->row->identitas_pengajar ?>">
+		</p>
+		<p>
+			<label class="left" for="pangkat">Pangkat/Golongan</label>
+			<input type="text" id="pangkat" class="event-message" wrap="soft" name="pangkat"
+				style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"
+				value="<?= $this->row->pangkat; ?>">
+		</p>
+		<p>
+			<label class="left" for="instansi">Asal Instansi</label>
+			<input type="text" id="instansi" class="event-message" wrap="soft" name="instansi"
+				style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"
+				value="<?= $this->row->instansi; ?>">
+		</p>
+		<p>
+			<label class="left" for="npwp">NPWP</label>
+			<input type="text" id="npwp" class="event-message" wrap="soft" name="npwp"
+				style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"
+				value="<?= $this->row->npwp; ?>">
+		</p>
+		<p>
+			<label class="left" for="email">Email</label>
+			<input type="email" id="email" class="event-message" wrap="soft" name="email"
+				style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"
+				value="<?= $this->row->email; ?>">
+		</p>
+		<p>
+			<label class="left" for="no_telp">No. Telepon</label>
+			<input type="number" id="no_telp" class="event-message" wrap="soft" name="no_telp"
+				style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"
+				value="<?= $this->row->no_telp ?>">
+		</p>
+		<p>
+			<label class="left" for="norekening">No. Rekening</label>
+			<input type="text" id="norekening" class="event-message" wrap="soft" name="norekening"
+				style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"
+				value="<?= $this->row->norekening; ?>">
+		</p>
+		<p>
+			<label class="left" for="namabank">Nama Bank</label>
+			<input type="text" id="namabank" class="event-message" wrap="soft" name="namabank"
+				style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"
+				value="<?= $this->row->namabank; ?>">
+		</p>
+		<p>
+			<label class="left" for="fotopengajar_uri">Foto Pengajar</label>
+			<?
+			if ($this->row->fotopengajar_uri != '') {
+				echo '<img src="https://berkas.dpr.go.id/mooc/fotopengajar/' . $this->row->fotopengajar_uri . '" height="100" />';
+				echo '<a href="/pengajarnonasn/profile/delete-files/id/' . $this->row->id . '  ">Hapus</a>';
+				echo '<input type="hidden" id="file_name" autocomplete="disable" name="file_name" value="' . $this->row->fotopengajar_uri . '"/>';
+			} else {
+				echo '<input type="file" accept="image/*" id="file_name" autocomplete="disable" name="file_name"/>';
+			}
+			?>
+		</p>
+
+
+
+		<p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Simpan" class="" /></label><a
+				href="/pengajar" class="UIbutton-small">Batal</a></p>
+	</div>
+</form>
+<div style="clear:both"></div>
+
+
+
+
+
+
+<div class="content-header">
+	<div class="UI_Header_Title">
+		<h1>
+			<?= $this->avatar; ?>Ganti Password
+		</h1>
+	</div>
+	<div class="clear"></div>
+</div>
+<form id="compose" name="compose" method="post" action="/default/pendaftaran/ubahpassword"
+	enctype="multipart/form-data">
+
+
+	<div class="tabular">
+		<p>
+			<label class="left" for="old_password">Password Lama</label>
+			<input type="password" id="old_password" class="event-message" wrap="soft" name="old_password"
+				style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<!-- <p>
+			<label class="left" for="new_password">Password Baru</label>
+			<input type="password" id="new_password" class="event-message" wrap="soft" name="new_password" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+		
+		<p>
+			<label class="left" for="confirm_password">Konfirmasi Password Baru</label>
+			<input type="password" id="confirm_password" class="event-message" wrap="soft" name="confirm_password" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p> -->
+
+
+		<p>
+			<label class="left" for="new_password">Password Baru</label>
+			<input type="password" id="new_password" class="event-message" wrap="soft" name="new_password"
+				style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<p>
+			<label class="left" for="confirm_password">Konfirmasi Password Baru</label>
+			<input type="password" id="confirm_password" class="event-message" wrap="soft" name="confirm_password"
+				style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<div id="password_match_warning" class="mb-3  text-danger px-5" style="display: none; margin-left: 150px; color: red;">
+			<i class="bi bi-exclamation-circle"></i> Password tidak cocok.
+		</div>
+
+
+
+		<p class="savecancel">
+			<label class="UIbutton-small">
+				<input type="submit" value="Simpan" class="" />
+			</label>
+			<a href="/pengajar" class="UIbutton-small">Batal</a>
+		</p>
+	</div>
+</form>
+<div style="clear:both"></div>
+
+
+<script>
+	function checkPasswordMatch() {
+		var newPassword = document.getElementById("new_password").value;
+		var confirmPassword = document.getElementById("confirm_password").value;
+
+		if (newPassword !== confirmPassword) {
+			document.getElementById("password_match_warning").style.display = "block";
+		} else {
+			document.getElementById("password_match_warning").style.display = "none";
+		}
+	}
+
+	document.getElementById("new_password").addEventListener("keyup", checkPasswordMatch);
+	document.getElementById("confirm_password").addEventListener("keyup", checkPasswordMatch);
+</script>

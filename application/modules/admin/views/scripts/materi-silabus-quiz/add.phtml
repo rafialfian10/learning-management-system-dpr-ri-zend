@@ -1,0 +1,192 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+		$("#tanggal").datepicker({
+			yearRange: "-100:+1",
+			changeYear: "true",
+			changeMonth: "true",
+			dateFormat: "dd-mm-yy"
+		});
+	})
+
+	function selectFields1(id, id, nama_materi) {
+		$('#id_materi_silabus').val(id);
+		$('#nama_materi').val(nama_materi);
+		$.facebox.close();
+	}
+
+	function ClearFields1() {
+		document.getElementById("id_materi_silabus").value = "";
+		document.getElementById("nama_materi").value = "";
+	}
+
+	function selectFields2(id, id, nama_pengajar) {
+		$('#id_pengajar').val(id);
+		$('#nama_pengajar').val(nama_pengajar);
+		$.facebox.close();
+	}
+
+	function ClearFields2() {
+		document.getElementById("id_pengajar").value = "";
+		document.getElementById("nama_pengajar").value = "";
+	}
+
+	$(document).ready(function() {
+
+		$('.tambah_soal').click(function() {
+			var soal = $(".sub_container_soal").length + 1;
+
+			let idx = soal;
+			$('.container_soal').append(
+				`<div class="content_soal" id="content_soal_${soal}">
+				<p class="sub_container_soal" id="soalx_${soal}" style="display:flex; flex-direction:row; margin-top:50px;">
+				<label class="judul_soal" for="soal_${soal}">Soal ${soal}</label>
+				<input id="input_soal_${soal}" class="input_soal" wrap="soft" name="soal[]" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+				<button type="button" id="hapus_soal_${soal}" class="hapus_soal" style="margin-left:10px; width:20px; font-weight: bold;"> x </button>
+			</p>
+			<div class="container_jawaban" id="container_jawaban_${soal}" style="display:flex; flex-direction:column">
+				<p class="sub_container_jawaban_${soal}" id="jawaban_${soal}_1" style="display:flex; flex-direction:row">
+					<label class="left" for="input_jawaban_${soal}_1">Jawaban 1</label>
+					<input id="input_jawaban_${soal}_1" name="jawaban[${soal-1}][]" class="event-message input_jawaban_${soal}" wrap="soft"style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+					<button type="button" class="tambah_jawaban_${soal}" style="margin-left:10px; width:20px; font-weight:bold;" > + </button>
+				</p>
+			</div>
+			<p class="container_kunci_jawaban" id="container_kunci_jawaban_${soal}">
+				<label class="kunci_jawaban" for="kunci_jawaban_${soal}">Kunci Jawaban Soal ${soal}</label>
+				<input type="radio" class="kunci_jawaban" name="kunci_jawaban_${soal}" value="1" required checked="check"> <b>Jawaban 1</b>
+			</p> </div>`);
+
+			$('.hapus_soal').click(function() {
+				var x = $(this).parent().attr('id');
+				var y = 1;
+				
+				$(this).parent().parent().remove();
+
+				$(".content_soal").each(function(key, item) {
+					$(this).find("label.judul_soal").text("Soal " + (key + 1));
+					$(this).find("input.input_soal").attr('id', 'input_soal_'+ (key + 1));
+					$(this).find("button.hapus_soal").attr('id', 'hapus_soal_'+ (key + 1));
+					$(this).find("label.kunci_jawaban").text("Kunci Jawaban Soal " + (key + 1));
+					$(this).find("input.kunci_jawaban").attr('name', 'kunci_jawaban_'+ (key + 1));
+				});			
+			});
+
+			$('.tambah_jawaban_' + soal).click(function() {
+				var jawaban = $(".sub_container_jawaban_" + soal).length + 1;
+
+				if (jawaban <= 5) {
+					let id = jawaban;
+					$('#container_jawaban_' + soal).append(
+						`<p class="sub_container_jawaban_${soal}" id="jawaban_${soal}_${jawaban}" style="display:flex; flex-direction:row">
+					<label class="left" for="input_jawaban_${soal}_${jawaban}">Jawaban ${jawaban}</label>
+					<input name="jawaban[${soal-1}][]" id="input_jawaban_${soal}_${jawaban}" class="event-message" wrap="soft" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+					<button type="button" id="button_${soal}_${jawaban}" class="hapus_jawaban_${soal}" style="margin-left:10px; width:20px; font-weight: bold;"> x </button>
+					</p>`);
+					$('#container_kunci_jawaban_' + soal).append(
+						`<input style="margin-left:11px;" name="kunci_jawaban_${soal}" type="radio" id="kunci_jawaban_${soal}_${jawaban}" class="kunci_jawaban_${soal}" value="${jawaban}"> <b id="kunci_jawabanx_${soal}_${jawaban}">Jawaban ${jawaban}</b>`);
+
+
+					$('.hapus_jawaban_' + soal).click(function() {
+						var x = $(this).parent().attr('id');
+						var y = 1;
+						// console.log(x)
+						$(this).parent().remove();
+						$(this).parent().remove();
+						$('#container_kunci_jawaban_' + soal).find('input[type="radio"]').remove();
+						$('#container_kunci_jawaban_' + soal).find('b').remove();
+						$(".sub_container_jawaban_" + soal).each(function(key, item) {
+							$(this).find("label.left").text("Jawaban " + (key + 1));
+							$('#container_kunci_jawaban_' + soal).append(`
+								<input style='margin-left:11px;' type='radio' id='kunci_jawaban_${soal}_${key+1}' class='kunci_jawaban_${soal}' value='${key+1}'> <b id='kunci_jawabanx_${soal}_${key+1}'>Jawaban ${key+1}</b> `);
+						});
+					});
+
+				} else {
+					alert("Maksimal pilihan jawaban 5")
+				}
+			});
+		});
+
+		$('.tambah_jawaban_1').click(function() {
+			var jawaban = $(".sub_container_jawaban_1").length + 1;
+			if (jawaban <= 5) {
+				$('#container_jawaban_1').append(
+					`<p class="sub_container_jawaban_1" id="jawaban_1_${jawaban}" data-jawaban="${jawaban}" style="display:flex; flex-direction:row">
+					<label class="left" for="input_jawaban_1_${jawaban}">Jawaban ${jawaban}</label>
+					<input name="jawaban[0][]" id="input_jawaban_1_${jawaban}" class="event-message" wrap="soft" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+					<button type="button" id="button_1_${jawaban}" class="hapus_jawaban_1" style="margin-left:10px; width:20px; font-weight: bold;"> x </button>
+					</p>`);
+				$('#container_kunci_jawaban_1').append(
+					`<input style="margin-left:11px;" name="kunci_jawaban_1" type="radio" id="kunci_jawaban_1_${jawaban}" class="kunci_jawaban_1" value="${jawaban}"> <b id="kunci_jawabanx_1_${jawaban}">Jawaban ${jawaban}</b>`);
+
+
+				$('.hapus_jawaban_1').click(function() {
+					var x = $(this).parent().attr('data-jawaban');
+					$(this).parent().remove();
+					$('#container_kunci_jawaban_1').find('input[type="radio"]').remove();
+					$('#container_kunci_jawaban_1').find('b').remove();
+					$(".sub_container_jawaban_1").each(function(key, item) {
+						$(this).find("label.left").text("Jawaban " + (key + 1));
+						$('#container_kunci_jawaban_1').append(`
+							<input style='margin-left:11px;' type='radio' id='kunci_jawaban_1_${key+1}' class='kunci_jawaban_1' value='${key+1}'> <b id='kunci_jawabanx_1_${key+1}'>Jawaban ${key+1}</b> `);
+					});
+				});
+
+			} else {
+				alert("Maksimal pilihan jawaban 5")
+			}
+		});
+	});
+</script>
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?= $this->avatar; ?>Tambah Materi Silabus Quiz</h1>
+	<div class="header_nav_links"><a href="/admin/materi-silabus-quiz/index">Back to Daftar Materi Silabus Quiz</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p>
+			<!-- <label>Nama Pengajar</label>
+			<input readonly class="required" type="text" id="nama_pengajar" autocomplete="disable" name="nama_pengajar" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" />
+			<input class="required" type="hidden" id="id_pengajar" autocomplete="disable" name="id_pengajar" value="<?= $this->row->id_pengajar; ?>" />
+			<input type="button" value="..." id="btnpengajar" style="height:30px;" onclick="jQuery.facebox({ ajax: '/admin/materi-silabus-quiz/search-pengajar'});">
+			<input type="button" style="height:30px;" onclick="ClearFields2();" value="Clear">
+			<font color="red">*</font> -->
+		</p>
+
+		<p>
+			<!-- <label>Nama Materi Silabus</label>
+			<input readonly class="required" type="text" id="nama_materi" autocomplete="disable" name="nama_materi" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" />
+			<input class="required" type="hidden" id="id_materi_silabus" autocomplete="disable" name="id_materi_silabus" value="<?= $this->row->id_materi_silabus; ?>" />
+			<input type="button" value="..." id="btnmaterisilabus" style="height:30px;" onclick="jQuery.facebox({ ajax: '/admin/materi-silabus-quiz/search-materi-silabus'});">
+			<input type="button" style="height:30px;" onclick="ClearFields1();" value="Clear">
+			<font color="red">*</font> -->
+		</p>
+		<div class="container_soal" id="container_soal_1" style="display:flex; flex-direction:column">
+			<div class="content_soal" id="content_soal_1">
+			<p class="sub_container_soal" id="soalx_1" style="display:flex; flex-direction:row">
+				<label class="left" for="soal_1">Soal 1</label>
+				<input id="input_soal_1" class="input_soal" wrap="soft" name="soal[]" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+				<button type="button" class="tambah_soal" style="margin-left:10px; width:20px; font-weight:bold;"> + </button>
+			</p>
+
+			<div class="container_jawaban" id="container_jawaban_1" style="display:flex; flex-direction:column">
+				<p class="sub_container_jawaban_1" id="jawaban_1_1" style="display:flex; flex-direction:row">
+					<label class="left" for="input_jawaban_1_1">Jawaban 1</label>
+					<input id="input_jawaban_1_1" name="jawaban[0][]" class="event-message input_jawaban_1" wrap="soft" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+					<button type="button" class="tambah_jawaban_1" style="margin-left:10px; width:20px; font-weight:bold;"> + </button>
+				</p>
+			</div>
+
+			<p class="container_kunci_jawaban" id="container_kunci_jawaban_1">
+				<label class="kunci_jawabanx" for="kunci_jawaban_1_1">Kunci Jawaban Soal 1</label>
+				<input name="kunci_jawaban_1" type="radio" id="kunci_jawaban_1_1" class="kunci_jawaban_1" value="1" required checked="check"> 
+				<b id="kunci_jawabanx_1_1">Jawaban 1</b>
+			</p>
+			</div>
+		</div>
+		<p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Simpan" class="" /></label><a href="/admin/materi-silabus-quiz/index" class="UIbutton-small">Batal</a></p>
+	</div>
+</form>
+<div style="clear:both"></div>

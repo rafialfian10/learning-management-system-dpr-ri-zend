@@ -1,0 +1,96 @@
+<?php
+    // format time tanggal lahir
+    $tanggal_lahir = $this->peserta->tanggal_lahir;
+    $tanggal_lahir_formatted = date("Y-m-d", strtotime($tanggal_lahir));
+?>
+
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<link rel="stylesheet" href="https://berkas.dpr.go.id/mooc/assets/css/profile.css">
+
+<!-- penugasan -->
+<section class="container-penugasan rounded-4 m-auto" style="max-width: 80vw; margin-top: 150px !important;">
+    <div class="mb-4" style="width: 100%;">
+        <p class="fs-3 fw-bold">Profile</p>
+    </div>
+
+    <div class="background-content d-flex flex-column justify-content-center rounded-4 p-3 mb-5" style="border: 1px solid #D4A216; background-color: #E5E7E9;">
+        <form method="post" action="" enctype="multipart/form-data">
+            <div class="d-flex flex-column mb-3" style="width: 100%;">
+                <label for="nama" class="mb-2 fs-6 fw-bold ps-1">Nama</label>
+                <input type="text" name="nama" id="nama" class="sub-background-content px-3 rounded-3 text-secondary" style="height: 40px; border: 1px solid #D4A216; outline: #D4A216;" placeholder="Nama...." value="<?= $this->peserta->nama ?>">
+            </div>
+
+            <div class="d-flex flex-column mb-3" style="width: 100%;">
+                <label for="jenis_peserta" class="mb-2 fs-6 fw-bold ps-1">Jenis Peserta</label>
+                <input readonly type="text" name="jenis_peserta" id="jenis_peserta" class="sub-background-content px-3 rounded-3 text-secondary" style="height: 40px; border: 1px solid #D4A216; outline: #D4A216;" placeholder="Jenis Peserta...." value="<?= $this->peserta->jenis_peserta ?>">
+                <!-- <select name="jenis_peserta" id="jenis_peserta" class="sub-background-content px-3 rounded-3 text-secondary" style="height: 40px; border: 1px solid #D4A216; outline: #D4A216;">
+                    <option value="ASN" <?= $this->peserta->jenis_peserta == "ASN" ? 'selected' : '' ?>>ASN</option>
+                    <option value="NonASN" <?= $this->peserta->jenis_peserta == "NonASN" ? 'selected' : '' ?>>Non-ASN</option>
+                </select> -->
+            </div>
+
+            <div class="d-flex flex-column mb-3" style="width: 100%;">
+                <label for="email" class="mb-2 fs-6 fw-bold ps-1">Email</label>
+                <input type="email" name="email" id="email" class="sub-background-content px-3 rounded-3 text-secondary" style="height: 40px; border: 1px solid #D4A216; outline: #D4A216;" placeholder="Email...." value="<?= $this->peserta->email ?>">
+            </div>
+
+            <div class="d-flex flex-column mb-3" style="width: 100%;">
+                <label for="identitas" class="mb-2 fs-6 fw-bold ps-1">Identitas</label>
+                <input type="text" name="identitas" id="identitas" class="sub-background-content px-3 rounded-3 text-secondary" style="height: 40px; border: 1px solid #D4A216; outline: #D4A216;" placeholder="Identitas...." value="<?= $this->peserta->identitas ?>">
+            </div>
+
+            <div class="d-flex flex-column mb-3" style="width: 100%;">
+                <label for="tempat_lahir" class="mb-2 fs-6 fw-bold ps-1">Tempat Lahir</label>
+                <input type="text" name="tempat_lahir" id="tempat_lahir" class="sub-background-content px-3 rounded-3 text-secondary" style="height: 40px; border: 1px solid #D4A216; outline: #D4A216;" placeholder="Tempat Lahir...." value="<?= $this->peserta->tempat_lahir ?>">
+            </div>
+
+            <div class="d-flex flex-column mb-3" style="width: 100%;">
+                <label for="tanggal_lahir" class="mb-2 fs-6 fw-bold ps-1">Tanggal Lahir</label>
+                <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="sub-background-content px-3 rounded-3 text-secondary" style="height: 40px; border: 1px solid #D4A216; outline: #D4A216;" placeholder="Tanggal Lahir...." value="<?= $tanggal_lahir_formatted ?>">
+            </div>
+
+            <div class="d-flex flex-column mb-3" style="width: 100%;">
+                <label for="jenis_kelamin" class="mb-2 fs-6 fw-bold ps-1">Jenis Kelamin</label>
+                <select name="jenis_kelamin" id="jenis_kelamin" class="sub-background-content px-3 rounded-3 text-secondary" style="height: 40px; border: 1px solid #D4A216; outline: #D4A216;">
+                    <option value="laki-laki" <?= $this->peserta->jenis_kelamin == "laki-laki" ? 'selected' : '' ?>>Laki-laki</option>
+                    <option value="perempuan" <?= $this->peserta->jenis_kelamin == "perempuan" ? 'selected' : '' ?>>Perempuan</option>
+                </select>
+            </div>
+
+            <div class="d-flex flex-column mb-3" style="width: 100%;">
+                <label for="pekerjaan" class="mb-2 fs-6 fw-bold ps-1">Pekerjaan</label>
+                <input type="text" name="pekerjaan" id="pekerjaan" class="sub-background-content px-3 rounded-3 text-secondary" style="height: 40px; border: 1px solid #D4A216; outline: #D4A216;" placeholder="Pekerjaan...." value="<?= $this->peserta->pekerjaan ?>">
+            </div>
+
+            <div class="d-flex flex-column mb-3" style="width: 100%;">
+                <label for="kewarganegaraan" class="mb-2 fs-6 fw-bold ps-1">Kewarganegaraan</label>
+                <input type="text" name="kewarganegaraan" id="kewarganegaraan" class="sub-background-content px-3 rounded-3 text-secondary" style="height: 40px; border: 1px solid #D4A216; outline: #D4A216;" placeholder="Kewarganegaraan...." value="<?= $this->peserta->kewarganegaraan ?>">
+            </div>
+
+            <div class="d-flex flex-column mb-3" style="width: 100%;">
+                <label for="no_telp" class="mb-2 fs-6 fw-bold ps-1">Nomor Telepon</label>
+                <input type="text" name="no_telp" id="no_telp" class="sub-background-content px-3 rounded-3 text-secondary" style="height: 40px; border: 1px solid #D4A216; outline: #D4A216;" placeholder="Nomor Telepon...." value="<?= $this->peserta->no_telp ?>">
+            </div>
+
+            <?
+				if ($this->peserta->fotopesertanonasn_uri != "") {
+					echo '<div class="d-flex flex-column mb-3" style="width: 100%;">
+                            <label for="file_image" class="mb-2 fs-6 fw-bold ps-1">Foto Profile</label>
+                            <div class="d-flex flex-row">
+                                <img src="https://berkas.dpr.go.id/mooc/fotopesertanonasn/' . $this->peserta->fotopesertanonasn_uri . '" style="width: 200px; height: 200px;"/>
+                                <input type="hidden" accept="image/*" id="file_image" name="file_image" value="'. $this->peserta->fotopesertanonasn_uri .'">
+                                &nbsp; &nbsp;<a href="/peserta/profile/delete-files/id/' . $this->peserta->id . '" class="text-danger text-decoration-none"><i class="bi bi-trash text-danger"></i>Hapus</a>
+                            </div>
+                    </div>';
+				} else {
+					echo'<div class="d-flex flex-column mb-3" style="width: 100%;">
+                        <label for="file_image" class="mb-2 fs-6 fw-bold ps-1">Foto Profile</label>
+                        <input type="file" accept="image/*" id="file_image" name="file_image" class="sub-background-content text-secondary" style="height: 50px;" placeholder="Foto Profile....">
+                    </div>';
+				}
+			?>
+            <button type="submit" class="btn-submit p-2 rounded-3 border border-0 text-center text-light fw-bold" style="width: 100%; background-color: #D4A216;">Edit Profile</button>
+        </form>
+    </div>
+</section>
+<!-- end penugasan -->

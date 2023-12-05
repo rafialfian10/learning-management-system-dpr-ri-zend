@@ -1,0 +1,104 @@
+<script id="js">
+$(function(){
+	$("table")
+		.tablesorter({theme: 'blue', widthFixed: true, widgets: ['zebra', 'filter']})
+		.tablesorterPager({container: $(".pager"), 
+							output: '{startRow} - {endRow} / {filteredRows} ({totalRows})', 
+							fixedHeight: true, 
+							removeRows: false, 
+							cssGoto: '.gotoPage' });
+});
+</script>
+
+<div class="content-header"></div>
+	<div class="UI_Header_Title">
+		<h1><?=$this->avatar;?> Daftar Batch</h1>
+		<div class="header_nav_links"><span class="right context_menu"><a href="/admin/batch/add" class="UIlink-button small right">Tambah batch</a></span>
+	</div>
+</div>
+<div class="clear"></div>
+<br>
+
+<? if (count($this->rows) > 0) { ?>
+	<?=$this->pager;?>
+
+	<table class="tablesorter">
+		 <thead>
+			 <tr>
+				<th width="5%">No.</th>
+				<th align="center">Judul Batch</th>
+				<th align="center">Pelatihan</th>
+				<th align="center">Coach</th>
+				<th width="5%" align="center">Kuota</th>
+				<th width="5%" align="center">Peserta</th>
+				<th align="center">Tanggal Awal</th>
+				<th align="center">Tanggal Akhir</th>
+				<th align="center">Aksi</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+			$index = 1;
+			foreach($this->rows as $row)
+			{
+				$nama_pelatihan = '-';
+				$nama_coach = '-';
+				$jumlah_peserta = 0;
+				
+				foreach($this->peserta as $z)
+				{
+					if ($z->id_batch == $row->id) {
+						$jumlah_peserta++;
+					}
+				}
+
+				foreach($this->pelatihan as $x){
+					if ($x->id == $row->id_pelatihan) {
+						$nama_pelatihan = $x->nama_pelatihan;
+					}
+				}
+				foreach($this->coach as $y){
+					if ($y->id == $row->id_coach) {
+						$nama_coach = $y->nama_coach;
+					}
+				}
+				
+				echo '<tr>';
+				echo '<td align="center">'. $index++ .'.</td>';
+				echo '<td>'. $row->judul_batch .'</td>';
+				echo '<td>'. $nama_pelatihan .'</td>';
+				echo '<td>'. $nama_coach .'</td>';
+
+			if (empty($row->kuota_peserta) || is_null($row->kuota_peserta)) {
+				echo '<td align="center">-</td>';
+			} else {
+				echo '<td align="center">'. $row->kuota_peserta .'</td>';
+			}
+			
+				echo '<td align="center">'. $jumlah_peserta .'</td>';
+				
+			if (empty($row->tgl_awal) || is_null($row->tgl_awal)) {
+				echo '<td align="center">-</td>';
+			} else {
+				echo '<td align="center">'. date('d-m-Y', strtotime($row->tgl_awal)) .'</td>';
+			}
+
+			if (empty($row->tgl_akhir) || is_null($row->tgl_akhir)) {
+				echo '<td align="center">-</td>';
+			} else {
+				echo '<td align="center">'. date('d-m-Y', strtotime($row->tgl_akhir)) .'</td>';
+			}
+				echo '<td align="center"><a href="/admin/batch/edit/id/'. $row->id .'">EDIT</a>';
+				if ($this->getRole() == 'admin' || $this->getRole() == 'super') {
+					echo '&nbsp;|&nbsp;<a href="/admin/batch/delete/id/'. $row->id .'" onclick="return confirmDelete();">DELETE</a>';
+				}
+				echo '</td>';
+				echo '</tr>';
+			}
+			?>
+		</tbody>
+	</table>
+<? } else {
+	echo 'Data tidak ditemukan.';
+}
+?>

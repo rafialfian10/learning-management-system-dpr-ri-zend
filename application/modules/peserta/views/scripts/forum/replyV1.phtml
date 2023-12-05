@@ -1,0 +1,545 @@
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<link rel="stylesheet" href="https://berkas.dpr.go.id/mooc/assets/css/reply-forum.css">
+
+<!-- sidebar -->
+<div class="area"></div>
+<nav class="main-menu background-content" style="max-width: 100vw;" onmouseover="changeMarginLeft(20)" onmouseout="changeMarginLeft(0)">
+    <ul>
+        <li class="has-subnav">
+            <a href="/peserta/index">
+                <img src="https://berkas.dpr.go.id/mooc/assets/images/dashboardblack.png" alt="" class="icon" style="width: 20px; height: 20px;">
+                <span class="nav-text">Dashboard</span>
+            </a>
+        </li>
+
+        <li class="has-subnav">
+            <a href="/peserta/pelatihan">
+                <img src="https://berkas.dpr.go.id/mooc/assets/images/pelatihan-black.png" alt="" class="icon" style="width: 20px; height: 20px;">
+                <span class="nav-text">Pelatihan</span>
+            </a>    
+        </li>
+
+        <li class="has-subnav active">
+            <a href="/peserta/forum">
+                <img src="https://berkas.dpr.go.id/mooc/assets/images/mentoring-white.png" alt="" class="icon" style="width: 20px; height: 20px;">
+                <span class="nav-text">Forum</span>
+            </a>    
+        </li>
+
+        <li class="has-subnav">
+            <a href="/peserta/riwayat">
+                <img src="https://berkas.dpr.go.id/mooc/assets/images/hourglass-split.svg" alt="" class="icon" style="width: 20px; height: 20px;">
+                <span class="nav-text">Riwayat</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+<!-- end sidebar -->
+
+<!-- forum -->
+<section class="container-forum d-flex flex-column rounded-4 my-5" style="max-width: 80vw; margin-left: 10%; margin-top: 150px !important;">
+    <div class="d-flex flex-column" style="width: 100%;">
+        <p class="mb-2 fs-3 fw-bold">Ruang Diskusi</p>
+        <div class="content-diskusi d-flex flex-row mb-4">
+            <button class="d-flex justify-content-center align-items-center m-0 text-light p-1 px-3 rounded-4 me-3 text-decoration-none border-0 cursor-pointer" style="height: 100%; font-size: 14px; background-color: #D4A216;">Semua</button>
+            <button class="background-content d-flex justify-content-center align-items-center m-0 p-1 px-3 rounded-4 me-3 text-decoration-none cursor-pointer" style="height: 100%; font-size: 14px; color: #D4A216; border: 1px solid #D4A216;">Terjawab</button>
+            <button class="background-content d-flex justify-content-center align-items-center m-0 p-1 px-3 rounded-4 me-3 text-decoration-none cursor-pointer" style="height: 100%; font-size: 14px; color: #D4A216; border: 1px solid #D4A216;">Belum Terjawab</button>
+        </div>
+    </div>
+
+    <p class="m-1 fs-5 fw-bold"><?= $this->nama_pelatihan ?></p>
+    <div class="background-content d-flex flex-column justify-content-center rounded-3 p-3 mb-5" style="background-color: #E5E7E9; border: 1px solid #D4A216;">
+        <div class="d-flex flex-row mb-3">
+            <div class="d-flex flex-column justify-content-center align-items-center text-center bg-light border border-light rounded-circle mb-3 me-3" style="width: 50px; height: 50px; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">
+                <img src="https://berkas.dpr.go.id/mooc/fotocoach/<?= $this->fotocoach_uri ?>" alt="" style="width: 25px; height: 25px;">
+            </div>
+
+            <div class="d-flex flex-column justify-content-start" style="width: 100%;">
+                <p class="m-0 fw-bold"><?= $this->nama_coach ?></p>
+                <p class="m-0 text-secondary"><?= formatTime($this->forums->tanggal_input) ?></p>
+            </div>
+
+            <div>
+                <button type="button" class="copy1 border-0 bg-transparent">
+                    <i class="bi bi-clipboard fs-5 div-text"></i>
+                </button>
+            </div>
+        </div>
+
+        <?php
+            if($this->forums->file_forum != "") {
+                echo'<div class="sub-background-content d-flex flex-row justify-content-between align-items-center mb-1 rounded-3 p-2" style="width: 100%; background-color: #F4F6F6;">
+                        <input readonly class="sub-background-content fs-6 border-0" style="width: 100%; outline: white; background-color: #F4F6F6;" value="'. $this->forums->file_forum .'">
+                        <button type="button" class="border-0 bg-transparent" onclick="downloadFile(\'https://berkas.dpr.go.id/mooc/forum/'. $this->forums->file_forum .'\')">
+                            <i class="bi bi-download fs-5 fw-bold"></i>
+                        </button>
+                    </div>';
+                } else {
+                    echo "";
+                }
+        ?>
+
+        <div class="content-message d-flex flex-row justify-content-between align-items-center">
+            <input readonly class="background-content div-text input1 m-0 fs-6 border-0" style="width: 80%; background-color: #E5E7E9; outline: white" value="<?= $this->forums->title ?>">
+            <div class="d-flex flex-row justify-content-end align-items-center pe-2" style="width: 10%">
+                <a href="#forum" class="toggles p-0 fs-7 text-decoration-none text-dark fw-bold">Reply</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<?php
+    $auth = Zend_Auth::getInstance()->getIdentity();
+
+    // format time
+    function formatTime($time) {
+        $date = new DateTime($time);
+        $formattedDate = $date->format('d M Y H:i:s');
+        return $formattedDate;
+    }
+    // end format time
+
+    $replies = [];
+    // mendapatkan data chat 
+    foreach ($this->chats as $key=> $chat) {
+        
+        $nama2 = "-";
+
+        if ($chat->role_user == "Mentor") {
+            foreach ($this->mentors as $m) {
+                if ($m->id == $chat->id_user) {
+                    $nama2 = $m->nama_mentor;
+                    break;
+                }
+            }
+        } else if ($chat->role_user == "Peserta") {
+            foreach ($this->pesertas as $p) {
+                if ($p->id == $chat->id_user) {
+                    $nama2 = $p->nama;
+                    break;
+                }
+            }
+        } else if ($chat->role_user == "Coach") {
+            foreach ($this->coachs as $c) {
+                if ($c->id == $chat->id_user) {
+                    $nama2 = $c->nama_coach;
+                    break;
+                }
+            }
+        }
+
+        $data_chat = "";
+
+        if($chat->id_user == $auth->id_peserta) {
+            echo'<section id="' . $chat->id . '" class="container-forum-user d-flex flex-column rounded-4 my-0 ps-5" style="max-width: 80vw; margin-left: 10%;">';
+        } else {
+            echo'<section id="' . $chat->id . '" class="container-forum-other d-flex flex-column rounded-4 my-0 pe-5" style="max-width: 80vw; margin-left: 10%;">';
+        }
+
+            $data_chat .= '<div class="background-content d-flex flex-column justify-content-center rounded-3 p-3 mb-5" style="width: 100%; background-color: #E5E7E9; border: 1px solid #D4A216;">          
+                <div class="d-flex flex-row mb-3">
+                    <div class="d-flex flex-column justify-content-start" style="width: 100%;">
+                        <p class="m-0 fw-bold">'. $nama2 .'</p>
+                        <p class="m-0 text-secondary">'. formatTime($chat->tanggal_input) .'</p>
+                    </div>
+
+                    <div>
+                        <button type="button" class="copy2 border-0 bg-transparent">
+                            <i class="bi bi-clipboard fs-5 div-text"></i>
+                        </button>
+                    </div>
+                </div>';
+        
+                // looping data reply
+                $balasan = '';
+
+                if($chat->id_reply != 0) {
+                    foreach ($replies as $reply) {
+                        if ($reply['id'] == $chat->id_reply) {
+                            $balasan .= $reply['isi'];
+                            break; 
+                        }
+                    }
+                }
+                // End looping data reply
+
+                $data_chat .= $balasan . '<div class="content-message d-flex flex-column justify-content-between align-items-center">';
+                    if($chat->file_forum != '') {
+                        $data_chat .= '<div class="sub-background-content d-flex flex-row justify-content-between align-items-center mb-1 rounded-3 p-2" style="width: 100%; background-color: #F4F6F6;">
+                                <input readonly class="sub-background-content fs-6 border-0" style="width: 100%; outline: white; background-color: #F4F6F6;" value="'. $chat->file_forum .'">
+                                <button type="button" class="border-0 bg-transparent" onclick="downloadFile(\'https://berkas.dpr.go.id/mooc/forum/'. $chat->file_forum .'\')">
+                                    <i class="bi bi-download fs-5 fw-bold"></i>
+                                </button>
+                            </div>';
+                    } 
+
+                    $data_chat .= '<div class="d-flex flex-row justify-content-between" style="width: 100%;">
+                        <input readonly class="background-content div-text input2 m-0 fs-6 border-0" style="width: 90%; background-color: #E5E7E9; outline: white;" value="'. $chat->isi .'">
+                        <a href="#forum" class="toggles p-0 fs-7 text-decoration-none text-dark fw-bold" cursor: pointer" onclick="addInput(\'' . $nama2 . '\',\'' . $chat->id . '\')">Reply</a>
+                    </div>
+                </div>
+            </div>
+        </section>';
+        
+        // reply chat
+        $data_reply = '<div class="rounded-3 mb-3 p-3" style="background-color: #FFC55C;">
+            <div class="d-flex flex-column justify-content-start mb-3" style="width: 100%;">
+                <p class="m-0 fw-bold">' . $nama2 . '</p>
+                <p class="m-0">' . $chat->tanggal_input . '</p>
+            </div>';
+
+            if ($chat->file_forum != "") {
+                $data_reply.= '<div class="d-flex flex-row justify-content-between align-items-center mb-1 rounded-3 p-2" style="width: 100%; background-color: #FFB52E;">
+                    <input readonly class="div-text fs-6 border-0" style="width: 100%; outline: white; background-color: #FFB52E;" value="' . $chat->file_forum . '">
+                    <button type="button" class="border-0 bg-transparent" onclick="downloadFile(\'https://berkas.dpr.go.id/mooc/forum/' . $chat->file_forum . '\')">
+                        <i class="bi bi-download fs-5 fw-bold"></i>
+                    </button>
+                </div>';
+            }
+            $data_reply.='<p class="m-0 fs-6" style="width: 80%">' . $chat->isi . '</p> 
+        </div>';
+        
+        $replies[] = ['id' => $chat->id, 'isi' => $data_reply];
+        //end reply chat
+
+        echo $data_chat;
+    }
+?>
+
+<form method="post" action="" enctype="multipart/form-data">
+    <!-- popup message -->
+    <section id="forum" class="background-content popup-message message position-fixed p-2 rounded-4" style="width: 81%; margin-left: 9.5%; height: 100px; bottom: -50px; background-color: #E5E7E9;">
+        <legend style="font-size: 15px;"><b id="balasan" class="div-text"> Komentar </b></legend>
+        <div style="width: 100%;">
+            <div id="daftar-peserta" class="daftar-user" style="display:none;">
+                <label style="width: 15%" for="id_reply_mentoring">Id Reply</label>
+                <input type="hidden" id="id_reply" name="id_reply" value="0" />
+            </div>
+
+            <div id="daftar-peserta" class="daftar-user" style="display:none;">
+                <label style="width: 15%" for="role_user">Role User</label>
+                <input type="hidden" id="role_user" autocomplete="disable" name="role_user" class="px-3 rounded-5 border-0" style="width: 50%; height:30px;" value="Peserta" />
+            </div>
+
+            <div id="daftar-peserta" class="daftar-user" style="display:none;">
+                <label style="width: 15%" for="id_user">Id User</label>
+                <input type="hidden" id="id_user" autocomplete="disable" name="id_user" class="px-3 rounded-5 border-0" style="width: 50%; height:30px;" value="<?= $auth->id_peserta ?>" />
+            </div>
+
+            <div class="position-relative mb-2" style="width: 100%; height: 50px; background-color: F4F6F6;">
+                <button type="button" class="btn-popup-link position-absolute m-0 border-0 bg-transparent" style="width: 5em; height: 50px; left: 0; z-index: 10">
+                    <i class="bi bi-link-45deg fs-3"></i>
+                </button>
+
+                <input type="text" id="isi" name="isi" class="sub-background-content position-absolute m-0 rounded-5" style="width: 100%; height: 50px; padding-left: 4em; border: 2px solid #D4A216; background-color: #F4F6F6; outline: #D4A216;" placeholder="Ketik pesan">
+
+                <button type="submit" class="position-absolute m-0 border-0" style="width: 5em; height: 50px; right: 0; background-color: #D4A216; border-top-right-radius: 50px; border-bottom-right-radius: 50px;">
+                    <i class="bi bi-send-fill fs-5 text-light"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+    <!-- end popup message -->
+</form>
+
+<form method="post" action="" enctype="multipart/form-data">
+    <!-- popup tautan -->
+    <section class="popup-link background-content" style="background-color: #E5E7E9;">
+        <header>
+            <span></span>
+            <div class="close-popup-link" style="background-color: #F4F6F6"><i class="bi bi-x text-dark"></i></div>
+        </header>
+        <div class="content">
+            <ul class="icons">
+                <!-- foto -->
+                <div class="d-flex flex-column align-items-center">
+                    <div class="position-relative d-flex justify-content-center align-items-center rounded-circle" style="width: 50px; height: 50px; background-color: #ba55d3;">
+                        <input type="file" name="file_forum" id="foto" class="position-absolute" style="width: 100%; height: 50px; opacity: 0; outline: white; cursor: pointer;" accept="image/*, video/*">
+                        <i class="bi bi-image-fill fs-5 text-light"></i>
+                    </div>
+                    <label for="foto">Foto</label>
+                </div>
+
+                <!-- video -->
+                <div class="d-flex flex-column align-items-center">
+                    <div class="position-relative d-flex justify-content-center align-items-center rounded-circle" style="width: 50px; height: 50px; background-color: #9ecfc1;">
+                        <input type="file" name="file-mentoring" id="video" class="position-absolute" style="width: 100%; height: 50px; opacity: 0; outline: white; cursor: pointer;" accept="video/*">
+                        <i class="bi bi-camera-reels-fill fs-5 text-light"></i>
+                    </div>
+                    <label for="video">Video</label>
+                </div>
+
+                <!-- audio -->
+                <div class="d-flex flex-column align-items-center">
+                    <div class="position-relative d-flex justify-content-center align-items-center rounded-circle" style="width: 50px; height: 50px; background-color: #ff6347;">
+                        <input type="file" name="file_forum" id="audio" class="position-absolute" style="width: 100%; height: 50px; opacity: 0; outline: white; cursor: pointer;" accept="audio/*">
+                        <i class="bi bi-headset fs-5 text-light"></i>
+                    </div>
+                    <label for="audio">Audio</label>
+                </div>
+
+                <!-- document -->
+                <div class="d-flex flex-column align-items-center">
+                    <div class="position-relative d-flex justify-content-center align-items-center rounded-circle" style="width: 50px; height: 50px; background-color: #4682b4;">
+                        <input type="file" name="file_forum" id="document" class="position-absolute" style="width: 100%; height: 50px; opacity: 0; outline: white; cursor: pointer;" accept=".doc, .docx, .pdf">
+                        <i class="bi bi-file-earmark-fill fs-5 text-light"></i>
+                    </div>
+                    <label for="document">Dokumen</label>
+                </div>
+
+                <!-- camera -->
+                <div class="d-flex flex-column align-items-center">
+                    <div class="position-relative d-flex justify-content-center align-items-center rounded-circle" style="width: 50px; height: 50px; background-color: #fa8072;">
+                        <input type="file" name="file_forum" id="camera" class="position-absolute" style="width: 100%; height: 50px; opacity: 0; outline: white; cursor: pointer;" accept="image/*">
+                        <i class="bi bi-camera fs-5 text-light"></i>
+                    </div>
+                    <label for="camera">Kamera</label>
+                </div>
+            </ul>
+        </div>
+    </section>
+    <!-- popup tautan -->
+
+    <!-- popup send -->
+    <section class="popup-send background-content" style="background-color: #E5E7E9;">
+        <div id="daftar-anonym" class="daftar-user">
+            <input type="hidden" id="id_user" name="id_user" autocomplete="disable" class="px-3 rounded-5 border-0" style="width: 50%; height:30px;" value="<?= $auth->id_peserta ?>"/>
+            <input type="hidden" id="id_replyx" name="id_reply" value="0" />
+            <input type="hidden" id="role_user" name="role_user" autocomplete="disable" class="px-3 rounded-5 border-0" style="width: 50%; height:30px;" value="Peserta"/>
+        </div>
+
+        <legend style="font-size: 15px;"><b id="balasan"> Komentar </b></legend>
+        <div class="content">
+            <header>
+                <p class="fs-5 fw-bold">Kirim sebagai file</p>
+            </header>
+           
+            <div>
+                <div class="d-flex flex-column mb-3">
+                    <label for="file_forum" class="mb-2 fw-bold">Nama file</label>
+                    <input type="file" name="file_forum" class="sub-background-content div-text border-bottom border-dark border-0 p-1 px-2 rounded-3" id="file_forum">
+                </div>
+
+                <div class="d-flex flex-column mb-3">
+                    <label for="isi" class="mb-2 fw-bold">Keterangan</label>
+                    <input type="text" name="isi" class="sub-background-content div-text border-bottom border-dark border-0 p-1 px-2 rounded-3" style="background-color: #E5E7E9; outline: white;" id="isi" placeholder="Ketik pesan">
+                </div>
+            </div>
+            <div class="my-2 p-2 text-end" style="width: 100%;">
+                <button type="button" class="close-popup-send fw-bold fs-6 mx-2 bg-transparent border-0">Cancel</button>
+                <button type="submit" class="fw-bold fs-6 mx-2 bg-transparent border-0">Send</button>
+            </div>
+        </div>
+    </section>
+    <!-- end modal send -->
+</form>
+<!-- end forum -->
+  
+<script>
+    let chatsData = <?= json_encode($data_chat) ?>;
+    console.log(chatsData);
+    
+    // reply mentoring
+    function changeRole(val) {
+        document.querySelectorAll(".daftar-user").forEach(function (el) {
+            el.style.display = "none";
+        });
+
+        if (val === "Mentor") {
+            document.querySelector("#daftar-mentor").style.display = "block";
+        } else if (val === "Peserta") {
+            document.querySelector("#daftar-peserta").style.display = "block";
+        }
+
+        if (val === "Coach") {
+            document.querySelector("#daftar-coach").style.display = "block";
+            document.querySelector('#id_user').value = '<?= $this->id_coach; ?>';
+        }
+    }
+
+    function addInput(user, id) {
+        document.querySelector('#balasan').textContent = 'Komentar balasan ke ' + user;
+        document.querySelector('#id_reply').value = id;
+        document.querySelector('#id_replyx').value = id;
+    }
+    // end reply mentoring
+
+    // popup message
+    let show = function (element) {
+        element.style.display = 'block';
+    };
+
+    let hide = function (element) {
+        element.style.display = 'none';
+    };
+
+    let toggleChat = function (element) {
+        if (window.getComputedStyle(element).display === 'block') {
+            hide(element);
+            return;
+        }
+
+        show(element);
+    };
+
+    document.addEventListener('click', function (event) {
+        let popupMessage = document.querySelector('.popup-message');
+        let popupLink = document.querySelector(".popup-link");
+        let popupSend = document.querySelector(".popup-send");
+        let isPopupMessageVisible = window.getComputedStyle(popupMessage).display === 'block';
+        let isPopupLinkVisible = window.getComputedStyle(popupLink).display === 'block';
+        let isPopupSendVisible = window.getComputedStyle(popupSend).display === 'block';
+
+        if (event.target.classList.contains('toggles')) {
+            event.preventDefault();
+
+            let target = event.target.hash ? document.querySelector(event.target.hash) : null;
+            if (target) {
+                toggleChat(target);
+            }
+
+            return;
+        }
+
+        if (!popupLink.contains(event.target) && !popupSend.contains(event.target)) {
+            show(popupMessage)
+            if(!popupMessage.contains(event.target)) {
+                hide(popupMessage);
+            }
+        }
+        
+        // if (!popupMessage.contains(event.target) && !popupLink.contains(event.target) && !popupSend.contains(event.target)) { 
+        //     hide(popupMessage);
+        // }
+    });
+    // end popup message
+
+    // popup link
+    const popupMessage = document.querySelector('.popup-message');
+    const btnPopupLink = document.querySelector(".btn-popup-link");
+    const popupLink = document.querySelector(".popup-link");
+    const popupSend = document.querySelector('.popup-send');
+    const closePopupLink = popupLink.querySelector(".close-popup-link");
+    const closePopupSend = popupSend.querySelector(".close-popup-send");
+
+    btnPopupLink.onclick = () => {
+        popupLink.classList.toggle("show");
+    }
+
+    closePopupLink.onclick = () => {
+        btnPopupLink.click();
+    }
+
+    closePopupSend.onclick = () => {
+        // kosongkan value input ketika close popup send
+        modalFileInput.value = '';
+        modalTextInput.value = '';
+
+        popupSend.classList.remove("show");
+    }
+
+    // end popup link
+
+    // popup send
+    const fileInputPopups = document.querySelectorAll('.popup-link input[type="file"]');
+    const TextInputMessage = document.querySelector('.message input[type="text"]');
+    
+    // Menyalin text dan file dari input popup ke input popupSend
+    const modalFileInput = document.querySelector('.popup-send input[name="file_forum"]');
+    const modalTextInput = document.querySelector('.popup-send input[name="isi"]');
+
+    fileInputPopups.forEach((fileInputPopup, index) => {
+        fileInputPopup.addEventListener('change', function() {
+            // Memeriksa apakah file telah dipilih
+            if (fileInputPopup.files.length > 0) {
+                // Memunculkan popupSend
+                popupSend.classList.add('show');
+    
+                // salin value dan files input ke input popupSend
+                modalFileInput.files = fileInputPopup.files;
+                modalTextInput.value = TextInputMessage.value;
+            }
+        });
+    });
+    // end popup send
+
+    // copy
+    const copy1 = document.querySelectorAll(".copy1");
+    const input1 = document.querySelectorAll(".input1");
+    const copy2 = document.querySelectorAll(".copy2");
+    const input2 = document.querySelectorAll(".input2");
+
+    copy1.forEach((element, index) => {
+        element.addEventListener("click", () => {
+            input1[index].select();
+            document.execCommand("copy");
+            element.innerText = "Copied";
+            element.style.backgroundColor = "transparent";
+
+            setTimeout(() => {
+                element.innerText = "Copy";
+            }, 3000);
+        });
+    });
+
+    copy2.forEach((element, index) => {
+        element.addEventListener("click", () => {
+            input2[index].select();
+            document.execCommand("copy");
+            element.innerText = "Copied";
+            element.style.backgroundColor = "transparent";
+
+            setTimeout(() => {
+                element.innerText = "Copy";
+            }, 3000);
+        });
+    });
+    // end copy
+
+    // download file
+    function downloadFile(url) {
+        let link = document.createElement('a');
+        link.href = url;
+        link.download = true;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    // end download file
+
+    // animation sidebar
+    function changeMarginLeft(margin) {
+        let containerForums = document.querySelectorAll('.container-forum');
+        let containerForumUsers = document.querySelectorAll('.container-forum-user');
+        let containerForumOthers = document.querySelectorAll('.container-forum-other');
+
+        containerForums.forEach(containerForum => {
+            if (margin === 0) {
+                containerForum.classList.remove('margin-left-20');
+            } else {
+                containerForum.classList.add('margin-left-20');
+            }
+        });
+
+        containerForumUsers.forEach(containerForumUser => {
+            if (margin === 0) {
+                containerForumUser.classList.remove('margin-left-20');
+            } else {
+                containerForumUser.classList.add('margin-left-20');
+            }
+        });
+
+        containerForumOthers.forEach(containerForumOther => {
+            if (margin === 0) {
+                containerForumOther.classList.remove('margin-left-20');
+            } else {
+                containerForumOther.classList.add('margin-left-20');
+            }
+        });
+    }
+    // end animation sidebar
+</script> 
+
+
+

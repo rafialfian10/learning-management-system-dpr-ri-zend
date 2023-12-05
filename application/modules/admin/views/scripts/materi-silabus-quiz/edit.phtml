@@ -1,0 +1,221 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+	})
+</script>
+
+<script>
+	function selectFields1(id, id, nama_materi) {
+		$('#id_materi_silabus').val(id);
+		$('#nama_materi').val(nama_materi);
+		$.facebox.close();
+	}
+
+	function ClearFields1() {
+		document.getElementById("id_materi_silabus").value = "";
+		document.getElementById("nama_materi").value = "";
+	}
+
+	function selectFields2(id, id, nama_pengajar) {
+		$('#id_pengajar').val(id);
+		$('#nama_pengajar').val(nama_pengajar);
+		$.facebox.close();
+	}
+
+	function ClearFields2() {
+		document.getElementById("id_pengajar").value = "";
+		document.getElementById("nama_materi").value = "";
+	}
+</script>
+
+<script>
+	$(document).ready(function() {
+		$('.hapus_jawabann').click(function() {
+			var x = $(this).parent().attr('id');
+			var y = 1;
+			
+			$(this).parent().remove();
+			$('#kunci_jawaban'+x).remove();
+			$('#kunci_jawaban2'+x).remove();
+			$('.container_kunci_jawaban').find('input[type="radio"]').remove();
+			$('.container_kunci_jawaban').find('b').remove();
+			$(".sub_container_jawaban").each(function(key,item) {
+				$(this).find("label.left").text("Jawaban "+(key+1));
+				$('.container_kunci_jawaban').append(`<input style='margin-left:11px;' type='radio' id='kunci_jawaban${key+1}'class='kunci_jawaban' value='${key+1}'> <b id='kunci_jawaban2${key+1}'>Jawaban ${key+1}</b> `);
+			});
+		});
+
+		$('.tambah_jawaban').click(function() {
+			var jawaban = $(".sub_container_jawaban").length + 1;
+
+			if (jawaban <= 5) {
+				let id = jawaban; 
+				$('.container_jawaban').append(
+					`<p class="sub_container_jawaban" id="${jawaban}" style="display:flex; flex-direction:row">
+					<label class="left" id="label${jawaban}" for="jawaban${jawaban}">Jawaban ${jawaban}</label>
+					<input name="jawaban${jawaban}" id="text${jawaban}" class="event-message" wrap="soft" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+					<button type="button" id="button${jawaban}" class="hapus_jawaban" style="margin-left:10px; width:20px; font-weight: bold;"> x </button>
+					</p>`);
+				$('.container_kunci_jawaban').append(`<input style="margin-left:11px;" name="kunci_jawaban" type="radio" id="kunci_jawaban${jawaban}" class="kunci_jawaban" value="${jawaban}"> <b id="kunci_jawaban2${jawaban}">Jawaban ${jawaban}</b>`);
+						
+				$('.hapus_jawaban').click(function() {
+					var x = $(this).parent().attr('id');
+					var y = 1;
+					// console.log(x)
+					$(this).parent().remove();
+					$('#kunci_jawaban'+x).remove();
+					$('#kunci_jawaban2'+x).remove();
+					$('.container_kunci_jawaban').find('input[type="radio"]').remove();
+					$('.container_kunci_jawaban').find('b').remove();
+					$(".sub_container_jawaban").each(function(key,item) {
+						$(this).find("label.left").text("Jawaban "+(key+1));
+						$('.container_kunci_jawaban').append(`<input style='margin-left:11px;' type='radio' id='kunci_jawaban${key+1}'class='kunci_jawaban' value='${key+1}'> <b id='kunci_jawaban2${key+1}'>Jawaban ${key+1}</b> `);
+					});
+				});
+
+			} else {
+				alert("Maksimal jawaban 5")
+			}
+		});
+	});	
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>Edit Materi Silabus Quiz</h1>
+	<div class="header_nav_links"><a href="/admin/materi-silabus-quiz/index">Back to Daftar Materi Silabus Quiz</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p>
+			<label>Nama Pengajar</label>
+			<input readonly class="required" type="text" id="nama_pengajar" autocomplete="disable" name="nama_pengajar" value="<?= $this->nama_pengajar ?>" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" />
+			<input class="required" type="hidden" id="id_pengajar" autocomplete="disable" name="id_pengajar" value="<?= $this->row->id_pengajar; ?>" />
+			<input type="button" value="..." id="btnpengajar" style="height:30px;" onclick="jQuery.facebox({ ajax: '/admin/materi-silabus-quiz/search-pengajar'});">
+			<input type="button" style="height:30px;" onclick="ClearFields2();" value="Clear">
+			<font color="red">*</font>
+		</p>
+
+		<p><label>Nama Materi Silabus</label>
+			<input readonly class="required" type="text" id="nama_materi" autocomplete="disable" name="nama_silabus" value="<?= $this->nama_materi ?>" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;"/>
+			<input class="required" type="hidden" id="id_materi_silabus" autocomplete="disable" name="id_materi_silabus" value="<?= $this->row->id_materi_silabus ?>" />
+			<input type="button" value="..." id="btnmaterisilabus" style="height:30px;" onclick="jQuery.facebox({ ajax: '/admin/materi-silabus-quiz/search-materi-silabus'});">
+			<input type="button" style="height:30px;" onclick="ClearFields1();" value="Clear">
+			<font color="red">*</font>
+		</p>
+		<p>
+			<label class="left" for="pertanyaan">Pertanyaan</label>
+			<input id="pertanyaan" class="event-message" wrap="soft" name="pertanyaan" value="<?= $this->row->pertanyaan; ?>" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<div class="container_jawaban" style="display:flex; flex-direction:column">
+			<?php
+				if($this->row->jawaban1 != "") {
+					echo '<p class="sub_container_jawaban" id="jawaban1" style="display:flex; flex-direction:row">
+							<label class="left" for="jawaban1">Jawaban 1</label>
+							<input id="jawaban1" name="jawaban1" class="event-message" wrap="soft" value="'.$this->row->jawaban1.'" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+							<button type="button" class="tambah_jawaban" style="margin-left:10px; width:20px; font-weight: bold;"> + </button>
+						</p>';
+				} else {
+					echo '';
+				};
+	
+				if($this->row->jawaban2 != "") {
+					echo '<p class="sub_container_jawaban" id="jawaban2" style="display:flex; flex-direction:row">
+							<label class="left" for="jawaban2">Jawaban 2</label>
+							<input id="jawaban2" name="jawaban2" class="event-message" wrap="soft" value="'.$this->row->jawaban2.'" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+							<button type="button" id="button2" class="hapus_jawaban hapus_jawabann" style="margin-left:10px; width:20px; font-weight: bold;"> x </button>
+						</p>';
+				} else {
+					echo '';
+				};
+	
+				if($this->row->jawaban3 != "") {
+					echo '<p class="sub_container_jawaban" id="jawaban3" style="display:flex; flex-direction:row">
+							<label class="left" for="jawaban3">Jawaban 3</label>
+							<input id="jawaban3" name="jawaban3" class="event-message" wrap="soft" value="'.$this->row->jawaban3.'" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+							<button type="button" id="button3" class="hapus_jawaban hapus_jawabann" style="margin-left:10px; width:20px; font-weight: bold;"> x </button>
+						</p>';
+				} else {
+					echo '';
+				};
+	
+				if($this->row->jawaban4 != "") {
+					echo '<p class="sub_container_jawaban" id="jawaban4" style="display:flex; flex-direction:row">
+							<label class="left" for="jawaban4">Jawaban 4</label>
+							<input id="jawaban4" name="jawaban4" class="event-message" wrap="soft" value="'.$this->row->jawaban4.'" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+							<button type="button" id="button4" class="hapus_jawaban hapus_jawabann" style="margin-left:10px; width:20px; font-weight: bold;"> x </button>
+						</p>';
+				} else {
+					echo '';
+				};
+	
+				if($this->row->jawaban5 != "") {
+					echo '<p class="sub_container_jawaban" id="jawaban5" style="display:flex; flex-direction:row">
+							<label class="left" for="jawaban5">Jawaban 5</label>
+							<input id="jawaban5" name="jawaban5" class="event-message" wrap="soft" value="'.$this->row->jawaban5.'" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+							<button type="button" id="button5" class="hapus_jawaban hapus_jawabann" style="margin-left:10px; width:20px; font-weight: bold;"> x </button>
+						</p>';
+				} else {
+					echo '';
+				};
+			?>
+		</div>
+
+		<p class="container_kunci_jawaban">
+			<label class="left" for="kunci_jawaban">Kunci Jawaban</label>
+
+			<?php
+				$idKunci = 1;
+				$jawaban = 1;
+				$valueJawaban = 1;
+				$idb = 1;
+				$kunciJawaban = $this->row->kunci_jawaban;
+				$checked = "";
+
+				for($i = 1; $i <= 5; $i++) {
+					if($i == $kunciJawaban) {
+						$checked = "checked";
+					} else {
+						"";
+					}
+				}
+
+		
+				if($this->row->kunci_jawaban != ""  && $this->row->jawaban1 != "") {
+					echo '<input type="radio" style="margin-left:10px;" name="kunci_jawaban" value="'.$valueJawaban++.'" id="kunci'.$idKunci++.'" class="kunci_jawaban" '.($this->row->kunci_jawaban == "1" ? $checked : "" ).'> <b id="kunci2'.$idb++.'">Jawaban '.$jawaban++.'</b>';   
+				} else {
+					echo '';
+				}
+						
+				if($this->row->kunci_jawaban != ""  && $this->row->jawaban2 != "") {
+					echo '<input type="radio" style="margin-left:10px;" name="kunci_jawaban" value="'.$valueJawaban++.'" id="kunci'.$idKunci++.'" class="kunci_jawaban" '.($this->row->kunci_jawaban == "2" ? $checked : "" ).'> <b id="kunci2'.$idb++.'">Jawaban '.$jawaban++.'</b>';   
+				} else {
+					echo '';
+				}
+
+				if($this->row->kunci_jawaban != ""  &&  $this->row->jawaban3 != "") {
+					echo '<input type="radio" style="margin-left:10px;" name="kunci_jawaban" value="'.$valueJawaban++.'" id="kunci'.$idKunci++.'" class="kunci_jawaban" '.($this->row->kunci_jawaban == "3" ? $checked : "" ).'> <b id="kunci2'.$idb++.'">Jawaban '.$jawaban++.'</b>';   
+				} else {
+					echo '';
+				}
+
+				if($this->row->kunci_jawaban != ""  &&  $this->row->jawaban4 != "") {
+					echo '<input type="radio" style="margin-left:10px;" name="kunci_jawaban" value="'.$valueJawaban++.'" id="kunci'.$idKunci++.'" class="kunci_jawaban" '.($this->row->kunci_jawaban == "4" ? $checked : "" ).'> <b id="kunci2'.$idb++.'">Jawaban '.$jawaban++.'</b>';   
+				} else {
+					echo '';
+				}
+
+				if($this->row->kunci_jawaban != ""  &&  $this->row->jawaban5 != "") {
+					echo '<input type="radio" style="margin-left:10px;" name="kunci_jawaban" value="'.$valueJawaban++.'" id="kunci'.$idKunci++.'" class="kunci_jawaban" '.($this->row->kunci_jawaban == "5" ? $checked : "" ).'> <b id="kunci2'.$idb++.'">Jawaban '.$jawaban++.'</b>';   
+				} else {
+					echo '';
+				}
+			?>
+		</p>
+
+		<p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Simpan" class="" /></label><a href="/admin/materi-silabus-quiz/index" class="UIbutton-small">Batal</a></p>
+	</div>
+</form>
+<div style="clear:both"></div>

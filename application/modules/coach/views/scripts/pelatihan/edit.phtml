@@ -1,0 +1,256 @@
+<script type="text/javascript">
+	var DecimalSeparator = ",";
+	var ThousandSeparator = ".";
+	var CurrencyDecimalDigits = 4;
+
+	$(document).ready(function() {
+		$("#compose").validate();
+		$("#tanggal").datepicker({
+			yearRange: "-100:+1",
+			changeYear: "true",
+			changeMonth: "true",
+			dateFormat: "dd-mm-yy"
+		});
+	})
+</script>
+
+<script>
+	function selectFields1(id, id, nama_pengajar, id_pengajar) {
+		$('#id_pengajar_'+id_pengajar).val(id);
+		$('#nama_pengajar_'+id_pengajar).val(nama_pengajar);
+		$.facebox.close();
+	}
+
+	function ClearFields1(id_pengajar) {
+		document.getElementById("id_pengajar_"+id_pengajar).value = "";
+		document.getElementById("nama_pengajar_"+id_pengajar).value = "";
+	}
+	
+	$(document).ready(function() {
+		$(`.hapus_pengajar`).click(function() {
+			$(this).parent().remove();
+		});
+
+		$('.tambah_pengajar').click(function() {
+			let pengajar = $(".sub_container_pengajar").length + 1;
+	
+			$('.container_pengajar').append(
+				`<p class="sub_container_pengajar" id="${pengajar}" style="display:flex; flex-direction:row">	
+					<label>Nama Pengajar</label>
+					<input readonly class="required" type="text" id="nama_pengajar_${pengajar}" autocomplete="disable" name="nama_pengajar[]" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" /> &nbsp;
+					<input class="required" type="hidden" id="id_pengajar_${pengajar}" autocomplete="disable" name="id_pengajar[]" value="" />
+					<input type="button" value="..." id="btnpengajar_${pengajar}" style="height:30px;" onclick="jQuery.facebox({ ajax: '/admin/pelatihan/search-pengajar/id/${pengajar}'});"> &nbsp;
+					<input type="button" style="height:30px;" onclick="ClearFields1(${pengajar});" value="Clear">&nbsp;
+					<font color="red">*</font>
+					
+					<button type="button" id="button${pengajar}" class="hapus_pengajar${pengajar} border border-secondary fw-bold me-5" style="width:20px; margin-left:10px; display: block;"> x </button>
+
+				</p>`);
+
+			$(`.hapus_pengajar${pengajar}`).click(function() {
+				$(this).parent().remove();
+			})
+		});	
+	});
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?= $this->avatar; ?>Edit Pelatihan</h1>
+	<div class="header_nav_links"><a href="/coach/pelatihan/index">Back to Daftar Pelatihan</a></div>
+</div>
+<div class="clear"></div>
+
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p>
+			<label class="left" for="nama_pelatihan">Nama Pelatihan</label>
+			<input id="nama_pelatihan" class="event-message" wrap="soft" value="<?= $this->row->nama_pelatihan; ?>" name="nama_pelatihan" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+		<p>
+			<label class="left" for="deskripsi">Deskripsi Mata Pelatihan</label>
+			<textarea id="deskripsi" class="event-message" wrap="soft" rows="6" name="deskripsi" style="overflow: hidden; display: block; width: 350px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"><?= $this->row->deskripsi; ?></textarea>
+		</p>
+		<p>
+			<label>Tipe Pelatihan</label>
+			<select class="required" id="tipe_pelatihan" name="tipe_pelatihan">
+				<option value="" disabled>Pilih Tipe...</option>
+				<option value="classical" <?= ($this->row->tipe_pelatihan == 'classical') ? ' selected' : ''; ?>>Classical</option>
+				<option value="nonclassical" <?= ($this->row->tipe_pelatihan == 'nonclassical') ? ' selected' : ''; ?>>Non Classical</option>
+				<option value="blended" <?= ($this->row->tipe_pelatihan == 'blended') ? ' selected' : ''; ?>>Blended</option>
+			</select>
+			<font color="red">*</font>
+		</p>
+		<p>
+
+		<p>
+			<label class="left" for="nama_pelatihan">Sampul Pelatihan</label>
+			<?
+			if ($this->row->sampul_pelatihan != "") {
+				echo '<img src="https://berkas.dpr.go.id/mooc/thumbkelas/' . $this->row->sampul_pelatihan . '" height="200" />';
+				echo '<input type="hidden" id="cek_file" name="cek_file" value="1">';
+				echo '&nbsp; &nbsp;<a href="/coach/pelatihan/delete-files/id/' . $this->row->id . '  ">Hapus</a>';
+			} else {
+				echo '<input type="file" id="file_name" autocomplete="disable" name="file_name"/>';
+			}
+			?>
+		</p>
+
+		<div class="container_pengajar">
+			<?php
+				$id_pengajar = explode(",",$this->row->id_pengajar); 
+
+				foreach($id_pengajar as $key=>$val){
+
+					$nama_pengajar = '';
+					foreach($this->pengajar as $xxx){
+						if($val == $xxx->id){
+							$nama_pengajar = $xxx->nama_pengajar;
+							break;
+						}
+					}
+					if($key == 0){
+						echo '<p class="sub_container_pengajar">
+						<label>Nama Pengajar</label>
+						<input readonly value="'.$nama_pengajar.'" class="required" type="text" id="nama_pengajar_'.($key+1).'" autocomplete="disable" name="nama_pengajar[]" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" />
+						<input class="required" type="hidden" id="id_pengajar_'.($key+1).'" autocomplete="disable" name="id_pengajar[]" value="'.$val.'" />
+						<input type="button" value="..." id="btnpengajar_'.($key+1).'" style="height:30px;" onclick="jQuery.facebox({ ajax: \'/admin/pelatihan/search-pengajar/id/'.($key+1).'\'});">
+						<input type="button" style="height:30px;" onclick="ClearFields1('.($key+1).');" value="Clear">
+						<font color="red">*</font>
+						<button type="button" class="tambah_pengajar border border-secondary" style="margin-left:10px; width:20px; font-weight:bold;"> + </button>
+					</p>';
+					} else {
+						echo '<p class="sub_container_pengajar" id="'.($key+1).'" style="display:flex; flex-direction:row">	
+						<label>Nama Pengajar</label>
+						<input readonly value="'.$nama_pengajar.'" class="required" type="text" id="nama_pengajar_'.($key+1).'" autocomplete="disable" name="nama_pengajar[]" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" /> &nbsp;
+						<input class="required" type="hidden" id="id_pengajar_'.($key+1).'" autocomplete="disable" name="id_pengajar[]" value="'.$val.'" />
+						<input type="button" value="..." id="btnpengajar_'.($key+1).'" style="height:30px;" onclick="jQuery.facebox({ ajax: \'/admin/pelatihan/search-pengajar/id/'.($key+1).'\'});"> &nbsp;
+						<input type="button" style="height:30px;" onclick="ClearFields1('.($key+1).');" value="Clear">&nbsp;
+						<font color="red">*</font>
+						
+						<button type="button" id="button'.($key+1).'" class="hapus_pengajar hapus_pengajar'.($key+1).' border border-secondary fw-bold me-5" style="width:20px; margin-left:10px; display: block;"> x </button>
+	
+					</p>';
+					}
+				}
+			
+			?>
+		</div>
+
+		<input type="hidden" id="id" name="id" value="<?= $this->row->id; ?>">
+		<p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Simpan" class="" /></label><a href="/coach/pelatihan/index" class="UIbutton-small">Batal</a></p>
+	</div>
+</form>
+<div style="clear:both"></div>
+<br><br><br><br><br>
+
+<!-- Table data silabus, materi dan quiz -->
+<script id="js">
+	$(function() {
+		$("table")
+			.tablesorter({
+				theme: 'blue',
+				widthFixed: true,
+				widgets: ['zebra', 'filter']
+			})
+			.tablesorterPager({
+				container: $(".pager"),
+				output: '{startRow} - {endRow} / {filteredRows} ({totalRows})',
+				fixedHeight: true,
+				removeRows: false,
+				cssGoto: '.gotoPage'
+			});
+	});
+</script>
+
+<div style="width: 90%; margin: auto; text-align: right;">
+	<!-- <button class="header_nav_links"><a style="color: black; padding: 5px;" href="/coach/silabus/add/id/<?= $this->row->id ?>">Tambah Agenda</a></button> -->
+</div>
+
+<h1 style="width: 100%; text-align: center;">Daftar Agenda, Mata Pelatihan</h1>
+<?= $this->pager; ?>
+<table class="tablesorter">
+	<thead>
+		<tr>
+			<th width=5%>No.</th>
+			<th align="center">Nama Agenda</th>
+			<th align="center">Mata Pelatihan</th>
+			<!-- <th width=10% align="center">Aksi</th> -->
+		</tr>
+	</thead>
+	<tbody>
+		<?php
+
+		//Pretest
+		$rowspan = count($this->pre_test);
+		echo '<tr>';
+		echo '<td align="center"> 1 </td>';
+		echo '<td align="center">Pre-Test & Post-Test</td>';
+		echo '<td align="center">' . ($rowspan == 0 ? '0' : $rowspan)  . ' Soal</td>';
+		// echo '<td align="center"><a href="/coach/pretest/' . ($rowspan == 0 ? 'add' : 'edit')  . '/id/' . $this->row->id . '">' . ($rowspan == 0 ? 'TAMBAH' : 'EDIT')  . '</a></td>';
+		echo '</tr>';
+
+		//Agenda
+		$index = 2;
+		$i = 1;
+		
+		if (sizeof($this->silabus) == 0) {
+			echo '<tr>';
+			echo '<td align="center"> 2 </td>';
+			echo '<td align="center">Agenda</td>';
+			echo '<td align="center"> - </td>';
+			// echo '<td align="center"><a href="/coach/silabus/add/id/' . $this->row->id . '">TAMBAH</a></td>';
+			echo '</tr>';
+		} else {
+			foreach ($this->silabus as $key => $val) {
+
+				$count = 0;
+
+				foreach ($this->materi as $xxx) {
+					if ($xxx->id_silabus ==  $val->id) {
+						$count++;
+					}
+				}
+
+				if($count == 0){
+					echo '<tr>';
+					echo '<td style="vertical-align : middle;" align="center"> ' . $index++ . ' </td>';
+					echo '<td style="vertical-align : middle;" align="center"> Agenda ' . $i++ . ' : ' . $val->nama_silabus . ' </td>';
+					echo '<td align="center"> ' . $count . ' Mata Pelatihan </td>';
+					// echo '<td style="vertical-align : middle;" align="center"><a href="/coach/silabus/edit/id/' . $val->id . '">EDIT</a> | <a href="/coach/silabus/delete/id/' . $val->id . '">DELETE</a></td>';
+					echo '</tr>';
+				} else {
+					
+					$ceker = 0;
+					
+					foreach ($this->materi as $yyy => $zzz) {
+						if ($zzz->id_silabus ==  $val->id && $ceker == 0) {
+							echo '<tr>';
+							echo '<td rowspan="' . $count . '" style="vertical-align : middle;" align="center"> ' . $index++ . ' </td>';
+							echo '<td rowspan="' . $count . '" style="vertical-align : middle;" align="center"> Agenda ' . $i++ . ' : ' . $val->nama_silabus . ' </td>';
+							echo '<td align="center">' . $zzz->nama_materi . '</td>';
+							// echo '<td rowspan="' . $count . '" style="vertical-align : middle;" align="center"><a href="/coach/silabus/edit/id/' . $val->id . '">EDIT</a> | <a href="/coach/silabus/delete/id/' . $val->id . '">DELETE</a></td>';
+							echo '</tr>';
+							$ceker = 1;
+						} else if ($zzz->id_silabus ==  $val->id) {
+							echo '<tr>';
+							echo '<td align="center">' . $zzz->nama_materi . '</td>';
+							echo '</tr>';
+						}
+					}
+				}
+			}
+		}
+
+		//Quiz
+		// $rowspanx = count($this->quiz);
+		// echo '<tr>';
+		// echo '<td align="center"> ' . $index++ . ' </td>';
+		// echo '<td align="center">Quiz</td>';
+		// echo '<td align="center">' . ($rowspanx == 0 ? '0' : $rowspanx)  . ' Soal</td>';
+		// echo '<td align="center"><a href="/coach/silabus-quiz/' . ($rowspanx == 0 ? 'add' : 'edit')  . '/id/' . $this->row->id . '">' . ($rowspanx == 0 ? 'TAMBAH' : 'EDIT')  . '</a></td>';
+		// echo '</tr>';
+
+		?>
+	</tbody>
+</table>

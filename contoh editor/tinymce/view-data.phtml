@@ -1,0 +1,28 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+	});
+</script>
+		<?
+		$struktur = array(
+			'hadir' => 'Hadir',
+			'I' => 'I. PENDAHULUAN',
+			'II' => 'II. KESIMPULAN / KEPUTUSAN',
+			'III' => 'III. PENUTUP'
+		);
+		?>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>  View Catatan Rapat (<?=$struktur[$this->col];?>)</h1>
+	<div class="header_nav_links"><a href="#" onclick="$(document).trigger('close.facebox');">Back to Edit Catatan Rapat</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="/admin/catatan-rapat/edit-data" enctype="multipart/form-data">
+	<div class="tabular">
+		<p><label><?=$struktur[$this->col];?></label><?=$this->row[$this->col];?> <font color="red">*</font></div></p>
+	
+		<p class="savecancel"><input type="hidden" id="id" name="id" value="<?=$this->id;?>"><input type="hidden" id="col" name="col" value="<?=$this->col;?>"><a href="#" class="UIbutton-small" onclick="$(document).trigger('close.facebox'); ">Batal</a></p>
+	</div>
+</form>
+<div style="clear:both"></div>

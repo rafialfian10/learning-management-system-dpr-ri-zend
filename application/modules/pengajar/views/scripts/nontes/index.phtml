@@ -1,0 +1,78 @@
+<script id="js">
+	$(function(){
+		$("table")
+			.tablesorter({
+				theme: 'blue', 
+				widthFixed: true, 
+				widgets: ['zebra', 'filter']
+			})
+			.tablesorterPager({
+				container: $(".pager"), 
+				output: '{startRow} - {endRow} / {filteredRows} ({totalRows})', 
+				fixedHeight: true, 
+				removeRows: false, 
+				cssGoto: '.gotoPage' 
+			});
+	});
+</script>
+
+<div class="content-header"></div>
+	<div class="UI_Header_Title">
+		<h1><?=$this->avatar;?> Daftar Nontes</h1>
+		<div class="header_nav_links"><span class="right context_menu"><a href="/admin/nontes/add" class="UIlink-button small right">Tambah Nontes</a></span>
+	</div>
+</div>
+<div class="clear"></div>
+<br>
+
+<? if (count($this->nontest) > 0) { ?>
+	<?=$this->pager;?>
+
+	<table class="tablesorter">
+		 <thead>
+			 <tr>
+			 	<th width="5px">No.</th>
+				<th>Pelatihan</th>
+				<th>Title</th>
+				<th>Soal Nontes</th>
+				<th>Aksi</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+			$index = 1;
+			foreach($this->nontest as $nontes) {
+				$nama_pelatihan = "";
+				$id_skor_nontes = "";
+
+				foreach($this->pelatihans as $pelatihan) {
+					if($pelatihan->id == $nontes->id_pelatihan) {
+						$nama_pelatihan = $pelatihan->nama_pelatihan;
+					}
+				}
+
+				foreach($this->skor_nontest as $skor_nontes) {
+					if($skor_nontes->id_pelatihan == $nontes->id_pelatihan) {
+						$id_skor_nontes = $skor_nontes->id;
+					}
+				}
+
+				echo '<tr>';
+				echo '<td align="center">'. $index++ .'.</td>';
+				echo '<td align="center">'. $nama_pelatihan .'</td>';
+				echo '<td align="center">'. $nontes->title .'</td>';
+				echo '<td align="center"><a href="https://berkas.dpr.go.id/mooc/nontes/'. ($nontes->file_nontes == '' ? '-': $nontes->file_nontes) .'" target="_blank">'.($nontes->file_nontes == '' ? '-': $nontes->file_nontes).'</a></td>';
+				echo '<td align="center">
+						<a href="/admin/skor-nontest/index/id/'. $nontes->id_pelatihan .'">PENILAIAN |</a>
+						<a href="/admin/nontes/edit/id/'. $nontes->id_pelatihan .'">EDIT |</a>
+						<a href="/admin/nontes/delete/id/'. $nontes->id .'" onclick="return confirmDelete();">DELETE</a>';
+				echo '</td>';
+				echo '</tr>';
+			}
+			?>
+		</tbody>
+	</table>
+<? } else {
+	echo 'Data tidak ditemukan.';
+}
+?>

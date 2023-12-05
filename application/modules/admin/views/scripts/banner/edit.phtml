@@ -1,0 +1,31 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+	})
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>Edit Gambar Banner</h1>
+	<div class="header_nav_links"><a href="/admin/banner/index">Back to Daftar Banner</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		
+		<p>
+			<label class="left" for="banner_uri">Gambar Banner</label> 
+			<?
+			if ($this->row->gambar_uri != '') {
+				echo '<img src="https://berkas.dpr.go.id/mooc/banner/' . $this->row->gambar_uri . '" height="100" />';
+				echo '<a href="/admin/banner/delete-files/id/' . $this->row->id . '  ">Hapus</a>';
+				echo '<input type="hidden" id="file_name" autocomplete="disable" name="file_name" value="'.$this->row->gambar_uri.'"/>';
+			} else {
+				echo '<input type="file" accept="image/*" id="file_name" autocomplete="disable" name="file_name"/>';
+			}
+			?>
+		</p>
+		<p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Simpan" class="" /></label><a href="/admin/banner/index" class="UIbutton-small">Batal</a></p>
+	</div>
+</form>
+<div style="clear:both"></div>

@@ -1,0 +1,679 @@
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>    
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://berkas.dpr.go.id/mooc/assets/css/pretest.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- sidebar -->
+<div class="area"></div>
+
+<!-- end sidebar -->
+<nav class="main-menu" style="max-width: 100vw; margin-top: 85px;">
+    <div id="mySidebar" class="sidebar background-content" style=" z-index: 999; margin-top: 85px; overflow-y: auto; max-height: calc(100vh - 85px); background-color: #E5E7E9;">
+        <a style="color: #D4A216;" href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <div class="p-3">
+            <p class="fs-5">Table of Contents</p>
+            <hr>
+            <?php
+                $progress = explode("-", $this->progress->status_progress);
+            ?>
+            <a <?= ($progress[0] == 'Pretest' ? ' style="pointer-events: none; cursor: default;" ' : '') ?> href="/pesertanonasn/pelatihan-saya/pretest/id/<?= $this->batch->id ?>">Pretest
+                <?= ($progress[0] !== 'Pretest' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') ?>
+            </a>
+
+            <hr>
+            <div>
+                <?php
+                $materi_idx = 'x';
+                foreach ($this->silabus as $id => $silabus) {
+                    echo '<ul style="margin-left: -35px; ">';
+                    echo ' <a class=" collapsed dropdown-toggle" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#a' . $silabus->id . '" aria-expanded="false" aria-controls="collapseExample">' . $silabus->nama_silabus . ' </a>';
+                    echo '</ul>';
+
+                    echo ' <div class="collapse" id="a' . $silabus->id . '" >';
+                    echo '<ul >';
+
+                    $i = 1;
+                    foreach ($this->materi as $idx => $materi) {
+                        if ($materi->id_silabus == $silabus->id) {
+                            echo '<li> 
+                                        <a ' . ($progress[0] == 'Materi' || $progress[0] == 'Postest' || $progress[0] == 'Mentoring' || $progress[0] == 'Penugasan' || $progress[0] == 'Penilaian' || $progress[0] == 'Sertifikat' ? 'style="margin-left: -42px;"' : '') . ' ' . ($this->progress->status_progress == 'Pretest' ? ' style="margin-left: -42px; pointer-events: none; cursor: default;"' : '') . 'href="/pesertanonasn/pelatihan-saya/belajar/id/' . $this->batch->id . '/silabus/' . ($id + 1) . '/materi/' . $i++ . '">' . $materi->nama_materi . '
+                                        ' . ($progress[0] == 'Pretest' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '') . '
+                                        ' . ($progress[0] == 'Postest' || $progress[0] == 'Mentoring' || $progress[0] == 'Penugasan' || $progress[0] == 'Penilaian' || $progress[0] == 'Sertifikat' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') . '
+                                        </a>
+                                  </li>';
+                        }
+                    }
+                    echo '</ul>';
+                    echo '</div>';
+                }
+
+                ?>
+
+            </div>
+            <hr>
+            <a <?= ($this->progress->status_progress == 'Pretest' || $progress[0] == 'Materi' || $progress[0] ==
+                'Mentoring' || $progress[0] == 'Penugasan' || $progress[0] == 'Penilaian' || $progress[0] ==
+                'Sertifikat' ? ' disabled="disabled" class="disabled" ' : '') ?> href="/pesertanonasn/pelatihan-saya/postest/id/
+                <?= $this->batch->id ?>">Postest
+                <?= ($this->progress->status_progress == 'Pretest' || $progress[0] == 'Materi' || $progress[0] == 'Mentoring' || $progress[0] == 'Penugasan' || $progress[0] == 'Penilaian' || $progress[0] == 'Sertifikat' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '') ?>
+                <?= ($progress[0] == 'Mentoring' || $progress[0] == 'Penugasan' || $progress[0] == 'Penilaian' || $progress[0] == 'Sertifikat' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') ?>
+            </a>
+            <hr>
+            <a <?= ($this->progress->status_progress == 'Pretest' || $progress[0] == 'Materi' || $progress[0] == 'Postest' ?
+                ' disabled="disabled" class="disabled" ' : '') ?> href="/pesertanonasn/pelatihan-saya/mentoring/id/
+                <?= $this->batch->id ?>">Mentoring
+                <?= ($this->progress->status_progress == 'Pretest' || $progress[0] == 'Materi' || $progress[0] == 'Postest' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '') ?>
+                <?= ($progress[0] == 'Penugasan' || $progress[0] == 'Penilaian' || $progress[0] == 'Sertifikat' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') ?>
+            </a>
+            <hr>
+            <a <?= ($this->progress->status_progress == 'Pretest' || $progress[0] == 'Materi' || $progress[0] == 'Postest'
+                || $progress[0] == 'Mentoring' ? ' disabled="disabled" class="disabled" ' : '') ?> href="/pesertanonasn/pelatihan-saya/penugasan/id/
+                <?= $this->batch->id ?>">Tugas Akhir
+                <?= ($this->progress->status_progress == 'Pretest' || $progress[0] == 'Materi' || $progress[0] == 'Mentoring' || $progress[0] == 'Postest' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '') ?>
+                <?= ($progress[0] == 'Penilaian' || $progress[0] == 'Sertifikat' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') ?>
+            </a>
+            <hr>
+            <a <?= ($this->progress->status_progress == 'Pretest' || $progress[0] == 'Materi' || $progress[0] == 'Postest'
+                || $progress[0] == 'Mentoring' || $progress[0] == 'Penugasan' || $progress[0] == 'Penilaian' ? '
+                disabled="disabled" class="disabled" ' : '') ?> href="/pesertanonasn/pelatihan-saya/sertifikat/id/
+                <?= $this->batch->id ?>">Sertifikat
+                <?= ($this->progress->status_progress == 'Pretest' || $progress[0] == 'Materi' || $progress[0] == 'Postest' || $progress[0] == 'Mentoring' || $progress[0] == 'Penugasan' || $progress[0] == 'Penilaian' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '') ?>
+                <?= ($progress[0] == 'Sertifikat' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') ?>
+            </a>
+            <hr>
+                <div style="text-align: center;">
+                    <button class=" btn btn-outline-danger" onclick="menyerahClicked()"><i class="bi bi-x-circle"></i> Menyerah</button>
+                </div>
+            <hr>
+        </div>
+    </div>
+
+    <div id="main">
+        <button class="openbtn background-content" id="nav-icon" onclick="toggleNav()" style="z-index: 2; position: fixed; margin-left: -23px; display: flex; justify-content: center;align-items: center; color: #D4A216; background-color: #E5E7E9; font-size: 41px; padding: 10px 0px 15px 0;">&#8250;</button>
+
+        <div class="row content-header mb-3">
+            <div class="col-1"></div>
+            <div class="sub-content-header col-10">
+                <div class="card rounded-4 background-content" style="border: none; background-color: #E5E7E9; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38); ">
+                    <div class="card-body" style="color: #808080;">
+                        <a class="text-decoration-none" href="/pesertanonasn" style="color: #808080;">Belajar Saya</a>&nbsp &nbsp|&nbsp &nbsp
+                        <a class="text-decoration-none" href="/pesertanonasn/pelatihan" style="color: #808080;">Pelatihan</a>&nbsp &nbsp|&nbsp &nbsp
+                        <a class="text-decoration-none" style="color: #808080;" href="/pesertanonasn/pelatihan-saya/belajar/id/<?= $this->batch->id ?>/silabus/1/materi/1"><?= $this->pelatihan->nama_pelatihan ?></a>&nbsp &nbsp|&nbsp &nbsp
+                        <a class="text-dark text-decoration-none">Pre-Test</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-1"></div>
+        </div>
+
+        <!-- nontest -->
+        <form id="nontes-form" class="mb-5" method="post" action="" enctype="multipart/form-data">
+            <?php if ($progress[0] == 'Pretest'): ?>
+                <?php
+                    $session = new Zend_Session_Namespace('loggedInUser');
+        	        $auth= $session->user; // Dapatkan id user yang login
+                    // var_dump($auth->id_peserta);
+                    $id_pelatihan = "";
+                    $title_nontest = "";
+                    $soal_nontest = "";
+
+                    foreach($this->nontes as $n) {
+                        $id_pelatihan = $n->id_pelatihan; 
+                        $title_nontest = $n->title;  
+                        $soal_nontest = $n->file_nontes;   
+                    }
+                                                                    
+                    if($soal_nontest) {
+                        echo'<div class="container-nontes row m-auto mt-3 d-flex justify-content-between" style="max-width: 80vw;">
+                                <div class="col-12 rounded-4 p-0">
+                                    <div class="card background-content mb-1 rounded-4" style="background-color: #E5E7E9; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38)">
+                                        <div class="card-body">
+                                            <div class="d-flex flex-column">
+                                                <p class="fs-4 fw-bold">Pretest - Non-tes </p>
+                                                <p class="mb-1 fs-6 fw-bold">'. $title_nontest .'</p>
+                                                <a href="https://berkas.dpr.go.id/mooc/soalpretest/'. $soal_nontest .'" target="_blank" class="mb-3 text-dark text-decoration-none">
+                                                    <span class="fw-bold">Soal</span> : '.$soal_nontest.' &nbsp &nbsp <i class="bi bi-download fs-5 fw-bold"></i>
+                                                </a>
+                                                <p class="m-0 fs-6 fw-bold mb-2">Jawaban:</p>
+                                                <input type="file" name="jawaban_nontes" id="jawaban-nontes" class="jawaban-nontes mb-3 rounded-3 p-1" style="box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">';
+                                                if($this->skor_nontes->jawaban_nontes != "") {
+                                                    echo'<p class="m-0 fw-bold">File yang anda upload : <a href="https://berkas.dpr.go.id/mooc/jawabanpretest/'. $this->skor_nontes->jawaban_nontes .'" target="_blank">'. $this->skor_nontes->jawaban_nontes .'</a> &nbsp &nbsp &nbsp &nbsp 
+                                                        <button type="button" class="btn-delete-file border-0 bg-transparent" style="color: red !important;"><i class="bi bi-trash text-danger"></i> Hapus file</button>
+                                                    </p>';
+                                                } else {
+                                                    echo '';
+                                                }
+                                            echo'</div>
+                                        </div>
+                                        <button type="submit" class="btn-nontes align-self-end rounded-3 text-light m-3 fw-bold p-2 border-0" style="width: 20%; background-color: #d4a216;">Upload Tugas Non-Tes</button>
+                                    </div>
+                                </div>
+                            </div>';
+                    } else {
+                          echo '';
+                    }
+                ?>                    
+            <?php endif; ?>
+        </form>
+
+        <!-- pretest -->
+        <form method="post" action="" enctype="multipart/form-data" id="myForm">
+            <?php if ($progress[0] != 'Pretest'): ?>
+                <div class="row container-skor m-auto mt-3 d-flex justify-content-between" style="max-width: 80vw;">
+                    <div class="col-12 rounded-4">
+                        <div class="card content-skor rounded-4 background-content" style="background-color: #E5E7E9; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38)">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-center flex-column">
+                                    <!-- nilai pretest -->
+                                    <?php if ($this->skor->skor_akhir < 70): ?>
+                                        <p class="m-0 mb-2 fs-3">Skor Akhir Pretest Anda</p>
+                                        <div class="text-center mb-5 py-1 px-3 bg-danger rounded-3">
+                                            <p class="m-0 fs-4"> <?= $this->skor->skor_akhir ?>/100</p>
+                                        </div>
+                                    <?php else: ?>
+                                        <p class="m-0 mb-2 fs-3">Skor Akhir Pretest Anda</p>
+                                        <div class="text-center mb-5 py-1 px-3 bg-success rounded-3">
+                                            <p class="m-0 fs-4"><?= $this->skor->skor_akhir ?>/100</p>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <!-- nilai nontes -->
+                                    <?php if ($this->skor_nontes->skor_akhir != ""): ?>
+                                        <p class="m-0 mb-2 fs-3 ">Skor Akhir Nontes Anda</p>
+                                        <?php if ($this->skor_nontes->skor_akhir < 70): ?>
+                                            <div class="text-center m-0 py-1 px-3 bg-danger rounded-3">
+                                                <p class="m-0 fs-4"> <?= $this->skor_nontes->skor_akhir ?>/100</p>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="text-center m-0 py-1 px-3 bg-success rounded-3">
+                                                <p class="m-0 fs-4"> <?= $this->skor_nontes->skor_akhir ?>/100</p>
+                                            </div>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <p class="m-0 mb-2 fs-3">Skor Akhir Nontes Anda</p>
+                                        <div class="text-center m-0 py-1 px-3 rounded-3" style="background-color: #D4A216;">
+                                            <p class="m-0 fs-4">Masih dalam penilaian</p>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <div class="swal2-icon swal2-success" >
+                                        <div class="swal2-success-circular-line-left"></div>
+                                        <span class="swal2-success-line-tip"></span> 
+                                        <span class="swal2-success-line-long"></span>
+                                        <div class="swal2-success-ring"></div>
+                                        <div class="swal2-success-fix"></div>
+                                        <div class="swal2-success-circular-line-right"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row content-btn-next" style="margin-top:10px;">
+                    <div class="col-1"></div>
+                    <div class="col-10 sub-content-btn-next">
+                        <div class="card rounded-4 background-content" style="background-color: #E5E7E9; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">
+                            <div class="card-body">
+                                <div class="row m-0 d-flex justify-content-between align-items-center">
+                                    <div class="col-12 col-sm-7 p-0 text-start">
+                                        <p class="m-0 text-secondary fs-5" style="text-align: justify;">Anda telah menyelesaikan pretest, ayo selanjutnya pelajari materi! &nbsp; &nbsp;</p>
+                                    </div>
+                                    <div class="col-12 btn-next col-sm-3 text-end">
+                                        <a class="btn" style="color: #fff; background-color: #D4A216;" href="https://belajar.dpr.go.id/pesertanonasn/pelatihan-saya/belajar/id/<?= $this->batch->id ?>/silabus/1/materi/1">
+                                            <i class="bi bi-box-arrow-in-right"></i> &nbsp; &nbsp; Selanjutnya
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-1"></div>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($progress[0] == 'Pretest'): ?>
+                <section class="row container-pretest m-auto mt-3 d-flex justify-content-between" style="max-width: 80vw;">
+                    <div class="col-9 content-pretest rounded-4 p-0">
+                        <!-- pilihan ganda -->
+                        <div class="card content-pilihan-ganda me-5 rounded-4 background-content" style="background-color: #E5E7E9; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38)">
+                            <div class="card-body">
+                                <input type="hidden" readonly name="materi_id" id="materi_id" value="<?= $materi_idx ?>" />
+                                <input type="hidden" readonly name="id" id="id" value="<?= $this->progress->id_batch ?>" />
+
+                                <?php
+                                    $indicator = "";
+                                    $quiz = "";
+
+                                    foreach ($this->soal as $key => $val) {
+                                        $indicator .='<li class="page-item rounded-3 position-relative" style="width: 18%;">
+                                                        <a class="page-link page-pretest sub-background-content rounded-3 m-0 d-flex border border-dark justify-content-center align-items-center text-dark '. ($key == 0 ? "active2" : "") .'" style="width: 100%; background-color: #EBEDEF;" data-target="#carouselExampleIndicators" data-slide-to="' . $key . '" href="#">' . ($key + 1) . '</a>
+                                                    </li>';
+
+                                        $quiz .='<div class="carousel-item '. ($key == 0 ? 'active' : '') .' ">
+                                                    <div class="quiz mt-sm-5 my-1">
+                                                        <div>
+                                                            <div class="content-soal">
+                                                                <p class="fs-4 fw-bold text-decoration-underline">Pretest - Pertanyaan ' . ($key + 1) . ' dari ' . count($this->soal) . '</p>
+                                                                <p class="mb-2 fs-6" style="text-align: justify">' . $val->soal . ' ?</p>
+                                                                <p class="fs-6 fw-bold">Jawaban:</p>
+                                                            </div>
+
+                                                            <div class="content-jawaban p-2">
+                                                                <div id="options">
+                                                                    <label class="options sub-background-content" style="background-color: #EBEDEF;"  for="jawaban_'. $key .'_1">a. &nbsp'. $val->jawaban_1 .'
+                                                                        <input name="jawaban['. $key .']" type="radio" check-id="'. ($key + 1) .'"class="check jawaban_'. $key .'" value="1" id="jawaban_'. $key .'_1">
+                                                                        <span class="checkmark"></span>
+                                                                    </label>
+
+                                                                    <label class="options sub-background-content" style="background-color: #EBEDEF;" for="jawaban_'. $key .'_2">b. &nbsp'. $val->jawaban_2 .'
+                                                                        <input name="jawaban['. $key .']" type="radio" check-id="'. ($key + 1) .'"class="check jawaban_'. $key .'" value="2" id="jawaban_'. $key .'_2">
+                                                                        <span class="checkmark"></span>
+                                                                    </label>
+
+                                                                    '. ($val->jawaban_3 !== '' ? '<label class="options sub-background-content" style="background-color: #EBEDEF;"  for="jawaban_'. $key .'_3">c. &nbsp'. $val->jawaban_3 .'
+                                                                        <input name="jawaban['. $key .']" type="radio" check-id="'. ($key + 1) .'"class="check jawaban_'. $key .'" value="3" id="jawaban_'. $key .'_3">
+                                                                        <span class="checkmark"></span>
+                                                                    </label>' : '') .'
+
+                                                                    '. ($val->jawaban_4 !== '' ? '<label class="options sub-background-content" style="background-color: #EBEDEF;"  for="jawaban_'. $key .'_4">d. &nbsp' . $val->jawaban_4 .'
+                                                                        <input name="jawaban['. $key .']" type="radio" check-id="'. ($key + 1) .'"class="check jawaban_'. $key .'" value="4" id="jawaban_'. $key .'_4">
+                                                                        <span class="checkmark"></span>
+                                                                    </label>' : '') .'
+
+                                                                    '. ($val->jawaban_5 !== '' ? '<label class="options sub-background-content" style="background-color: #EBEDEF;"  for="jawaban_'. $key .'_5">e. &nbsp'. $val->jawaban_5 .'
+                                                                        <input name="jawaban['. $key .']" type="radio" check-id="'. ($key + 1) .'"class="check jawaban_'. $key .'" value="5" id="jawaban_'. $key .'_5">
+                                                                        <span class="checkmark"></span>
+                                                                    </label>' : '') . '
+                                                                </div>    
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>';
+                                    }
+                                ?>
+
+                                <div id="carouselExampleIndicators" class="carousel slide mb-5" data-ride="carousel">
+                                    <div class="carousel-inner">
+                                        <?= $quiz ?>
+                                    </div>
+
+                                    <div class="btn-next-prev d-flex justify-content-between align-items-center mb-3 mt-3">
+                                        <div id="prev" style="width: 20%;">
+                                            <a href="#carouselExampleIndicators" class="btn text-light prev rounded-3" style="width: 100%; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38); background-color: #D4A216;" role="button" data-slide="prev">Sebelumnya</a>
+                                        </div>
+
+                                        <div style="width: 20%;">
+                                            <a href="#carouselExampleIndicators" class="btn text-light next rounded-3" style="width: 100%; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38); background-color: #D4A216;" role="button" data-slide="next">Selanjutnya</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="p-2 rounded-3" style="background: rgb(212 22 22 / 35%)">
+                                    <p class="mb-1" style="text-align: justify;">Pretest hanya dapat dikerjakan 1x saja, kerjakan pretest dengan teliti, pilihlah jawaban dengan benar dan tepat.</p>
+                                    <p class="text-center m-0 fw-bold">Selamat mengerjakan!</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-indicator col-md-3 background-content rounded-4 d-flex flex-column" style="height: 40vh; overflow-y: auto; background-color: #E5E7E9; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">
+                        <p class="my-3">Nomor Soal</p>
+                        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                            <nav class="d-flex justify-content-center" style="width: 100%;" aria-label="Page navigation example">
+                                <ul class="pagination d-flex flex-wrap gap-1" style="width: 100%;">
+                                    <?= $indicator ?>
+                                </ul>
+                            </nav>
+                        </div>
+                     
+                        <button type="button" class="btn-submit-pretest sub-background-content btn d-flex align-items-center justify-content-center text-center" style="border: 1px solid #d4a216;" id="endBtn">
+                            <p class="m-auto fs-6">Selesaikan Pretest ?</p>
+                        </button>
+                    </div>
+                </section>
+            <?php endif; ?>
+        </form>
+        <!-- end pretest -->
+    </div>
+</nav>
+
+<script>
+    $('.carousel').carousel({
+        interval: false,
+    });
+
+    // pretest
+    document.getElementById('endBtn').addEventListener('click', function () {
+        // kondisi jika nontes kosong
+        let inputNontes = $('.jawaban-nontes');
+        let jawabanNontes = '<?= $this->skor_nontes->jawaban_nontes; ?>';
+
+        if (inputNontes.val() === '' && jawabanNontes === '') {
+            Swal.fire({
+                title: 'Gagal Submit',
+                text: 'Mohon lengkapi tugas nontes terlebih dahulu.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4CAF50',
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Selesai ?',
+            text: 'Anda yakin sudah selesai pada Pretest ini ?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sudah',
+            confirmButtonColor: '#4CAF50',
+            cancelButtonText: 'Belum',
+            cancelButtonColor: '#f44336',
+        }).then(function (res) {
+            if (res.isConfirmed) {
+                let form = $("#myForm").serialize();
+                $.ajax({
+                    url: '/pesertanonasn/pelatihan-saya/pretest',
+                    type: 'POST',
+                    data: form,
+                    success: function (response) {
+                        console.log('Ok')
+                        Swal.fire({
+                            title: 'Skor Anda : ' + response.result.nilai + '/100',
+                            icon: 'success',
+                            showCancelButton: false,
+                            confirmButtonText: 'Oke',
+                            confirmButtonColor: '#4CAF50',
+                        }).then(function (result) {
+                            window.location.href = '/pesertanonasn/pelatihan-saya/belajar/id/' + response.result.id + '/silabus/1/materi/1';
+                        });
+                    }
+                })
+            } else {
+                Swal.close();
+            }
+        })
+    });
+    // end pretest
+
+    // nontes
+    $('#nontes-form').submit(function(event) {
+        event.preventDefault();
+
+        let inputNontes = $('.jawaban-nontes');
+        let jawabanNontes = inputNontes.length > 0 ? inputNontes[0].files[0] : null;
+
+        if (inputNontes.val() === '') {
+            Swal.fire({
+                title: 'Gagal Submit',
+                text: 'Mohon lengkapi tugas nontes terlebih dahulu.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#4CAF50',
+            });
+            return;
+        }
+
+//         let formData = {
+//         id_peserta: <?= json_encode($auth->id_peserta) ?>,
+//         id_batch: <?= json_encode($this->batch->id) ?>,
+//         id_pelatihan: <?= json_encode($id_pelatihan) ?>,
+//         title: <?= json_encode($title_nontest) ?>,
+//         soal_nontes: <?= json_encode($soal_nontest) ?>,
+//         jawaban_nontes: jawabanNontes}
+// console.log(formData);
+
+        let form = new FormData();
+        form.append('id_peserta', <?= $auth->id_peserta ?>);
+        form.append('id_batch', <?= $this->batch->id ?>);
+        form.append('id_pelatihan', <?= $id_pelatihan ?>);
+        form.append('title', '<?= $title_nontest ?>');
+        form.append('soal_nontes', '<?= $soal_nontest ?>');
+        form.append('jawaban_nontes', jawabanNontes);
+        $.ajax({
+            url: '/pesertanonasn/pelatihan-saya/pretest/id/<?= $this->batch->id ?>',
+            type: 'POST',
+            data: form,
+            processData: false,
+            contentType: false,
+
+            success: function(response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    html: 'Tugas nontes berhasil di upload',
+                    confirmButtonColor: '#4CAF50',
+                    customClass: {
+                        popup: 'my-custom-popup-class',
+                        title: 'my-custom-title-class',
+                        content: 'my-custom-content-class',
+                        confirmButton: 'confirm-button-class'
+                    }
+                }).then(function(result) {
+                    if(result.isConfirmed) {
+                       
+                        window.location.href = '/pesertanonasn/pelatihan-saya/pretest/id/<?= $this->batch->id ?>';
+                    }
+                });
+            },
+            error: function(xhr, status, error) {
+                console.log('File nontes submission failed');
+                console.log(xhr.responseText);
+            }
+        });
+    });
+
+    let btnDeleteFile = document.querySelector(".btn-delete-file");
+    if(btnDeleteFile) {
+        btnDeleteFile.addEventListener("click", function () {
+            Swal.fire({
+                title: 'Anda yakin?',
+                text: "Anda tidak akan dapat mengembalikan ini!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Iya!',
+                confirmButtonColor: '#4CAF50',
+                cancelButtonText: 'Tidak',
+                cancelButtonColor: '#f44336',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Success!',
+                        'Tugas nontes telah berhasil dihapus',
+                        'success'
+                    ).then(() => {
+                        window.location.href = '/pesertanonasn/pelatihan-saya/delete-files-jawaban-nontest/id/<?= $this->skor_nontes->id ?>';
+                    });
+                } else {
+                    Swal.close();
+                }
+            });
+        });
+    }
+    // end nontes
+
+    // function meyerah
+    function menyerahClicked() {
+         Swal.fire({
+            title: 'Konfirmasi',
+            text: 'Ketik "MENYERAH" (dengan huruf besar) untuk menyerah',
+            input: 'text',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            cancelButtonText: 'Batal',
+            inputValidator: (value) => {
+                if (value !== 'MENYERAH') {
+                    return 'Tulisan tidak cocok';
+                }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/pesertanonasn/pelatihan-saya/menyerah',
+                    type: 'POST',
+                    data: {
+                        id: '<?=$this->progress->id?>',
+                        id_peserta: '<?=$this->progress->id_peserta?>',
+                        id_batch: '<?=$this->progress->id_batch?>',
+                        status_progress: '<?=$this->progress->status_progress?>',
+                        status_riwayat: 'Menyerah',
+                        // status_progress: 'Menyerah',
+                    },
+                    success: function (response) {
+                        window.location.href = '/pesertanonasn/riwayat';
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log('Failed: ' + textStatus);
+                        console.log(errorThrown);
+                    }
+                });
+            }
+        });
+    }
+    // end function menyerah
+
+    // page pretest
+    let pagePretest = document.querySelectorAll(".page-pretest");
+    let checkmark = document.querySelectorAll(".checkmark");
+    let checkInput = document.querySelectorAll(".check");
+    let prev = document.querySelector(".prev");
+    let next = document.querySelector(".next");
+
+    // page pretest click
+    pagePretest.forEach(function (page) {
+        page.addEventListener("click", function (event) {
+            pagePretest.forEach(function (page) {
+                if (page.classList.contains('active2')) {
+                    page.classList.remove('active2');
+                }
+            });
+
+            event.target.classList.add('active2');
+        });
+    });
+
+    // next button click
+    next.addEventListener("click", function (e) {
+        let activePageIndex = 0;
+        let totalPages = pagePretest.length;
+
+        pagePretest.forEach(function (page, index) {
+            if (page.classList.contains('active2')) {
+                activePageIndex = index;
+            }
+        });
+
+        pagePretest.forEach(function (page) {
+            page.classList.remove('active2');
+        });
+
+        let nextPageIndex = activePageIndex + 1;
+        if (nextPageIndex === totalPages) {
+            nextPageIndex = 0;
+            pagePretest[0].classList.add("active2");
+        }
+
+        let nextPage = pagePretest[activePageIndex + 1];
+        if (nextPage) {
+            nextPage.classList.add("active2");
+        }
+    });
+
+    // prev button click
+    prev.addEventListener("click", function (e) {
+        let activePageIndex = 0;
+        let totalPages = pagePretest.length;
+
+        pagePretest.forEach(function (page, index) {
+            if (page.classList.contains('active2')) {
+                activePageIndex = index;
+            }
+        });
+
+        pagePretest.forEach(function (page) {
+            page.classList.remove('active2');
+        });
+
+        let prevPageIndex = activePageIndex - 1;
+        if (prevPageIndex === -1) {
+            prevPageIndex = totalPages - 1;
+        }
+    
+        let prevPage = pagePretest[prevPageIndex];
+        if (prevPage) {
+            prevPage.classList.add("active2");
+        }
+    });
+
+    // checkmark click
+    let checkId = 0;
+    checkInput.forEach(function (check, checkIndex) {
+        check.addEventListener("click", function () {
+            checkId = check.getAttribute('check-id');
+
+            pagePretest.forEach(function (page, pageIndex) {
+                if (pageIndex == checkId - 1) {
+                    let checkmarkIcon = document.createElement("i");
+                    checkmarkIcon.classList.add("bi", "bi-check-circle-fill", "position-absolute");
+                    checkmarkIcon.style.fontSize = "10px";
+                    checkmarkIcon.style.color = "green";
+                    checkmarkIcon.style.top = "2px";
+                    checkmarkIcon.style.right = "2px";
+                    checkmarkIcon.innerHTML = "";
+                    page.appendChild(checkmarkIcon);
+                }
+            });
+        });
+    });
+    // end page pretest
+
+    window.onload = function () {
+        Swal.fire({
+            icon: 'question',
+            title: 'Mulai',
+            html: 'Sebelum memulai kelas pelatihan ini, silahkan menyelesaikan pretest ini terlebih dahulu.',
+            showCancelButton: false,
+            confirmButtonText: 'Mulai pretest',
+            confirmButtonColor: '#4CAF50',
+            cancelButtonText: 'Mulai pretest',
+            cancelButtonColor: '#4CAF50',
+        });
+    };
+
+    function toggleNav() {
+        var sidebar = document.getElementById("mySidebar");
+        var navIcon = document.getElementById("nav-icon");
+
+        if (window.innerWidth < 768) {
+            if (sidebar.style.width == "100%") {
+                sidebar.style.width = "0";
+                navIcon.innerHTML = "&#8250;";
+            } else {
+                sidebar.style.width = "100%";
+                navIcon.innerHTML = "&#8249;";
+            }
+        } else {
+            if (sidebar.style.width == "250px") {
+                sidebar.style.width = "0";
+                document.getElementById("main").style.marginLeft = "0";
+                navIcon.innerHTML = "&#8250;";
+            } else {
+                sidebar.style.width = "250px";
+                document.getElementById("main").style.marginLeft = "250px";
+                navIcon.innerHTML = "&#8249;";
+            }
+        }
+    }
+
+
+    function closeNav() {
+        document.getElementById("mySidebar").style.width = "0";
+        document.getElementById("main").style.marginLeft = "0";
+    }
+</script>

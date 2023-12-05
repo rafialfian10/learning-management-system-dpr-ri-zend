@@ -1,0 +1,428 @@
+<style>
+	.comment-body {
+		overflow: hidden;
+		line-height: normal;
+		padding: 10px;
+		margin-bottom: 5px;
+		border: 1px solid #898121;
+		border-radius: 5px;
+		color: black;
+		background-color: white;
+	}
+
+	.fn {
+		font-style: normal;
+		text-transform: capitalize;
+		font-weight: 700;
+	}
+
+	.reply {
+		float: right;
+		border: 1.5px solid #d8d6d6;
+		border-radius: 3px;
+		color: #777;
+		border: 1px solid #ccc;
+		padding: 5px 15px;
+		cursor: pointer;
+		font-family: Open Sans;
+		box-shadow: 0 1px 0 rgba(0, 0, 0, .08);
+		background: #f8f8f8;
+		font-weight: 700;
+	}
+</style>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+	})
+	
+	function selectFields1(id, id, nama) {
+		$('#id_pesertax').val(id);
+		<?php $id_pesertax = "id"; ?>
+		$('#nama_pesertax').val(nama);
+		$.facebox.close();
+	}
+
+	function ClearFields1() {
+		document.getElementById("id_pesertax").value = "";
+		document.getElementById("nama_pesertax").value = "";
+	}
+
+	function changeRole(val) {
+		$(".daftar-user").css("display", "none");
+		if (val == "Mentor") {
+			$("#daftar-mentor").show();
+		} else if (val == "Peserta") {
+			$("#daftar-peserta").show();
+		}
+		if (val == "Coach") {
+			$("#daftar-coach").show();
+			$('#id_user').val('<?= $this->id_coach; ?>');
+		}
+	}
+
+	function addInput(user, id) {
+		$('#balasan').text('Komentar balasan ke ' + user);
+		$('#id_reply').val(id);
+	}
+
+	function deleteInput(id) {
+		$('#balasan').text('Komentar');
+		$('#id_reply').val('0');
+	}
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?= $this->avatar; ?>Chat Mentoring</h1>
+	<div class="header_nav_links"><a href="/mentor/forum-mentoring/index">Back to Daftar Forum Mentoring</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<h2 style="margin-top:30px; margin-bottom:30px;"> Title : <?= $this->rows->title; ?> </h2>
+		<h2 style="margin-top:30px; margin-bottom:30px;"> File :   <a href="https://berkas.dpr.go.id/mooc/mentoring/<?= $this->rows->file_mentoring; ?>" style="border: 1px solid red; padding: 5px 10px; background-color: transparent; color: red; cursor: pointer;">Download</a> </h2>
+		
+		
+		
+		<h2 style="margin-top:30px; margin-bottom:30px;"> Pelatihan : <?= $this->pelatihan->nama_pelatihan; ?> </h2>
+		<h2 style="margin-top:30px; margin-bottom:30px;"> Batch : <?= $this->batch->judul_batch; ?> </h2>
+
+		<p>
+			<label>Pilih Peserta Yang Mau Dilihat Komentarnya</label>
+			<input readonly type="hidden" id="id_pesertax" autocomplete="disable" style="height:30px; padding: 0px; padding-left: 10px; width: 400px; border: 1px solid grey; border-radius: 2px;" />
+			<input readonly type="text" id="nama_pesertax" autocomplete="disable" style="height:30px; padding: 0px; padding-left: 10px; width: 400px; border: 1px solid grey; border-radius: 2px;" />
+			<input type="button" value="..." id="btnpesertax" style="height:30px;" onclick="jQuery.facebox({ ajax: '/mentor/forum-mentoring/search-pesertax/id/<?= $this->rows->id; ?>'});">
+			<input type="button" style="height:30px;" onclick="ClearFields1();" value="Clear">
+			<font color="red">*</font>
+		<p>
+		
+            <?php
+                $auth = Zend_Auth::getInstance()->getIdentity();
+                $this->ChatMentoringService = new ChatMentoringService();
+
+                $replies = [];
+                // mendapatkan data chat 
+                foreach ($this->chat_mentorings as $key => $chat) {
+                    
+                    $nama2 = "-";
+            
+                    if ($chat->role_user == "Mentor") {
+                        foreach ($this->mentor as $m) {
+                            if ($m->id == $chat->id_user) {
+                                $nama2 = $m->nama_mentor;
+                                break;
+                            }
+                        }
+                    } else if ($chat->role_user == "Peserta") {
+                        foreach ($this->peserta as $p) {
+                            if ($p->id == $chat->id_user) {
+                                $nama2 = $p->nama;
+                                break;
+                            }
+                        }
+                    } else if ($chat->role_user == "Coach") {
+                        foreach ($this->coach as $c) {
+                            if ($c->id == $chat->id_user) {
+                                $nama2 = $c->nama_coach;
+                                break;
+                            }
+                        }
+                    }
+            
+                    $data_chat = "";
+            
+                    if($chat->id_user == $auth->id_peserta) {
+                        echo'<section id="' . $chat->id . '" class="container-mentoring-user d-flex flex-column rounded-4 my-0 ps-5" style="max-width: 80vw; margin-left: 8.2%;">';
+                    } else {
+                        echo'<section id="' . $chat->id . '" class="container-mentoring-other d-flex flex-column rounded-4 my-0 pe-5" style="max-width: 80vw; margin-left: 8.2%;">';
+                    }
+            
+                        $data_chat .= '<div class="background-content d-flex flex-column justify-content-center rounded-3 p-3 mb-5" style="width: 100%; background-color: #E5E7E9; border: 1px solid #D4A216;">        
+                            <div class="d-flex flex-row mb-3">
+                                <div class="d-flex flex-column justify-content-start" style="width: 100%;">
+                                    <p class="m-0 fw-bold">'. $nama2 .'</p>
+                                    <p class="m-0 text-secondary">'. $chat->tanggal_input .'</p>
+                                </div>
+            
+                                <div>
+                                    <button type="button" class="copy2 border-0 bg-transparent">
+                                        <i class="bi bi-clipboard fs-5 div-text"></i>
+                                    </button>
+                                </div>
+                            </div>';
+                    
+                            // looping data reply
+                            $balasan = '';
+            
+                            if($chat->id_reply_mentoring != 0) {
+                                foreach ($replies as $reply) {
+                                    if ($reply['id'] == $chat->id_reply_mentoring) {
+                                        $balasan .= $reply['isi'];
+                                        break; 
+                                    }
+                                }
+                            }
+                            // End looping data reply
+                            $data_chat .= $balasan . '<div class="content-message d-flex flex-column justify-content-between align-items-center">';
+                                if($chat->file_mentoring != '') {
+                                    $data_chat .= '<div class="sub-background-content d-flex flex-row justify-content-between align-items-center mb-1 rounded-3 p-2" style="width: 100%; background-color: #F4F6F6;">
+                                            <input readonly class="sub-background-content fs-6 border-0" style="width: 100%; outline: white; background-color: #F4F6F6;" value="'. $chat->file_mentoring .'">
+                                            <button type="button" class="border-0 bg-transparent" onclick="downloadFile(\'https://berkas.dpr.go.id/mooc/mentoring/'. $chat->file_mentoring .'\')">
+                                                <i class="bi bi-download fs-5 fw-bold"></i>
+                                            </button>
+                                        </div>';
+                                } 
+                                $data_chat .= '<div class="d-flex flex-row justify-content-between" style="width: 100%;">
+                                    <input readonly class="background-content div-text input2 m-0 fs-6 border-0" style="width: 90%; background-color: #E5E7E9; outline: white;" value="'. $chat->isi .'">
+                                    <a href="#mentoring" class="toggles p-0 fs-7 text-decoration-none text-dark fw-bold" cursor: pointer" onclick="addInput(\'' . $nama2 . '\',\'' . $chat->id . '\')">Reply</a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>';
+                    
+                    // reply chat
+                    $data_reply = '<div class="rounded-3 mb-3 p-3" style="background-color: #FFC55C;">
+                                <div class="d-flex flex-column justify-content-start mb-3" style="width: 100%;">
+                                    <p class="m-0 fw-bold">' . $nama2 . '</p>
+                                    <p class="m-0">' . $chat->tanggal_input . '</p>
+                                </div>';
+            
+                                if ($chat->file_mentoring != "") {
+                                    $data_reply.= '<div class="d-flex flex-row justify-content-between align-items-center mb-1 rounded-3 p-2" style="width: 100%; background-color: #FFB52E;">
+                                        <input readonly class="div-text fs-6 border-0" style="width: 100%; outline: white; background-color: #FFB52E;" value="' . $chat->file_mentoring . '">
+                                        <button type="button" class="border-0 bg-transparent" onclick="downloadFile(\'https://berkas.dpr.go.id/mooc/mentoring/' . $chat->file_mentoring . '\')">
+                                            <i class="bi bi-download fs-5 fw-bold"></i>
+                                        </button>
+                                    </div>';
+                                }
+                                $data_reply.='<p class="m-0 fs-6" style="width: 80%">' . $chat->isi . '</p> 
+                            </div>';
+                    
+                    $replies[] = ['id' => $chat->id, 'isi' => $data_reply];
+                    //end reply chat
+            
+                    echo $data_chat;
+                }
+            ?>
+
+
+
+
+
+
+		<?php
+		// $this->ChatDiskusiService = new ChatDiskusiService();
+		$this->ChatMentoringService = new ChatMentoringService();
+
+
+		foreach ($this->chats as $key => $chat) {
+			$nama = '';
+		
+			if ($chat->role_user == "Mentor") {
+				foreach ($this->mentor as $m) {
+					if ($m->id == $chat->id_user) {
+						$nama = $m->nama_mentor;
+						break;
+					}
+				}
+			} else if ($chat->role_user == "Peserta") {
+				foreach ($this->peserta as $p) {
+					if ($p->id == $chat->id_user) {
+						$nama = $p->nama;
+						break;
+					}
+				}
+			} else if ($chat->role_user == "Coach") {
+				foreach ($this->coach as $c) {
+					if ($c->id == $chat->id_user) {
+						$nama = $c->nama_coach;
+						break;
+					}
+				}
+			}
+		
+			echo '<br>
+				<div class="comment-body" id="' . $chat->id . '" style="' . $margin . '">
+					<div style="background-color: #F9DBBB; height:17px;">
+						<img alt="" src="https://berkas.dpr.go.id/mooc/assets/images/username-orange.png" class="avatar" height="32" width="32">            
+						<cite class="fn">' . $nama . '</cite>     
+					</div>
+				
+					<div style="background-color: #F9DBBB; font-size: 10px; line-height: 17px; height:17px; margin-bottom:10px;">
+						' . $chat->tanggal_input . '        
+					</div>
+		
+					<p>' . $chat->isi . '</p>
+		
+					<div class="reply">
+						<a onclick="addInput(\'' . $nama . '\',\'' . $chat->id . '\')">Balas</a>
+					</div>
+				</div>';
+		
+			// $reply = $this->ChatDiskusiService->getAllDataReply($chat->id);
+			$reply = $this->ChatMentoringService->getAllDataReply($chat->id);
+			// var_dump($chat->id);
+			foreach ($reply as $xxx) {
+				if ($xxx->role_user == "Mentor") {
+					foreach ($this->mentor as $m) {
+						if ($m->id == $xxx->id_user) {
+							$nama = $m->nama_mentor;
+							break;
+						}
+					}
+				} else if ($xxx->role_user == "Peserta") {
+					foreach ($this->peserta as $p) {
+						if ($p->id == $xxx->id_user) {
+							$nama = $p->nama;
+							break;
+						}
+					}
+				} else if ($xxx->role_user == "Coach") {
+					foreach ($this->coach as $c) {
+						if ($c->id == $xxx->id_user) {
+							$nama = $c->nama_coach;
+							break;
+						}
+					}
+				}
+				echo '
+					<div class="comment-body" id="' . $xxx->id . '" style="margin-left:30px;">
+						<div style="background-color: #F9DBBB; height:17px;">
+							<img alt="" src="https://berkas.dpr.go.id/mooc/assets/images/username-orange.png" class="avatar" height="32" width="32">            
+							<cite class="fn">' . $nama . '</cite>     
+						</div>
+					
+						<div style="background-color: #F9DBBB; font-size: 10px; line-height: 17px; height:17px; margin-bottom:10px;">
+							' . $xxx->tanggal_input . '        
+						</div>
+		
+						<p>' . $xxx->isi . '</p>
+		
+						<div class="reply">
+							<a onclick="addInput(\'' . $nama . '\',\'' . $xxx->id . '\')">Balas</a>
+						</div>
+					</div>';
+					// var_dump($xxx->id);
+				$reply2 = $this->ChatMentoringService->getAllDataReply($xxx->id);
+				
+				foreach ($reply2 as $yyy) {
+					if ($yyy->role_user == "Mentor") {
+						foreach ($this->mentor as $m) {
+							if ($m->id == $yyy->id_user) {
+								$nama = $m->nama_mentor;
+								break;
+							}
+						}
+					} else if ($yyy->role_user == "Peserta") {
+						foreach ($this->peserta as $p) {
+							if ($p->id == $yyy->id_user) {
+								$nama = $p->nama;
+								break;
+							}
+						}
+					} else if ($yyy->role_user == "Coach") {
+						foreach ($this->coach as $c) {
+							if ($c->id == $yyy->id_user) {
+								$nama = $c->nama_coach;
+								break;
+							}
+						}
+					}
+					echo '
+						<div class="comment-body" id="' . $yyy->id . '" style="margin-left:60px;">
+							<div style="background-color: #F9DBBB; height:17px;">
+								<img alt="" src="https://berkas.dpr.go.id/mooc/assets/images/username-orange.png" class="avatar" height="32" width="32">            
+								<cite class="fn">' . $nama . '</cite>     
+							</div>
+						
+							<div style="background-color: #F9DBBB; font-size: 10px; line-height: 17px; height:17px; margin-bottom:10px;">
+								' . $yyy->tanggal_input . '        
+							</div>
+		
+							<p>' . $yyy->isi . '</p>
+		
+							<div class="reply">
+								<a onclick="addInput(\'' . $nama . '\',\'' . $xxx->id . '\')">Balas</a>
+							</div>
+						</div> <br>';
+
+						$reply3 = $this->ChatMentoringService->getAllDataReply($yyy->id);
+				// var_dump($yyy->id);
+				foreach ($reply3 as $zzz) {
+					if ($zzz->role_user == "Mentor") {
+						foreach ($this->mentor as $m) {
+							if ($m->id == $zzz->id_user) {
+								$nama = $m->nama_mentor;
+								break;
+							}
+						}
+					} else if ($zzz->role_user == "Peserta") {
+						foreach ($this->peserta as $p) {
+							if ($p->id == $zzz->id_user) {
+								$nama = $p->nama;
+								break;
+							}
+						}
+					} else if ($zzz->role_user == "Coach") {
+						foreach ($this->coach as $c) {
+							if ($c->id == $zzz->id_user) {
+								$nama = $c->nama_coach;
+								break;
+							}
+						}
+					}
+					echo '
+						<div class="comment-body" id="' . $zzz->id . '" style="margin-left:60px;">
+							<div style="background-color: #F9DBBB; height:17px;">
+								<img alt="" src="https://berkas.dpr.go.id/mooc/assets/images/username-orange.png" class="avatar" height="32" width="32">            
+								<cite class="fn">' . $nama . '</cite>     
+							</div>
+						
+							<div style="background-color: #F9DBBB; font-size: 10px; line-height: 17px; height:17px; margin-bottom:10px;">
+								' . $zzz->tanggal_input . '        
+							</div>
+		
+							<p>' . $zzz->isi . '</p>
+		
+							<div class="reply">
+								<a onclick="addInput(\'' . $nama . '\',\'' . $yyy->id . '\')">Balas</a>
+							</div>
+						</div> <br>';
+				}
+				}
+
+				
+			}
+		}
+		
+		?>
+		<br>
+		<fieldset style="padding:30px; border:3px solid #898121; background:#F7F1E5;">
+			<legend style="font-size: 15px;">&nbsp <b id="balasan"> Komentar </b> &nbsp</legend>
+
+			<div class="content-isi">
+				<p id="daftar-anonym" class="daftar-user">
+					<label>Nama </label>
+					<input readonly type="text" id="nama" value="<?= $this->nama; ?>" name="name_user" style="height:30px; padding: 0px; padding-left: 10px; width: 450px; border: 1px solid grey; border-radius: 2px;" />
+					<input type="hidden" id="id_reply" name="id_reply" value='0' />
+				</p>
+
+				<p>
+					<label class="left" for="isi"> Komentar </label>
+					<input type="text" id="isi" name="isi" style="overflow: hidden; display: block; width: 450px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+				</p>
+			</div>
+		</fieldset>
+
+		<div class="content-reply">
+
+		</div>
+
+		<p class="savecancel">
+			<label class="UIbutton-small">
+				<input type="submit" value="Submit" class="" />
+			</label><a href="/mentor/forum-mentoring/index" class="UIbutton-small">Batal</a>
+		</p>
+	</div>
+</form>
+<div style="clear:both"></div>

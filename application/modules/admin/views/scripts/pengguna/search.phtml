@@ -1,0 +1,36 @@
+<script type="text/javascript">
+$(function() {
+	$("#search_table")
+		.tablesorter({theme: 'blue', widthFixed: true, widgets: ['zebra', 'filter']})
+		.tablesorterPager({container: $(".pager"), 
+							output: '{startRow} - {endRow} / {filteredRows} ({totalRows})', 
+							fixedHeight: true, 
+							removeRows: false, 
+							cssGoto: '.gotoPage' });
+});
+</script>
+
+<?=$this->pager;?>
+
+<table id="search_table" class="tablesorter">
+	<thead>
+		<tr>
+			<th>Nama</th>
+			<th>Aksi</th>
+		</tr>
+	</thead>
+	<tbody>
+		<?
+		$i = 1;
+		foreach($this->rows as $row)
+		{
+			echo '<tr>';
+			echo '<td>' . $row->nama . '</td>';
+			echo '<td align="center"><a href=\'javascript:selectFields("' . $row->id . '", "' . $row->nama . '", "' . $row->nomor . '", "' . $row->jabatan . '", "' . $row->unit_kerja . '", "' . $row->pengguna . '", "' . $row->email . '", "' . $row->id_satker . '");\'>PILIH</a></td>';
+			echo '</tr>';
+
+			$i++;
+		}	
+		?>	
+	</tbody>
+</table>

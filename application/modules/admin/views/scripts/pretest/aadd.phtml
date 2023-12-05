@@ -1,0 +1,49 @@
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?= $this->avatar; ?> <?= $this->pelatihan->nama_pelatihan ?> > Tambah Soal Pre-Test</h1>
+	<div class="header_nav_links"><a href="/admin/pelatihan/edit/id/<?= $this->pelatihan->id ?>">Kembali ke Pelatihan <?= $this->pelatihan->nama_pelatihan ?></a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+
+	<div class="tabular">
+		<input type="hidden" id="id_pelatihan" name="id_pelatihan" value="<?= $this->pelatihan->id; ?>" />
+		
+		<div class="container_soal" id="container_soal_1" style="display:flex; flex-direction:column">
+			<div class="content_soal" id="content_soal_1">
+			<p class="sub_container_soal" id="soalx_1" style="display:flex; flex-direction:row">
+				<label class="left" for="soal_1">Soal 1</label>
+				<input id="input_soal_1" class="input_soal" wrap="soft" name="soal[]" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+			</p>
+
+			<div class="container_jawaban" id="container_jawaban_1" style="display:flex; flex-direction:column">
+				<p class="sub_container_jawaban_1" id="jawaban_1_1" style="display:flex; flex-direction:row">
+					<label class="left" for="input_jawaban_1_1">Jawaban 1</label>
+					<input id="input_jawaban_1_1" name="jawaban[0][]" class="event-message input_jawaban_1" wrap="soft" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+				</p>
+			</div>
+
+			<p class="container_kunci_jawaban" id="container_kunci_jawaban_1">
+				<label class="kunci_jawabanx" for="kunci_jawaban_1_1">Kunci Jawaban Soal 1</label>
+                
+				<input style="margin-left:10px;" name="kunci_jawaban[0]" type="radio" id="kunci_jawaban_1_1" class="kunci_jawaban_1" value="1" required checked="check"> 
+				<b id="kunci_jawabanx_1_1">Jawaban 1</b>
+
+                <input style="margin-left:10px;" name="kunci_jawaban[0]" type="radio" id="kunci_jawaban_2_2" class="kunci_jawaban_2" value="2"> 
+				<b id="kunci_jawabanx_2_2">Jawaban 2</b>
+
+                <input style="margin-left:10px;" name="kunci_jawaban[0]" type="radio" id="kunci_jawaban_3_3" class="kunci_jawaban_3" value="3"> 
+				<b id="kunci_jawabanx_3_3">Jawaban 3</b>
+
+                <input style="margin-left:10px;" name="kunci_jawaban[0]" type="radio" id="kunci_jawaban_4_4" class="kunci_jawaban_4" value="4"> 
+				<b id="kunci_jawabanx_4_4">Jawaban 4</b>
+
+                <input style="margin-left:10px;" name="kunci_jawaban[0]" type="radio" id="kunci_jawaban_5_5" class="kunci_jawaban_5" value="5"> 
+				<b id="kunci_jawabanx_5_5">Jawaban 5</b>
+			</p>
+			</div>
+		</div>
+		<p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Simpan" class="" /></label><a href="/admin/materi-silabus-quiz/index" class="UIbutton-small">Batal</a></p>
+	</div>
+</form>
+<div style="clear:both"></div>

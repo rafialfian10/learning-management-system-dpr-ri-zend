@@ -1,0 +1,127 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+		$("#tanggal_sk_pimpinan").datepicker({yearRange:"-10:+10",changeYear:"true",changeMonth:"true",dateFormat:"dd-mm-yy"});
+		$("#tanggal_sk_presiden").datepicker({yearRange:"-10:+10",changeYear:"true",changeMonth:"true",dateFormat:"dd-mm-yy"});
+		$("#tanggal_ttd").datepicker({yearRange:"-10:+10",changeYear:"true",changeMonth:"true",dateFormat:"dd-mm-yy"});
+		$.validator.addMethod("time", function(value, element) {
+			return this.optional(element) || /^(([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])$/i.test(value);
+		}, "Format waktu salah.");
+		$(".timepicker").mask("99:99");
+	});
+
+function selectFields(indeks, id, nomor, nama) 
+{
+	if(indeks==1){
+		$('#no_ketua_rapat').val(nomor);
+		$('#nama_ketua_rapat').val(nama);
+		$('#id_ketua_rapat').val(id);
+	}else if(indeks==2){
+		$('#no_sekretaris_rapat').val(nomor);
+		$('#nama_sekretaris_rapat').val(nama);
+		$('#id_sekretaris_rapat').val(id);
+	}
+	
+	$.facebox.close();
+}
+
+function ClearFields(id) 
+{
+	if(id==1){
+		document.getElementById("no_ketua_rapat").value = "";
+		document.getElementById("nama_ketua_rapat").value = "";
+		document.getElementById("id_ketua_rapat").value = "";
+	}else if(id==2){
+		document.getElementById("no_sekretaris_rapat").value = "";
+		document.getElementById("nama_sekretaris_rapat").value = "";
+		document.getElementById("id_sekretaris_rapat").value = "";
+	 }
+}
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>  Tambah Catatan Rapat</h1>
+	<div class="header_nav_links"><a href="/admin/catatan-rapat">Back to Daftar Catatan Rapat</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p><label>AKD</label><select class="required" id="id_akd" name="id_akd">
+			<option value="">-- Pilih AKD --</option>
+			<?
+			foreach($this->AkdRows as $row)
+			{
+				echo '<option value="' . $row->id . '">' . $row->nama . '</option>';
+			}
+			?>
+		</select> <font color="red">*</font></p>
+		<p><label>Bidang</label>
+		<select class="required" id="bidang" name="bidang">
+			<option value="">-- Pilih Bidang --</option>
+			<?
+			$arrBidang = array(
+				'Kerjasama Organisasi Internasional' => 'Kerjasama Organisasi Internasional',
+				'Kerjasama Organisasi Regional' => 'Kerjasama Organisasi Regional',
+				'Kerjasama Bilateral' => 'Kerjasama Bilateral'
+			);
+			foreach($arrBidang as $key => $value)
+			{
+				echo '<option value="' . $value . '">' . $key . '</option>';
+			}
+			?>
+		</select> <font color="red">*</font>
+		<p><label>Tahun Sidang :</label><input type="text" class="required" id="tahun_sidang" autocomplete="disable" name="tahun_sidang" maxlength="4" /> <font color="red">*</font></p>
+		<p><label>Masa Persidangan :</label><input type="text" class="required" id="masa_persidangan" autocomplete="disable" name="masa_persidangan" maxlength="4" /> <font color="red">*</font></p>
+		<p><label>Rapat Ke :</label><input type="text" class="required" id="rapat_ke" autocomplete="disable" name="rapat_ke" maxlength="4" /> <font color="red">*</font></p>		
+		<p><label>Jenis Rapat</label>
+		<select class="required" id="id_jenis_rapat" name="id_jenis_rapat">
+			<option value="">-- Pilih Jenis Rapat --</option>
+			<?
+			foreach($this->JenisRapatRows as $row)
+			{
+				echo '<option value="' . $row->id . '">' . $row->nama . '</option>';
+			}
+			?>
+		</select> <font color="red">*</font>
+		
+		<p><label>Sifat Rapat</label>
+		<select class="required" id="sifat_rapat" name="sifat_rapat">
+			<option value="">-- Pilih Sifat Rapat --</option>
+			<?
+			$arrSifatRapat = array(
+				'Terbuka' => 'Terbuka',
+				'Tertutup' => 'Tertutup'
+			);
+			foreach($arrSifatRapat as $key => $value)
+			{
+				echo '<option value="' . $value . '">' . $key . '</option>';
+			}
+			?>
+		</select> <font color="red">*</font>
+		<p><label>Tanggal</label><input readonly type="text" class="datepicker  required" id="tanggal" autocomplete="disable" name="tanggal" value="<?=date('d-m-Y');?>" /> <font color="red">*</font></p>
+		<p><label>Waktu</label><input placeholder="23:59" type="text" class="timepicker required" id="waktu" autocomplete="disable" name="waktu" /> <font color="red">*</font></p>
+		<p><label>Tempat</label><input type="text" class="required" id="tempat" autocomplete="disable" name="tempat" /> <font color="red">*</font></p>
+		<p><label>Acara</label><input type="text" class="required" id="acara" autocomplete="disable" name="acara" /> <font color="red">*</font></p>		
+
+		<p><label>Nama Ketua Rapat</label><input readonly class="" type="text" id="nama_ketua_rapat" autocomplete="disable" name="nama_ketua_rapat" value=""/><input readonly class="" type="hidden" id="no_ketua_rapat" autocomplete="disable" name="no_ketua_rapat" value=""/> <input class="" type="hidden" id="id_ketua_rapat" autocomplete="disable" name="id_ketua_rapat" value=""/> <input type="button" value="..." id="btnKetuaRapat" onclick="jQuery.facebox({ ajax: '/admin/catatan-rapat/search-ketua-rapat'});"> <input type="button" onclick="ClearFields(1);" value="Clear"></p>
+		<p><label>Nama Sekretaris Rapat</label><input readonly class="" type="text" id="nama_sekretaris_rapat" autocomplete="disable" name="nama_sekretaris_rapat" value=""/> <input readonly class="" type="hidden" id="no_sekretaris_rapat" autocomplete="disable" name="no_sekretaris_rapat" value=""/><input class="" type="hidden" id="id_sekretaris_rapat" autocomplete="disable" name="id_sekretaris_rapat" value=""/> <input type="button" value="..." id="btnSekretarisRapat" onclick="jQuery.facebox({ ajax: '/admin/catatan-rapat/search-sekretaris-rapat'});"> <input type="button" onclick="ClearFields(2);" value="Clear"></p>
+
+		<p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Simpan" class=""/></label><a href="/admin/catatan-rapat" class="UIbutton-small">Batal</a></p>
+	</div>
+</form>
+<div style="clear:both"></div>
+
+<script type="text/javascript" src="/cxedit0r_ksap/ckeditor.js"></script>
+<script type="text/javascript">
+	var areas = Array('hadir', 'I', 'II', 'III');
+	$.each(areas, function (i, area) {
+     CKEDITOR.replace( area ,{
+			filebrowserBrowseUrl: '/cxedit0r_ksap/kcfinder/browse.php?type=files',
+			filebrowserImageBrowseUrl: '/cxedit0r_ksap/kcfinder/browse.php?type=images',
+			filebrowserUploadUrl: '/cxedit0r_ksap/kcfinder/upload.php?type=files',
+			filebrowserImageUploadUrl: '/cxedit0r_ksap/kcfinder/upload.php?type=images'
+		});
+    });
+	
+</script>

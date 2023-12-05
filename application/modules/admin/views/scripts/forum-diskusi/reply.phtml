@@ -1,0 +1,311 @@
+<style>
+	.comment-body {
+		overflow: hidden;
+		line-height: normal;
+		padding: 10px;
+		margin-bottom: 5px;
+		border: 1px solid #898121;
+		border-radius: 5px;
+		color: black;
+		background-color: white;
+	}
+
+	.fn {
+		font-style: normal;
+		text-transform: capitalize;
+		font-weight: 700;
+	}
+
+	.reply {
+		float: right;
+		border: 1.5px solid #d8d6d6;
+		border-radius: 3px;
+		color: #777;
+		border: 1px solid #ccc;
+		padding: 5px 15px;
+		cursor: pointer;
+		font-family: Open Sans;
+		box-shadow: 0 1px 0 rgba(0, 0, 0, .08);
+		background: #f8f8f8;
+		font-weight: 700;
+	}
+</style>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+	})
+
+	function selectFields1(id, id, nama) {
+		$('#id_user').val(id);
+		$('#nama_peserta').val(nama);
+		$.facebox.close();
+	}
+
+	function ClearFields1() {
+		document.getElementById("id_user").value = "";
+		document.getElementById("nama").value = "";
+	}
+
+	function selectFields2(id, id, nama_mentor) {
+		$('#id_user').val(id);
+		$('#nama_mentor').val(nama_mentor);
+		$.facebox.close();
+	}
+
+	function ClearFields2() {
+		document.getElementById("id_userm").value = "";
+		document.getElementById("nama_mentor").value = "";
+	}
+	
+	function selectFields3(id, id, nama) {
+		$('#id_pesertax').val(id);
+		<?php $id_pesertax = "id"; ?>
+		$('#nama_pesertax').val(nama);
+		$.facebox.close();
+	}
+
+	function ClearFields3() {
+		document.getElementById("id_pesertax").value = "";
+		document.getElementById("nama_pesertax").value = "";
+	}
+
+	function changeRole(val) {
+		$(".daftar-user").css("display", "none");
+		if (val == "Mentor") {
+			$("#daftar-mentor").show();
+		} else if (val == "Peserta") {
+			$("#daftar-peserta").show();
+		}
+		if (val == "Coach") {
+			$("#daftar-coach").show();
+			$('#id_user').val('<?= $this->id_coach; ?>');
+		}
+	}
+
+	function addInput(user, id) {
+		$('#balasan').text('Komentar balasan ke ' + user);
+		$('#id_reply').val(id);
+	}
+
+	function deleteInput(id) {
+		$('#balasan').text('Komentar');
+		$('#id_reply').val('0');
+	}
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?= $this->avatar; ?>Simulasi Chat Diskusi <?= $id_pesertax ?></h1>
+	<div class="header_nav_links"><a href="/admin/forum-diskusi/index">Back to Daftar Forum Diskusi</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<h2 style="margin-top:30px; margin-bottom:30px;"> Title : <?= $this->rows->title; ?> </h2>
+
+		<!-- <p>
+			<label>Pilih Peserta Yang Mau Dilihat Komentarnya</label>
+			<input readonly type="hidden" id="id_pesertax" autocomplete="disable" style="height:30px; padding: 0px; padding-left: 10px; width: 400px; border: 1px solid grey; border-radius: 2px;" />
+			<input readonly type="text" id="nama_pesertax" autocomplete="disable" style="height:30px; padding: 0px; padding-left: 10px; width: 400px; border: 1px solid grey; border-radius: 2px;" />
+			<input type="button" value="..." id="btnpesertax" style="height:30px;" onclick="jQuery.facebox({ ajax: '/admin/forum-diskusi/search-pesertax/id/<?= $this->rows->id_batch; ?>'});">
+			<input type="button" style="height:30px;" onclick="ClearFields3();" value="Clear">
+			<font color="red">*</font>
+		<p> -->
+
+		<?php
+		$this->ChatDiskusiService = new ChatDiskusiService();
+
+		foreach ($this->chats as $key => $chat) {
+			$nama = '';
+
+			if ($chat->role_user == "Mentor") {
+				foreach ($this->mentor as $m) {
+					if ($m->id == $chat->id_user) {
+						$nama = $m->nama_mentor;
+						break;
+					}
+				}
+			} else if ($chat->role_user == "Peserta") {
+				foreach ($this->peserta as $p) {
+					if ($p->id == $chat->id_user) {
+						$nama = $p->nama;
+						break;
+					}
+				}
+			} else if ($chat->role_user == "Coach") {
+				foreach ($this->coach as $c) {
+					if ($c->id == $chat->id_user) {
+						$nama = $c->nama_coach;
+						break;
+					}
+				}
+			}
+
+			echo '<br>
+				<div class="comment-body" id="' . $chat->id . '" style="' . $margin . '">
+					<div style="background-color: #F9DBBB; height:17px;">
+						<img alt="" src="https://berkas.dpr.go.id/mooc/assets/images/username-orange.png" class="avatar" height="32" width="32">			
+						<cite class="fn">' . $nama . '</cite> 	
+					</div>
+				
+					<div style="background-color: #F9DBBB; font-size: 10px; line-height: 17px; height:17px; margin-bottom:10px;">
+						' . $chat->tanggal_input . '		
+					</div>
+
+					<p>' . $chat->isi . '</p>
+
+					<div class="reply">
+						<a onclick="addInput(\'' . $nama . '\',\'' . $chat->id . '\')">Balas</a>
+					</div>
+				</div>';
+
+			$reply = $this->ChatDiskusiService->getAllDataReply($chat->id);
+
+			foreach ($reply as $xxx) {
+				if ($xxx->role_user == "Mentor") {
+					foreach ($this->mentor as $m) {
+						if ($m->id == $xxx->id_user) {
+							$nama = $m->nama_mentor;
+							break;
+						}
+					}
+				} else if ($xxx->role_user == "Peserta") {
+					foreach ($this->peserta as $p) {
+						if ($p->id == $xxx->id_user) {
+							$nama = $p->nama;
+							break;
+						}
+					}
+				} else if ($xxx->role_user == "Coach") {
+					foreach ($this->coach as $c) {
+						if ($c->id == $xxx->id_user) {
+							$nama = $c->nama_coach;
+							break;
+						}
+					}
+				}
+				echo '
+					<div class="comment-body" id="' . $xxx->id . '" style="margin-left:30px;">
+						<div style="background-color: #F9DBBB; height:17px;">
+							<img alt="" src="https://berkas.dpr.go.id/mooc/assets/images/username-orange.png" class="avatar" height="32" width="32">			
+							<cite class="fn">' . $nama . '</cite> 	
+						</div>
+					
+						<div style="background-color: #F9DBBB; font-size: 10px; line-height: 17px; height:17px; margin-bottom:10px;">
+							' . $xxx->tanggal_input . '		
+						</div>
+
+						<p>' . $xxx->isi . '</p>
+
+						<div class="reply">
+							<a onclick="addInput(\'' . $nama . '\',\'' . $xxx->id . '\')">Balas</a>
+						</div>
+					</div>';
+				$reply2 = $this->ChatDiskusiService->getAllDataReply($xxx->id);
+				foreach ($reply2 as $yyy) {
+					if ($yyy->role_user == "Mentor") {
+						foreach ($this->mentor as $m) {
+							if ($m->id == $yyy->id_user) {
+								$nama = $m->nama_mentor;
+								break;
+							}
+						}
+					} else if ($yyy->role_user == "Peserta") {
+						foreach ($this->peserta as $p) {
+							if ($p->id == $yyy->id_user) {
+								$nama = $p->nama;
+								break;
+							}
+						}
+					} else if ($yyy->role_user == "Coach") {
+						foreach ($this->coach as $c) {
+							if ($c->id == $yyy->id_user) {
+								$nama = $c->nama_coach;
+								break;
+							}
+						}
+					}
+					echo '
+						<div class="comment-body" id="' . $yyy->id . '" style="margin-left:60px;">
+							<div style="background-color: #F9DBBB; height:17px;">
+								<img alt="" src="https://berkas.dpr.go.id/mooc/assets/images/username-orange.png" class="avatar" height="32" width="32">			
+								<cite class="fn">' . $nama . '</cite> 	
+							</div>
+						
+							<div style="background-color: #F9DBBB; font-size: 10px; line-height: 17px; height:17px; margin-bottom:10px;">
+								' . $yyy->tanggal_input . '		
+							</div>
+
+							<p>' . $yyy->isi . '</p>
+
+							<div class="reply">
+								<a onclick="addInput(\'' . $nama . '\',\'' . $xxx->id . '\')">Balas</a>
+							</div>
+						</div> <br>';
+				}
+			}
+		}
+		?>
+		<br>
+		<fieldset style="padding:30px; border:3px solid #898121; background:#F7F1E5;">
+			<legend style="font-size: 15px;">&nbsp <b id="balasan"> Komentar </b> &nbsp</legend>
+
+			<div class="content-isi">
+				<p>
+					<label>Role User </label>
+					<select name="role_user" id="role_user" onchange="changeRole(this.value)" style="height:30px; padding: 0px; padding-left: 10px; width: 460px; border: 1px solid grey; border-radius: 2px;">
+						<option disabled selected>Pilih Role...</option>
+						<option value="Coach">Coach</option>
+						<option value="Mentor">Mentor</option>
+						<option value="Peserta">Peserta</option>
+					</select>
+					<font color="red">*</font>
+				</p>
+
+				<p id="daftar-anonym" class="daftar-user">
+					<label>Nama Pengguna</label>
+					<input readonly type="text" id="nama" value="-" name="name_user" style="height:30px; padding: 0px; padding-left: 10px; width: 450px; border: 1px solid grey; border-radius: 2px;" />
+					<input type="hidden" id="id_user" name="id_user" />
+					<input type="hidden" id="id_reply" name="id_reply" value='0' />
+				</p>
+
+				<p id="daftar-peserta" class="daftar-user" style="display:none;">
+					<label>Nama Peserta</label>
+					<input readonly type="text" id="nama_peserta" autocomplete="disable" name="nama" style="height:30px; padding: 0px; padding-left: 10px; width: 400px; border: 1px solid grey; border-radius: 2px;" />
+					<input type="button" value="..." id="btnpeserta" style="height:30px;" onclick="jQuery.facebox({ ajax: '/admin/forum-diskusi/search-peserta/id/<?= $this->rows->id_batch; ?>'});">
+					<input type="button" style="height:30px;" onclick="ClearFields1();" value="Clear">
+					<font color="red">*</font>
+				</p>
+
+				<p id="daftar-mentor" class="daftar-user" style="display:none;">
+					<label>Nama Mentor</label>
+					<input readonly type="text" id="nama_mentor" autocomplete="disable" name="nama" style="height:30px; padding: 0px; padding-left: 10px; width: 400px; border: 1px solid grey; border-radius: 2px;" />
+					<input type="button" value="..." id="btnmentor" style="height:30px;" onclick="jQuery.facebox({ ajax: '/admin/forum-diskusi/search-mentor/id/<?= $this->rows->id_batch; ?>'});">
+					<input type="button" style="height:30px;" onclick="ClearFields2();" value="Clear">
+					<font color="red">*</font>
+				</p>
+
+				<p id="daftar-coach" class="daftar-user" style="display:none;">
+					<label>Nama Coach</label>
+					<input readonly type="text" id="nama" value="<?= $this->nama_coach; ?>" name="nama_coach" style="height:30px; padding: 0px; padding-left: 10px; width: 450px; border: 1px solid grey; border-radius: 2px;" />
+				</p>
+
+				<p>
+					<label class="left" for="isi"> Komentar </label>
+					<input type="text" id="isi" name="isi" style="overflow: hidden; display: block; width: 450px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+				</p>
+			</div>
+		</fieldset>
+
+		<div class="content-reply">
+
+		</div>
+
+		<p class="savecancel">
+			<label class="UIbutton-small">
+				<input type="submit" value="Submit" class="" />
+			</label><a href="/admin/forum-diskusi/index" class="UIbutton-small">Batal</a>
+		</p>
+	</div>
+</form>
+<div style="clear:both"></div>

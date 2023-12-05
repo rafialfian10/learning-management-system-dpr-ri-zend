@@ -1,0 +1,83 @@
+<script id="js">
+$(function(){
+	$("table")
+		.tablesorter({theme: 'blue', widthFixed: true, widgets: ['zebra', 'filter']})
+		.tablesorterPager({container: $(".pager"), 
+							output: '{startRow} - {endRow} / {filteredRows} ({totalRows})', 
+							fixedHeight: true, 
+							removeRows: false, 
+							cssGoto: '.gotoPage' });
+});
+</script>
+
+<div class="content-header"></div>
+	<div class="UI_Header_Title">
+		<h1><?=$this->avatar;?> Daftar Agenda</h1>
+		<div class="header_nav_links"><a href="/pengajar/pelatihan/index">Back to Daftar Pelatihan</a></div>
+	</div>
+<div class="clear"></div>
+<br>
+
+<? 	if (count($this->rows) > 0) { ?>
+	<?=$this->pager;?>
+
+	<table class="tablesorter">
+		 <thead>
+			 <tr>
+			 	<th width="5px">No.</th>
+				<th>Nama Agenda</th>
+				<th>Nama Mata Pelatihan</th>
+				<th>Deskripsi</th>
+				<!-- <th>Aksi Mata Pelatihan</th> -->
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+				$rowspanCount = count($this->rows3);
+				$index = 1;
+						
+				foreach ($this->rows as $id => $silabus) {
+					// var_dump($silabus->id);
+					if ($silabus != 0) {
+						foreach($this->rows3 as $id => $materi) {
+							// var_dump($materi->nama_materi);
+							if($materi->id_silabus == $silabus->id) {
+								echo '<tr>';
+									echo '<td align="center">' . $index++ . '</td>';
+									echo '<td align="center">' . $silabus->nama_silabus . '</td>';
+									echo '<td align="center">'. $materi->nama_materi .'</td>';
+									echo '<td align="center">'. $materi->deskripsi_materi .'</td>';
+									// echo '<td align="center"><a href="/pengajar/materi-silabus/edit/id/' . $materi->id . '">EDIT</a></td>';
+									// echo '<td align="center"><a href="/pengajar/materi-silabus/delete/id/' . $materi->id . '">EDIT</a></td>';
+								echo '</tr>';				
+							} else {
+								// echo '<tr>';
+								// 	echo '<td align="center">' . $index++ . '</td>';
+								// 	echo '<td align="center">-</td>';
+								// 	echo '<td align="center">-</td>';
+								// 	echo '<td align="center">-</td>';
+								// 	// echo '<td align="center"><a href="/pengajar/materi-silabus/edit/id/' . $materi->id . '">EDIT</a></td>';
+								// 	// echo '<td align="center"><a href="/pengajar/materi-silabus/delete/id/' . $this->materi->id . '">DELETE</a></td>';
+								// echo '</tr>';
+							}
+						}
+					} else {
+						echo '<tr>';
+							echo '<td  align="center">' . $index++ . '</td>';
+							echo '<td  align="center">-</td>';
+							echo '<td align="center">-</td>';
+							// echo '<td align="center">-</td>';
+							echo '<td align="center"><a href="/pengajar/materi-silabus/edit/id/' . $val->id . '">EDIT</a></td>';
+						echo '</tr>';
+					}					
+				}
+			?>
+		</tbody>
+	</table>
+<? 	} else {
+		echo 'Data tidak ditemukan.';
+	}
+?>
+
+
+				

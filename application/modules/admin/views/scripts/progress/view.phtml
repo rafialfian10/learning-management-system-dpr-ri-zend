@@ -1,0 +1,42 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+	})
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>View Progres</h1>
+	<div class="header_nav_links"><a href="/admin/progress/index">Back to Daftar Progres</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p>
+			<label class="left" for="status_progress">Status Progres :</label>
+            <?= $this->row->status_progress ?>
+		</p>
+		<p>
+			<label class="left" for="score_pretes">Score Pretest :</label>
+			<?= $this->skor_pretest ? $this->skor_pretest->skor_akhir : "-" ?>
+		</p>
+		<p>
+			<label class="left" for="score_quiz">Score Quiz :</label>
+			<?= $this->skor_belajar ? $this->skor_belajar->skor_akhir : "-" ?>
+            
+		</p>
+
+        <p>
+			<label class="left" for="score_mentoring">Score Mentoring :</label>
+            <?= $this->skor_mentoring ? $this->skor_mentoring->skor_akhir : "-" ?>
+		</p>
+        <p>
+			<label class="left" for="score_mentoring">Score Penugasan :</label>
+            <?= $this->skor_penugasan ? $this->skor_penugasan->skor_akhir : "-" ?>
+		</p>
+
+		<!-- <? var_dump($this->skor_pretest->skor_akhir) ?> -->
+
+	</div>
+</form>
+<div style="clear:both"></div>

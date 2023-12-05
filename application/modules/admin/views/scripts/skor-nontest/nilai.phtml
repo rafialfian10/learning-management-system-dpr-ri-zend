@@ -1,0 +1,48 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+	})
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>Nilai Nontes</h1>
+	<div class="header_nav_links"><a href="/admin/jawabanpretest/index">Back to Daftar Jawaban Nontes</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p>
+			<label class="left" for="nama_peserta">Nama Peserta</label>
+			<input readonly disabled type="text" id="nama_peserta" class="event-message" wrap="soft" name="nama_peserta"  style="width: 450px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"  value="<?= $this->peserta->nama ?>">
+		</p>
+		<p>
+			<label class="left" for="skor_akhir">Skor Akhir</label>
+			<input type="text" id="skor_akhir" class="event-message" wrap="soft" name="skor_akhir"  style="width: 450px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value="<?= $this->skor_nontes->skor_akhir ?>">
+			<font color="red">*</font>
+		</p>
+		<p>
+			<label class="left" for="file_pdf">File Nontes</label>
+
+			<?php
+			if ($this->skor_nontes->ekstensi_file == 'pdf' || $this->skor_nontes->ekstensi_file == 'doc' || $this->skor_nontes->ekstensi_file == 'docx' || $this->skor_nontes->ekstensi_file == 'ppt' || $this->skor_nontes->ekstensi_file == 'pptx' || $this->skor_nontes->ekstensi_file == 'txt') {
+				echo ' ' . $this->skor_nontes->jawaban_nontes . ' <button style="background-color:blue;">
+					<a style="text-decoration:none; color:white; padding:10px;" href="https://berkas.dpr.go.id/mooc/jawabanpretest/' . $this->skor_nontes->jawaban_nontes . '" download>Unduh File</a> </button>';
+			} else if ($this->skor_nontes->ekstensi_file == 'jpg' || $this->skor_nontes->ekstensi_file == 'png' || $this->skor_nontes->ekstensi_file == 'jpeg') {
+				echo '<img src="https://berkas.dpr.go.id/mooc/jawabanpretest/' . $this->skor_nontes->jawaban_nontes . '" width="460" />';
+			} else if ($this->skor_nontes->ekstensi_file == 'mp3' || $this->skor_nontes->ekstensi_file == 'wav') {
+				echo '<audio src="https://berkas.dpr.go.id/mooc/jawabanpretest/' . $this->skor_nontes->jawaban_nontes . '" controls></audio>';
+			} else if ($this->skor_nontes->ekstensi_file == 'mp4' || $this->skor_nontes->ekstensi_file == 'mkv') {
+				echo '<video width="460" controls>
+					<source src="https://berkas.dpr.go.id/mooc/jawabanpretest/' . $this->skor_nontes->jawaban_nontes . '" type="video/mp4">
+					</video>';
+				echo '<input type="hidden" accept="video/*" id="file_video" autocomplete="disable" name="file_video" value="' . $this->skor_nontes->jawaban_nontes . '"/>';
+			}
+			?>
+		</p>
+		
+		<p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Simpan" class=""/></label><a href="/admin/skor-nontest/index/id/<?= $this->skor_nontes->id_pelatihan ?>" class="UIbutton-small">Batal</a></p>
+	</div>
+</form>
+<div style="clear:both"></div>
+

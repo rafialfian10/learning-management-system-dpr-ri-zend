@@ -1,0 +1,86 @@
+<script id="js">
+	$(function () {
+		$("table")
+			.tablesorter({ theme: 'blue', widthFixed: true, widgets: ['zebra', 'filter'] })
+			.tablesorterPager({
+				container: $(".pager"),
+				output: '{startRow} - {endRow} / {filteredRows} ({totalRows})',
+				fixedHeight: true,
+				removeRows: false,
+				cssGoto: '.gotoPage'
+			});
+	});
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?= $this->avatar; ?> Daftar Forum</h1>
+
+	<!-- <div class="header_nav_links"><span class="right context_menu"><a href="/coach/forum-diskusi/add" class="UIlink-button small right">Tambah Forum Diskusi</a></span>
+	</div> -->
+</div>
+<div class="clear"></div>
+<br>
+
+<? if (count($this->rows) > 0) { ?>
+	<?= $this->pager; ?>
+
+	<table class="tablesorter">
+		<thead>
+			<tr>
+				<th width="5px" align="center">No.</th>
+				<th align="center">Title</th>
+				<th align="center">Judul Batch</th>
+				<th align="center">Nama Pelatihan</th>
+				<th align="center">Aksi</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+			$auth = Zend_Auth::getInstance()->getIdentity();
+			$index = 1;
+
+			foreach ($this->forum_diskusi as $row) {
+				foreach ($this->coach_batchs as $coach_batch) {
+
+					$judul_batch = "-";
+					$nama_pelatihan = "-";
+
+					if ($coach_batch->id_batch == $row->id_batch && $coach_batch->status == 1) {
+						foreach ($this->pelatihans as $pelatihan) {
+							if ($pelatihan->id == $coach_batch->id_pelatihan && $coach_batch->id_batch == $row->id_batch) {
+								$nama_pelatihan = $pelatihan->nama_pelatihan;
+								break;
+							}
+
+						}
+
+						echo '<tr>';
+						echo '<td align="center">' . $index++ . '.</td>';
+						echo '<td align="center">' . $row->title . '</td>';
+
+						foreach ($this->batch as $y) {
+							if ($y->id == $row->id_batch) {
+								echo '<td align="center">' . $y->judul_batch . '</td>';
+								break;
+							}
+						}
+						echo '<td align="center">' . $nama_pelatihan . '</td>';
+						// echo '<td align="center"> <a href="/coach/forum-diskusi/reply/id/'. $row->id .'">VIEW</a> &nbsp;|&nbsp; <a href="/coach/forum-diskusi/edit/id/'. $row->id .'">EDIT</a>';
+						echo '<td align="center"> <a href="/coach/forum-diskusi/reply/id/' . $row->id . '">VIEW</a>';
+						// if ($this->getRole() == 'admin' || $this->getRole() == 'super') {
+						// 	echo '&nbsp;|&nbsp;<a href="/coach/forum-diskusi/delete/id/'. $row->id .'" onclick="return confirmDelete();">DELETE</a>';
+						// }
+						echo '</td>';
+						echo '</tr>';
+						break;
+					}
+				}
+			}
+			?>
+		</tbody>
+	</table>
+<? } else {
+	echo 'Data tidak ditemukan.';
+}
+?>

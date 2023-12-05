@@ -1,0 +1,105 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+	});
+
+	$(function() {
+		$("#tgl_awal").datepicker({
+			yearRange: "-1:+0",
+			changeYear: "true",
+			changeMonth: "true",
+			dateFormat: "dd-mm-yy"
+		});
+		$("#tgl_akhir").datepicker({
+			yearRange: "-1:+0",
+			changeYear: "true",
+			changeMonth: "true",
+			dateFormat: "dd-mm-yy"
+		});
+	});
+
+</script>
+
+<script src="<?= $this->url_statik; ?>/js/tinymce/tinymce.min.js"></script>
+
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>Edit Kegiatan</h1>
+	<div class="header_nav_links"><a href="/admin/kegiatan/index">Back to Daftar Kegiatan</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p>
+			<label class="left" for="title">Judul Kegiatan</label>
+			<input id="title" class="event-message" wrap="soft" name="title" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value="<?= $this->row->title; ?>" >
+		</p>
+
+		<p>
+			<label>Tipe Kegiatan</label>
+			<select class="required" id="tipe_kegiatan" name="tipe_kegiatan" style="width: 360px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+				<option value="" disabled>Pilih Tipe Kegiatan ...</option>
+				<option value="Workshop" <?= ($this->row->tipe_kegiatan == 'Workshop') ? ' selected' : ''; ?> >Workshop</option>
+				<option value="FGD" <?= ($this->row->tipe_kegiatan == 'FGD') ? ' selected' : ''; ?> >Forum Group Discussion</option>
+				<option value="Webinar" <?= ($this->row->tipe_kegiatan == 'Webinar') ? ' selected' : ''; ?> >Webinar</option>
+				<option value="Seminar" <?= ($this->row->tipe_kegiatan == 'Seminar') ? ' selected' : ''; ?> >Seminar</option>
+				<option value="CBTW" <?= ($this->row->tipe_kegiatan == 'CBTW') ? ' selected' : ''; ?> >Character Building and Team Work</option>
+			</select>  <font color="red">*</font>
+		<p>
+
+		<p>
+			<label class="left" for="konten">Konten </label>
+			<textarea id="konten" class="event-message" wrap="soft" rows="6" name="konten" style="overflow: hidden; display: block; width: 350px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"> <?= $this->row->konten; ?> </textarea>
+		</p>
+
+
+		<p id="tanggal_awal"><label>Tanggal Awal</label>
+			<input type="text" id="tgl_awal" autocomplete="disable" name="tgl_awal" value="<?= date('d-m-Y', strtotime($this->row->tgl_awal)); ?>" name="nama_coach" style="width:350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" value="<?= $this->row->tgl_awal; ?>" />
+			<font color="red">*</font>
+		</p>
+
+		<p id="tanggal_akhir"><label>Tanggal Akhir</label>
+			<input type="text" id="tgl_akhir" autocomplete="disable" name="tgl_akhir" value="<?= date('d-m-Y', strtotime($this->row->tgl_akhir)); ?>" name="nama_coach" style="width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" value="<?= $this->row->tgl_akhir; ?>" />
+			<font color="red">*</font>
+		</p>
+
+		<p>
+			<label class="left" for="deskripsi">Deskripsi </label>
+			<textarea id="deskripsi" class="event-message" wrap="soft" rows="6" name="deskripsi" style="overflow: hidden; display: block; width: 350px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"><?= $this->row->deskripsi; ?> </textarea>
+		</p>
+
+		<p>
+			<label class="left" for="sampul">Sampul Kegiatan</label> 
+			<?
+			if ($this->row->sampul != "") {
+				echo '<img src="https://berkas.dpr.go.id/mooc/sampulkegiatan/' . $this->row->sampul . '" height="200" />';
+				echo '<input type="hidden" id="cek_file" name="cek_file" value="1">';
+				echo '&nbsp; &nbsp;<a href="/admin/kegiatan/delete-files/id/' . $this->row->id . '  ">Hapus</a>';
+			} else {
+				echo '<input type="file" id="file_name" autocomplete="disable" name="file_name"/>';
+			}
+			?>
+		</p>
+
+		<p>
+			<label class="left" for="kuota_peserta">Kuota Peserta</label>
+			<input type="text" class="required" id="kuota_peserta" name="kuota_peserta" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value="<?= $this->row->kuota_peserta; ?>" /> 
+		</p>
+
+		<p>
+			<label class="left" for="penyelenggara">Penyelenggara</label>
+			<input id="penyelenggara" class="event-message" wrap="soft" name="penyelenggara" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value="<?= $this->row->penyelenggara; ?>" />
+		</p>
+	    
+		<p class="savecancel">
+			<?
+			//if ($this->getRole() == "admin" || $this->getRole() == "super" || $this->getRole() == "user") {
+				echo '<label class="UIbutton-small"><input type="submit" value="Simpan" class=""/></label>';
+			//}
+			?>
+			<a href="/admin/kegiatan/index" class="UIbutton-small">Batal</a>
+		</p>
+	</div>
+</form>
+<div style="clear:both"></div>

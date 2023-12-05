@@ -1,0 +1,96 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+	})
+
+	function selectFields1(id, id, judul_batch) {
+		$('#id_batch').val(id);
+		$('#judul_batch').val(judul_batch);
+		$.facebox.close();
+	}
+
+	function ClearFields1() {
+		document.getElementById("id_batch").value = "";
+		document.getElementById("judul_batch").value = "";
+	}
+
+	function selectFields2(id, id, nama) {
+		$('#id_peserta').val(id);
+		$('#nama_peserta').val(nama);
+		$.facebox.close();
+	}
+
+	function ClearFields2() {
+		document.getElementById("id_peserta").value = "";
+		document.getElementById("nama_peserta").value = "";
+	}
+
+	// function selectFields3(id, id, title) {
+	// 	$('#id_forum').val(id);
+	// 	$('#title').val(title);
+	// 	$.facebox.close();
+	// }
+
+	// function ClearFields3() {
+	// 	document.getElementById("id_forum").value = "";
+	// 	document.getElementById("title").value = "";
+	// }
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>Tambah Nilai Mentoring</h1>
+	<div class="header_nav_links"><a href="/mentor/nilai-mentoring/index">Back to Daftar Nilai Mentoring</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p>
+			<label>Batch</label>
+			<input readonly type="text" id="judul_batch" autocomplete="disable" name="judul_batch" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" />
+			<input type="hidden" id="id_batch" autocomplete="disable" name="id_batch" />
+			<input type="button" value="..." id="btnbatch" style="height:30px;" onclick="jQuery.facebox({ ajax: '/mentor/nilai-mentoring/search-batch'});">
+			<input type="button" style="height:30px;" onclick="ClearFields1();" value="Clear">
+			<font color="red">*</font>
+		</p>
+		<p id="daftar-peserta" class="daftar-user">
+			<label>Nama Peserta</label>
+			<input readonly type="text" id="nama_peserta" autocomplete="disable" name="nama_peserta" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" />
+			<input type="button" value="..." id="btnpeserta" style="height:30px;" onclick="jQuery.facebox({ ajax: '/mentor/nilai-mentoring/search-peserta/'});">
+			<input type="hidden" id="id_peserta" autocomplete="disable" name="id_peserta" />
+			<input type="button" style="height:30px;" onclick="ClearFields2();" value="Clear">
+			<font color="red">*</font>
+		</p>
+
+		<!-- <p id="forum-mentor">
+			<label>Forum</label>
+			<input readonly type="text" id="title" autocomplete="disable" name="title" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" />
+			<input type="button" value="..." id="btnforum" style="height:30px;" onclick="jQuery.facebox({ ajax: '/mentor/nilai-mentoring/search-forum/'});">
+			<input type="hidden" id="id_forum" autocomplete="disable" name="id_forum" />
+			<input type="button" style="height:30px;" onclick="ClearFields3();" value="Clear">
+		</p> -->
+
+		<p>
+			<label class="left" for="skor_keaktifan">Skor Keaktifan</label>
+			<input type="text" id="skor_keaktifan" class="event-message" wrap="soft" name="skor_keaktifan"  style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value="<?= $this->row->skor_keaktifan ?>">
+		</p>
+
+        <p>
+			<label class="left" for="skor_pemahaman">Skor Pemahaman</label>
+			<input type="text" id="skor_pemahaman" class="event-message" wrap="soft" name="skor_pemahaman"  style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value="<?= $this->row->skor_pemahaman ?>">
+		</p>
+
+		<p>
+			<label class="left" for="skor_tugas">Skor Tugas</label>
+			<input type="text" id="skor_tugas" class="event-message" wrap="soft" name="skor_tugas"  style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value="<?= $this->row->skor_tugas ?>">
+		</p>
+
+		<p>
+			<label class="left" for="skor_forum">Skor Forum</label>
+			<input type="text" id="skor_forum" class="event-message" wrap="soft" name="skor_forum"  style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value="<?= $this->row->skor_forum ?>">
+		</p>
+
+		<p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Simpan" class=""/></label><a href="/mentor/nilai-mentoring/index" class="UIbutton-small">Batal</a></p>
+	</div>
+</form>
+<div style="clear:both"></div>

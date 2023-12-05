@@ -1,0 +1,193 @@
+<?php
+	$nontes = "";
+	foreach($this->rows as $row) {
+		
+		$exploded = explode(",", $row->nontes);
+		$nontes = $exploded[0];
+		break;
+	}
+?>
+
+<script type="text/javascript">
+	
+	$(document).ready(function() {
+
+		$('.tambah_soal').click(function() {
+			var soal = $(".sub_container_soal").length + 1;
+
+			let idx = soal;
+			$('.container_soal').append(
+			`<div class="content_soal" id="content_soal_${soal}" data-soal="${soal}">
+				<p class="sub_container_soal" id="soalx_${soal}" style="display:flex; flex-direction:row; margin-top:50px;">
+				<label class="judul_soal" for="soal_${soal}">Soal ${soal}</label>
+				<input id="input_soal_${soal}" class="input_soal" wrap="soft" name="soal[]" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+				<button type="button" id="hapus_soal_${soal}" class="hapus_soal" style="margin-left:10px; width:20px; font-weight: bold;"> x </button>
+			</p>
+			<div class="container_jawaban" id="container_jawaban_${soal}" style="display:flex; flex-direction:column">
+				<p class="sub_container_jawaban_${soal} sub_container_jawaban" id="jawaban_${soal}_1" style="display:flex; flex-direction:row">
+					<label class="input_jawabanx_1" for="input_jawaban_${soal}_1">Jawaban 1</label>
+					<input id="input_jawaban_${soal}_1" name="jawaban[${soal-1}][]" class="event-message input_jawaban input_jawaban_${soal}" wrap="soft"style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+				</p>
+
+				<p class="sub_container_jawaban_${soal} sub_container_jawaban" id="jawaban_${soal}_2" style="display:flex; flex-direction:row">
+					<label class="input_jawabanx_2" for="input_jawaban_${soal}_2">Jawaban 2</label>
+					<input id="input_jawaban_${soal}_2" name="jawaban[${soal-1}][]" class="event-message input_jawaban input_jawaban_${soal}" wrap="soft"style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+				</p>
+
+				<p class="sub_container_jawaban_${soal} sub_container_jawaban" id="jawaban_${soal}_3" style="display:flex; flex-direction:row">
+					<label class="input_jawabanx_3" for="input_jawaban_${soal}_3">Jawaban 3</label>
+					<input id="input_jawaban_${soal}_3" name="jawaban[${soal-1}][]" class="event-message input_jawaban input_jawaban_${soal}" wrap="soft"style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+				</p>
+
+				<p class="sub_container_jawaban_${soal} sub_container_jawaban" id="jawaban_${soal}_4" style="display:flex; flex-direction:row">
+					<label class="input_jawabanx_4" for="input_jawaban_${soal}_4">Jawaban 4</label>
+					<input id="input_jawaban_${soal}_4" name="jawaban[${soal-1}][]" class="event-message input_jawaban input_jawaban_${soal}" wrap="soft"style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+				</p>
+
+				<p class="sub_container_jawaban_${soal} sub_container_jawaban" id="jawaban_${soal}_5" style="display:flex; flex-direction:row">
+					<label class="input_jawabanx_5" for="input_jawaban_${soal}_5">Jawaban 5</label>
+					<input id="input_jawaban_${soal}_5" name="jawaban[${soal-1}][]" class="event-message input_jawaban input_jawaban_${soal}" wrap="soft"style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+				</p>
+			</div>
+			<p class="container_kunci_jawaban" id="container_kunci_jawaban_${soal}">
+				<label class="kunci_jawaban" for="kunci_jawaban_${soal}">Kunci Jawaban Soal ${soal}</label>
+				<input style="margin-left:10px;" type="radio" class="kunci_jawaban" name="kunci_jawaban_${soal}" value="1" required checked="check"> <b>Jawaban 1</b>
+				<input style="margin-left:10px;" type="radio" class="kunci_jawaban" name="kunci_jawaban_${soal}" value="2" required> <b>Jawaban 2</b>
+				<input style="margin-left:10px;" type="radio" class="kunci_jawaban" name="kunci_jawaban_${soal}" value="3" required> <b>Jawaban 3</b>
+				<input style="margin-left:10px;" type="radio" class="kunci_jawaban" name="kunci_jawaban_${soal}" value="4" required> <b>Jawaban 4</b>
+				<input style="margin-left:10px;" type="radio" class="kunci_jawaban" name="kunci_jawaban_${soal}" value="5" required> <b>Jawaban 5</b>
+			</p> </div>`);
+
+			$('.hapus_soal').click(function() {
+				var x = $(this).parent().parent().attr('data-soal');
+
+				$(this).parent().parent().remove();
+
+				$(".content_soal").each(function(key, item) {
+					$(this).attr('id', 'content_soal_'+ (key + 1));
+					$(this).attr('data-soal', 'content_soal_'+ (key + 1));
+					$(this).find("p.sub_container_soal").attr('id', 'soalx_'+ (key + 1));
+					$(this).find("label.judul_soal").text("Soal " + (key + 1));
+					$(this).find("label.judul_soal").attr('for', 'input_soal_'+ (key + 1));
+					$(this).find("input.input_soal").attr('id', 'input_soal_'+ (key + 1));
+					$(this).find("button.hapus_soal").attr('id', 'hapus_soal_'+ (key + 1));
+					$(this).find("div.container_jawaban").attr('id', 'container_jawaban_'+ (key + 1));
+					$(this).find("input.input_jawaban").attr('name', 'jawaban['+ (key) +'][]');
+					$(this).find("input.kunci_jawaban").attr('name', 'kunci_jawaban_'+ (key + 1));
+					$(this).find("label.kunci_jawaban").text("Kunci Jawaban Soal " + (key + 1));
+				});			
+			});
+		});
+	});
+</script>
+
+<!-- bootstrap icon -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?= $this->avatar; ?> <?= $this->pelatihan->nama_pelatihan ?> > Edit Soal Pre-Test</h1>
+	<div class="header_nav_links"><a href="/pengajar/pelatihan/edit/id/<?= $this->pelatihan->id ?>">Kembali ke Pelatihan <?= $this->pelatihan->nama_pelatihan ?></a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+
+	<div class="tabular">
+		<input type="hidden" id="id_pelatihan" name="id_pelatihan" value="<?= $this->pelatihan->id; ?>" />
+		
+		<div class="container_soal" id="container_soal_1" style="display:flex; flex-direction:column">
+
+
+
+		<?php 
+			$script_js = '<script type="text/javascript">
+			$(document).ready(function() {';
+			
+			foreach($this->rows as $key => $val){
+				if($key == 0){
+					echo '<p>
+					<label class="left" for="batas_waktu">Batas Waktu</label>
+					<input type="number" id="batas_waktu" class="event-message required" wrap="soft" name="batas_waktu"  style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; width:350px;" value="'.$val->batas_waktu.'"> menit
+				</p>';
+				}
+				
+				$script_js .= '
+					$("#hapus_soal_'.($key+1).'").click(function() {
+						var x = $(this).parent().parent().attr("data-soal");
+		
+						$(this).parent().parent().remove();
+		
+						$(".content_soal").each(function(key, item) {
+							$(this).attr("id", "content_soal_"+ (key + 1));
+							$(this).attr("data-soal", "content_soal_"+ (key + 1));
+							$(this).find("p.sub_container_soal").attr("id", "soalx_"+ (key + 1));
+							$(this).find("label.judul_soal").text("Soal " + (key + 1));
+							$(this).find("label.judul_soal").attr("for", "input_soal_"+ (key + 1));
+							$(this).find("input.input_soal").attr("id", "input_soal_"+ (key + 1));
+							$(this).find("button.hapus_soal").attr("id", "hapus_soal_"+ (key + 1));
+							$(this).find("div.container_jawaban").attr("id", "container_jawaban_"+ (key + 1));
+							$(this).find("input.input_jawaban").attr("name", "jawaban["+ (key) +"][]");
+							$(this).find("input.kunci_jawaban").attr("name", "kunci_jawaban_"+ (key + 1));
+							$(this).find("label.kunci_jawaban").text("Kunci Jawaban Soal " + (key + 1));
+						});			
+					});
+				';
+				$button = '';
+
+				if($key == 0){
+					$button = '<button type="button" class="tambah_soal" style="margin-left:10px; width:20px; font-weight:bold;"> + </button>';
+				} else {
+					$button = '<button type="button" id="hapus_soal_'.($key+1).'" class="hapus_soal" style="margin-left:10px; width:20px; font-weight: bold;"> x </button>';
+				}
+
+				echo '<div class="content_soal" id="content_soal_'.($key+1).'" data-soal="'.($key+1).'">
+					<p class="sub_container_soal" id="soalx_'.($key+1).'" style="display:flex; flex-direction:row; margin-top:50px;">
+						<label class="judul_soal" for="soal_'.($key+1).'">Soal '.($key+1).'</label>
+						<input id="input_soal_'.($key+1).'" class="input_soal" wrap="soft" name="soal[]" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value="'.$val->soal.'">'.$button.'
+					</p>';
+	
+					echo '<div class="container_jawaban" id="container_jawaban_'.($key+1).'" style="display:flex; flex-direction:column">
+					<p class="sub_container_jawaban_'.($key+1).' sub_container_jawaban" id="jawaban_'.($key+1).'_1" style="display:flex; flex-direction:row">
+						<label class="input_jawabanx_1" for="input_jawaban_'.($key+1).'_1">Jawaban 1</label>
+						<input id="input_jawaban_'.($key+1).'_1" name="jawaban['.$key.'][]" class="event-message input_jawaban input_jawaban_'.($key+1).'" wrap="soft"style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value="'.$val->jawaban_1.'">
+					</p>
+
+					<p class="sub_container_jawaban_'.($key+1).' sub_container_jawaban" id="jawaban_'.($key+1).'_2" style="display:flex; flex-direction:row">
+						<label class="input_jawabanx_2" for="input_jawaban_'.($key+1).'_2">Jawaban 2</label>
+						<input id="input_jawaban_'.($key+1).'_2" name="jawaban['.$key.'][]" class="event-message input_jawaban input_jawaban_'.($key+1).'" wrap="soft"style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value="'.$val->jawaban_2.'">
+					</p>
+
+					<p class="sub_container_jawaban_'.($key+1).' sub_container_jawaban" id="jawaban_'.($key+1).'_3" style="display:flex; flex-direction:row">
+						<label class="input_jawabanx_3" for="input_jawaban_'.($key+1).'_3">Jawaban 3</label>
+						<input id="input_jawaban_'.($key+1).'_3" name="jawaban['.$key.'][]" class="event-message input_jawaban input_jawaban_'.($key+1).'" wrap="soft"style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value="'.$val->jawaban_3.'">
+					</p>
+
+					<p class="sub_container_jawaban_'.($key+1).' sub_container_jawaban" id="jawaban_'.($key+1).'_4" style="display:flex; flex-direction:row">
+						<label class="input_jawabanx_4" for="input_jawaban_'.($key+1).'_4">Jawaban 4</label>
+						<input id="input_jawaban_'.($key+1).'_4" name="jawaban['.$key.'][]" class="event-message input_jawaban input_jawaban_'.($key+1).'" wrap="soft"style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value="'.$val->jawaban_4.'">
+					</p>
+
+					<p class="sub_container_jawaban_'.($key+1).' sub_container_jawaban" id="jawaban_'.($key+1).'_5" style="display:flex; flex-direction:row">
+						<label class="input_jawabanx_5" for="input_jawaban_'.($key+1).'_5">Jawaban 5</label>
+						<input id="input_jawaban_'.($key+1).'_5" name="jawaban['.$key.'][]" class="event-message input_jawaban input_jawaban_'.($key+1).'" wrap="soft"style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value="'.$val->jawaban_5.'">
+					</p>
+				</div>
+				<p class="container_kunci_jawaban" id="container_kunci_jawaban_'.($key+1).'">
+					<label class="kunci_jawaban" for="kunci_jawaban_'.($key+1).'">Kunci Jawaban Soal '.($key+1).'</label>
+					<input style="margin-left:10px;" type="radio" class="kunci_jawaban" name="kunci_jawaban_'.($key+1).'" value="1" required '.($val->kunci_jawaban == '1' ? 'checked="check"' : '') .'> <b>Jawaban 1</b>
+					<input style="margin-left:10px;" type="radio" class="kunci_jawaban" name="kunci_jawaban_'.($key+1).'" value="2" required '.($val->kunci_jawaban == '2' ? 'checked="check"' : '') .'> <b>Jawaban 2</b>
+					<input style="margin-left:10px;" type="radio" class="kunci_jawaban" name="kunci_jawaban_'.($key+1).'" value="3" required '.($val->kunci_jawaban == '3' ? 'checked="check"' : '') .'> <b>Jawaban 3</b>
+					<input style="margin-left:10px;" type="radio" class="kunci_jawaban" name="kunci_jawaban_'.($key+1).'" value="4" required '.($val->kunci_jawaban == '4' ? 'checked="check"' : '') .'> <b>Jawaban 4</b>
+					<input style="margin-left:10px;" type="radio" class="kunci_jawaban" name="kunci_jawaban_'.($key+1).'" value="5" required '.($val->kunci_jawaban == '5' ? 'checked="check"' : '') .'> <b>Jawaban 5</b>
+				</p> </div>';
+				
+		}
+		$script_js .= '});</script>';
+		?>
+			
+		</div>
+		<p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Simpan" class="" /></label><a href="/pengajar/pelatihan/edit/id/<?= $this->pelatihan->id ?>" class="UIbutton-small">Batal</a></p>
+	</div>
+</form>
+<?= $script_js ?>
+<div style="clear:both"></div>

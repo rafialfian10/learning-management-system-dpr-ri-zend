@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>MOOC - DPR RI</title>
+
+<?=$this->headScript();?>
+<?=$this->headLink();?>
+
+
+<script type="text/javascript">
+var DecimalSeparator = ",";
+var ThousandSeparator = ".";
+var CurrencyDecimalDigits = 0;
+
+$(document).ready(function() {
+	/** 
+	 * Build menu 
+	 */
+	$('ul.t_a_ui_mega_menu li.sub').css({'opacity':'0'});
+	$('ul.t_a_ui_mega_menu li').hoverIntent({    
+		sensitivity: 2,
+		interval: 100,
+		over: megaHoverOver,    
+		timeout: 200,
+		out: megaHoverOut
+	});
+}); 
+</script>
+
+
+</head>
+
+<?
+$auth = Zend_Auth::getInstance()->getIdentity();
+$peran = $auth->peran;
+$username = $auth->nama;
+?>
+
+<body>
+<div id="container" >
+	<!-- header -->
+   	<div id="header">
+    	<div id="top"></div>
+		<div id="nav-bar">        
+			<div id="topnav-bar">
+	    		<div id="topleft">
+					<ul id="topnav">
+					
+					<!-- <li><a class="home" href="/admin"><img width=60 src="https://w7.pngwing.com/pngs/147/513/png-transparent-learning-management-system-course-computer-icons-educational-technology-others-miscellaneous-angle-text.png"></a></li> -->
+						<!-- <li><a class="home" href="/admin"><img src="<?=$this->url_statik;?>/images/admin/logoapp-<?=$this->domain;?>.png"></a></li> -->
+					</ul>
+				</div>
+		        <div id="topright">
+					<ul id="topnav">
+						
+						<li><a href="/login/logout">Log Out</a></li>
+						<li id="help"><a href="http://portal.dpr.go.id">&nbsp;Portal&nbsp;</a></li>
+					</ul>
+				</div>
+				<!-- START Menu -->
+				<div id="menu">
+					<ul class="t_a_ui_mega_menu">
+						<? if ($peran == 'admin' || $peran == 'super' || $peran == 'user') { ?>
+							<li>
+								
+								<a href="#">Login As 📟</a>
+								<a style="text-shadow: 2px 2px 4px #ffffff; color: white;   ">PENGUJI</a>
+								<div style="opacity: 0; display: none; width: 700px;" class="sub">
+								<div style="margin: 0px;" class="row">
+									<ul>
+										<li><a href="/index" title="Visitor">Pengunjung [Visitor]</a></li>
+										<? if($auth->id_admin !== NULL) {?>
+										<li><a href="/admin/index" title="Administrator">Login as [Administrator]</a></li>
+										<? } if($auth->id_coach !== NULL) {?>
+										<li><a href="/coach/index" title="Coach">Login as [Coach]</a></li>
+										<? } if($auth->id_mentor !== NULL) {?>
+										<li><a href="/mentor/index" title="Mentor">Login as [Mentor]</a></li>
+										<? } if($auth->id_pengajar !== NULL) {?>
+										<li><a href="/pengajar/index" title="Pengajar">Login as [Pengajar]</a></li>
+										<? } if($auth->id_penilai !== NULL) {?>
+										<li><a href="/penilai/index" title="Penguji">Login as [Penguji]</a></li>
+										<? } if($auth->id_peserta !== NULL) {?>
+										<li><a href="/peserta/index" title="Peserta">Login as [Peserta]</a></li>
+										<? } ?>
+									</ul>
+								</div>
+							</li>
+							<li>
+								<a href="#">Menu</a>
+								<div style="opacity: 0; display: none; width: 700px;" class="sub">
+								<div style="margin: 0px;" class="row">
+									<ul>
+										<li><span>Prasmanan - Penguji</span></li><br>
+										<li><a href="/penilai/penugasan/index" title="Penugasan">Daftar Nilai Penugasan</a></li>
+										<li><a href="/penilai/nilai-mentoring/index" title="Mentoring">Daftar Nilai Mentoring</a></li>
+									</ul>
+									<ul>
+										<li><span>Biodata - Penguji</span></li>
+										<li><a href="/penilai/profile/index" title="Profil">Profil</a></li>
+									</ul>
+								</div>
+							</li>
+						<? } ?>
+					</ul>
+				</div>	
+				<!-- END Menu -->
+			</div>		
+		</div>
+	</div>
+	<!-- header -->
+
+	<!-- content -->
+    <div id="content-container">
+        <div id="content-block" class="single">
+			<?=$this->layout()->content;?>
+        </div>
+    </div>
+    <div style="clear: both;"></div>
+	<!-- content -->
+
+	<!-- footer -->
+    <div id="footer">
+		<div style="clear: both;"></div>
+		<?=$this->copyright;?>
+    </div>
+	<!-- footer -->
+
+</div>
+
+</body>
+</html>

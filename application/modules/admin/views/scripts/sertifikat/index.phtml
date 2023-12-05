@@ -1,0 +1,73 @@
+<script id="js">
+	$(function() {
+		$("table")
+			.tablesorter({
+				theme: 'blue',
+				widthFixed: true,
+				widgets: ['zebra', 'filter']
+			})
+			.tablesorterPager({
+				container: $(".pager"),
+				output: '{startRow} - {endRow} / {filteredRows} ({totalRows})',
+				fixedHeight: true,
+				removeRows: false,
+				cssGoto: '.gotoPage'
+			});
+	});
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?= $this->avatar; ?> Daftar Sertifikat</h1>
+	<div class="header_nav_links"><span class="right context_menu"><a href="/admin/sertifikat/add" class="UIlink-button small right">Tambah Sertifikat</a></span>
+	</div>
+</div>
+<div class="clear"></div>
+<br>
+
+<? if (count($this->rows) > 0) { ?>
+	<?= $this->pager; ?>
+
+	<table class="tablesorter">
+		<thead>
+			<tr>
+				<th width="5px">No.</th>
+				<th>Nama Peserta</th>
+				<th>Batch</th>
+				<th>Title</th>
+				<th>Aksi</th>
+			</tr>
+		</thead>
+		<tbody>
+		<?php
+			$index = 1;
+			foreach($this->rows as $row) {
+				echo '<tr>';
+				echo '<td align="center">'. $index++ .'.</td>';
+				foreach($this->peserta as $xxx) {
+					if($xxx->id === $row->id_peserta){
+						echo '<td align="center">'.$xxx->nama.'</td>';
+						break;
+					}
+				}
+				foreach($this->batch as $yyy) {
+					if($yyy->id === $row->id_batch){
+						echo '<td align="center">'.$yyy->judul_batch.'</td>';
+						break;
+					}
+				}
+				echo '<td>'.$row->title.'</td>';
+				echo '<td align="center"><a href="/admin/sertifikat/file/id/'. $row->id .'/batch/'.$row->id_batch.'/peserta/'.$row->id_peserta.'"> DOWNLOAD </a>&nbsp;|&nbsp; <a href="/admin/sertifikat/edit/id/'. $row->id .'">EDIT</a>';
+				// if ($this->getRole() == 'admin' || $this->getRole() == 'super') {
+					echo '&nbsp;|&nbsp;<a href="/admin/sertifikat/delete/id/'. $row->id .'" onclick="return confirmDelete();">DELETE</a>';
+				// }
+				echo '</td>';
+				echo '</tr>';
+			}
+			?>
+		</tbody>
+	</table>
+<? } else {
+	echo 'Data tidak ditemukan.';
+}
+?>

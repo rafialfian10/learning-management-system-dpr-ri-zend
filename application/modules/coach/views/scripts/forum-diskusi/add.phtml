@@ -1,0 +1,39 @@
+<script type="text/javascript">
+	function selectFields1(id, id, judul_batch) {
+		$('#id_batch').val(id);
+		$('#judul_batch').val(judul_batch);
+		$.facebox.close();
+	}
+
+	function ClearFields1() {
+		document.getElementById("id_batch").value = "";
+		document.getElementById("judul_batch").value = "";
+	}
+	
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>Tambah Forum Diskusi</h1>
+	<div class="header_nav_links"><a href="/coach/forum-diskusi/index">Back to Daftar Forum Diskusi</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p>
+			<label class="left" for="title">Title</label>
+			<input type="text" id="title" name="title" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<p><label>Batch</label>
+			<input readonly type="text" id="judul_batch" autocomplete="disable" name="judul_batch" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value=""/>
+			<input type="hidden" id="id_batch" autocomplete="disable" name="id_batch" value="<?= $this->row->id_batch; ?>" />
+			<input type="button" value="..." id="btnbatch" style="height:30px;" onclick="jQuery.facebox({ ajax: '/coach/forum-diskusi/search-batch'});">
+			<input type="button" style="height:30px;" onclick="ClearFields1();" value="Clear">
+			<font color="red">*</font>
+		</p>
+		
+		<p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Simpan" class=""/></label><a href="/coach/peserta/index" class="UIbutton-small">Batal</a></p>
+	</div>
+</form>
+<div style="clear:both"></div>

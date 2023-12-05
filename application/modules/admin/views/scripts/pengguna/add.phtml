@@ -1,0 +1,152 @@
+<script type="text/javascript">
+	$(function() {
+		$("#compose").validate({
+			rules: {
+				password: {
+					minlength: 6
+				},
+				confirm_password: {
+					minlength: 6,
+					equalTo: "#password"
+				}
+			}
+		});
+	});
+
+	function selectFields(id, nama, param1, param2, param3, param4, param5, param6) {
+		$('#id_pengguna').val(id);
+		$('#nama').val(nama);
+		$('#nip').val(param1);
+		$('#jabatan').val(param2);
+		$('#unit_kerja').val(param3);
+		$('#instansi').val('Sekretariat Jenderal DPR RI');
+		$('#pengguna').val(param4);
+		$('#email').val(param5);
+		$('#id_satker').val(param6);
+		$.facebox.close();
+	}
+
+	function ClearFields() {
+		document.getElementById("id_pengguna").value = "";
+		document.getElementById("nama").value = "";
+		document.getElementById("nip").value = "";
+		document.getElementById("jabatan").value = "";
+		document.getElementById("unit_kerja").value = "";
+		document.getElementById("instansi").value = "";
+		document.getElementById("pengguna").value = "";
+		document.getElementById("email").value = "";
+		document.getElementById("id_satker").value = "";
+	}
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?= $this->avatar; ?> Tambah Pengguna</h1>
+	<div class="header_nav_links"><a href="/admin/pengguna">Back to Daftar Pengguna</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<? $readonly = ($this->jenis == 1) ? ' readonly' : ''; ?>
+		<p><label>Jenis</label>
+			<select disabled id="jenis2" name="jenis2">
+				<option value="">-- Pilih data --</option>
+				<?
+				$arrJenis = array('0' => 'Eksternal', '1' => 'Internal');
+				foreach ($arrJenis as $key => $value) {
+					$selected = ($this->jenis == $key) ? ' selected' : '';
+					echo '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+				}
+				?>
+			</select>
+			<input class="required" type="hidden" id="jenis" autocomplete="disable" name="jenis" value="<?= $this->jenis; ?>" />
+		</p>
+		<p><label>Nama</label>
+			<input <?= $readonly; ?> class="required" type="text" id="nama" autocomplete="disable" name="nama" value="<?= $_SESSION['flash']['data'][0] ?>" /> 
+			<input class="" type="hidden" id="id_pengguna" autocomplete="disable" name="id_pengguna" value="0" />
+			<input class="" type="hidden" id="id_satker" autocomplete="disable" name="id_satker" value="0" />
+			<? if ($this->jenis == 1) { ?>
+				<input type="button" value="..." id="btnPengguna" onclick="jQuery.facebox({ ajax: '/admin/pengguna/search'});"> <input type="button" onclick="ClearFields();" value="Clear">
+			<? } ?>
+			<font color="red">*</font>
+		</p>
+		<p><label>NIP</label><input <?= $readonly; ?> class="required" type="text" id="nip" autocomplete="disable" name="nip" value="" maxlength="18" />
+			<font color="red">*</font>
+		</p>
+		<p><label>Jabatan</label><input <?= $readonly; ?> class="required" type="text" id="jabatan" autocomplete="disable" name="jabatan" value="" />
+			<font color="red">*</font>
+		</p>
+		<p><label>Unit Kerja</label><input <?= $readonly; ?> class="required" type="text" id="unit_kerja" autocomplete="disable" name="unit_kerja" value="" />
+			<font color="red">*</font>
+		</p>
+		<? if ($this->jenis == 0) { ?>
+			<p><label>Instansi</label><select class="required" id="id_instansi" name="id_instansi" />
+				<option value="">-- Pilih Instansi --</option>
+				<?
+				foreach ($this->InstansiRows as $row) {
+					echo '<option value="' . $row->id . '|' . $row->instansi . '">' . $row->instansi . '</option>';
+				}
+				?>
+				</select>
+				<font color="red">*</font>
+			</p>
+		<? } else { ?>
+			<p><label>Instansi</label><input readonly class="required" type="text" id="instansi" autocomplete="disable" name="instansi" value="Sekretariat Jenderal DPR RI" /> <input class="required" type="hidden" id="id_instansi" autocomplete="disable" name="id_instansi" value="0|Sekretariat Jenderal DPR RI" />
+				<font color="red">*</font>
+			</p>
+		<? } ?>
+		<p><label>Peran</label>
+			<select id="peran" name="peran" class="required">
+				<option value="">-- Pilih data --</option>
+				<?
+				$arrPeran = array('admin' => 'Admin', 'super' => 'Super Persipar', 'user' => 'User Persipar', 'guest' => 'User Unit Kerja');
+				foreach ($arrPeran as $key => $value) {
+					$selected = ($this->row->peran == $key) ? ' selected' : '';
+					echo '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+				}
+				?>
+			</select>
+			<font color="red">*</font>
+		</p>
+		<p><label>Jenis Kelamin</label>
+			<select id="jenis_kelamin" name="jenis_kelamin">
+				<option value="">-- Pilih data --</option>
+				<?
+				$arrJenisKelamin = array('l' => 'Laki-laki', 'p' => 'Perempuan');
+				foreach ($arrJenisKelamin as $key => $value) {
+					echo '<option value="' . $key . '">' . $value . '</option>';
+				}
+				?>
+			</select>
+		</p>
+		<p><label>Nomor Handphone Pribadi</label><input class="" type="text" id="handphone" autocomplete="disable" name="handphone" value="<?= $this->row->handphone ?>" />
+		</p>
+		<p><label>Nomor Telepon Instansi</label><input class="" type="text" id="telepon" autocomplete="disable" name="telepon" value="<?= $this->row->telepon ?>" />
+		</p>
+		<hr style="border: 1px dashed gray;">
+		<? if ($this->jenis == 1) { ?>
+			<p><label>Pengguna</label><input readonly class="required" type="text" id="pengguna" autocomplete="disable" name="pengguna" value="" />
+				<font color="red">*</font>
+			</p>
+		<? } ?>
+		<p><label>Email</label><input class="required" type="text" id="email" autocomplete="disable" name="email" value="<?= $_SESSION['flash']['data'][2] ?>" />
+			<font color="red">*</font>
+		</p>
+		<? if ($this->jenis == 0) { ?>
+			<p><label>Password</label><input class="required" type="password" id="password" autocomplete="disable" name="password" value="" />
+				<font color="red">*</font>
+			</p>
+			<p><label>Konfirmasi Password</label><input class="required" type="password" id="confirm_password" autocomplete="disable" name="confirm_password" value="" />
+				<font color="red">*</font>
+			</p>
+		<? } ?>
+
+		<p class="savecancel">
+			<input type="hidden" id="id" name="id" value="0" />
+			<label class="UIbutton-small"><input type="submit" value="Simpan" class="" /></label>
+			<a href="/admin/pengguna" class="UIbutton-small">Batal</a>
+		</p>
+	</div>
+</form>
+<div style="clear:both"></div>
+<? unset($_SESSION['flash']['data']); ?>

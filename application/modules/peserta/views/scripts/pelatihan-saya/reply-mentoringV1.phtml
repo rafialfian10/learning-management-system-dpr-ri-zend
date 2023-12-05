@@ -1,0 +1,703 @@
+<?php
+    $progress = explode("-", $this->progress->status_progress);
+
+    // format time
+    function formatTime($time) {
+        $date = new DateTime($time);
+        $formattedDate = $date->format('d M Y H:m:s');
+
+        return $formattedDate;
+    }
+    // end format time
+?>
+
+<link rel="stylesheet" href="https://berkas.dpr.go.id/mooc/assets/css/belajar-pelatihan-saya.css">
+<link rel="stylesheet" href="https://berkas.dpr.go.id/mooc/assets/css/reply-mentoring.css">
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.min.js"></script>
+
+
+<div class="area"></div>
+<nav class="main-menu" style="max-width: 100vw; margin-top: 85px; ">
+    <div id="mySidebar" class="sidebar background-content" style="  z-index: 999; margin-top: 85px; overflow-y: auto; max-height: calc(100vh - 85px); background-color: #E5E7E9; ">
+        <a style="color: #D4A216;" href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <div class="p-3">
+            <p class="fs-5">Table of Contents</p>
+            <hr>
+            <?php
+                $progress = explode("-", $this->progress->status_progress);
+             ?>
+            <a <?= ($this->progress->status_progress == 'none' ? ' style="pointer-events: none; cursor: default;" ' : '') ?> href="/peserta/pelatihan-saya/pretest/id/<?= $this->batch->id ?>">Pretest
+                <?= ($this->progress->status_progress == 'none' ? '<i class="bi bi-lock-fill text-secondary"></i><br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') ?>
+                <?= ($this->progress->status_progress == 'Mentoring' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') ?>
+            </a>
+            
+            <hr>
+            <div>
+                <?php
+                $materi_idx = 'x';
+                foreach ($this->silabus as $id => $silabus) {
+                    echo '<ul style="margin-left: -35px; ">';
+                    echo ' <a class=" collapsed dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#a'. $silabus->id .'" aria-expanded="false" aria-controls="collapseExample">'. $silabus->nama_silabus .'</a>';
+                    echo '</ul>';
+
+                    echo ' <div class="collapse" id="a'. $silabus->id .'" >';
+                    echo '<ul>';
+
+                    $i = 1;
+                    foreach ($this->materi as $idx => $materi) {
+                        if ($materi->id_silabus == $silabus->id) {
+                            echo '<li> 
+                                        <a '.($this->progress->status_progress == 'none' ? ' style="pointer-events: none; cursor: default;" ' : '').' style="margin-left: -42px;" href="/peserta/pelatihan-saya/belajar/id/' . $this->batch->id . '/silabus/' . ($id + 1) . '/materi/' . $i++ . '">' . $materi->nama_materi . '
+                                        '.($progress[0] == 'Mentoring' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai ' : '').'
+                                        </a>
+                                  </li>';
+                                  
+                        }
+                    }
+                    echo '</ul>';
+                    echo '</div>';
+                }
+
+                ?>
+
+            </div>
+
+            <hr>
+            <a <?= ($progress[0] == 'Pretest' || $progress[0] == 'Materi' ? 'disabled="disabled" class="disabled"' : '') ?> href="/peserta/pelatihan-saya/postest/id/<?= $this->batch->id; ?>">
+                
+                Postest
+                
+                <?= ($progress[0] == 'Pretest' || $progress[0] == 'Materi' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '') ?>
+                <?=  ($progress[0] == 'Mentoring' || $progress[0] == 'Penugasan' || $progress[0] == 'Penilaian' || $progress[0] == 'Sertifikat' ? '<br><i class="bi bi-check-circle-fill text-success"></i> Selesai' : '') ?>
+                </a>
+
+            <hr>
+            <a style="color: #D4A216;" <?= ($this->progress->status_progress == 'none' ? ' style="pointer-events: none; cursor: default;" ' : '') ?> href="/peserta/pelatihan-saya/mentoring/id/<?= $this->batch->id ?>">Mentoring</a>
+
+            <hr>
+            <a <?= ($this->progress->status_progress == 'Mentoring' ? 'style="pointer-events: none; cursor: default;"' : '') ?> href="/peserta/pelatihan-saya/penugasan/id/<?= $this->batch->id ?>">Tugas Akhir
+            <?= ($this->progress->status_progress == 'Mentoring' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '') ?>
+            </a>
+
+            <hr>
+            <a <?= ($this->progress->status_progress == 'Mentoring' ? ' style="pointer-events: none; cursor: default;" ' : '') ?> href="/peserta/pelatihan-saya/sertifikat/id/<?= $this->batch->id ?>">Sertifikat
+            <?= ($this->progress->status_progress == 'Mentoring' ? '<i class="bi bi-lock-fill text-secondary"></i>' : '') ?></a>
+            <hr>
+            <div style="text-align: center;">
+                    <button class=" btn btn-outline-danger" onclick="menyerahClicked()"><i class="bi bi-x-circle"></i> Menyerah</button>
+                </div>
+            <hr>
+        </div>
+    </div>
+
+
+    <div id="main">
+        <button class="openbtn background-content" id="nav-icon" onclick="toggleNav()" style=" z-index: 2; position: fixed; margin-left: -23px; display: flex; justify-content: center;align-items: center; color: #D4A216; background-color: #E5E7E9; font-size: 41px; padding: 10px 0px 15px 0;">&#8250;</button>
+
+        <div class="row content-header mb-3">
+            <div class="col-1"></div>
+                <div class="sub-content-header col-10">
+                    <div class="card rounded-4 background-content" style="border: none; background-color: #E5E7E9; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38); ">
+                        <div class="card-body" style=" color: #808080; ">
+                            <a style=" color: #808080;" class="text-decoration-none" href="/peserta">Belajar Saya</a>&nbsp &nbsp|&nbsp &nbsp
+                            <a style=" color: #808080;" class="text-decoration-none" href="/peserta/pelatihan">Pelatihan</a>&nbsp &nbsp|&nbsp &nbsp
+                            <a style=" color: #808080;" class="text-decoration-none" href="/peserta/pelatihan-saya/belajar/id/<?= $this->batch->id ?>/silabus/1/materi/1"><?= $this->pelatihan->nama_pelatihan ?></a>&nbsp &nbsp|&nbsp &nbsp
+                            <a class="text-dark text-decoration-none" href="">Ruang Mentoring</a>
+                        </div>
+                    </div>
+                </div>
+            <div class="col-1"></div>
+        </div>
+
+        <!-- mentoring -->
+        <section class="container-mentoring m-auto rounded-4" style="max-width: 80vw;">
+            <div class="d-flex flex-column" style="width: 100%;">
+                <p class="mb-2 fs-3 fw-bold">Ruang Mentoring</p>
+                <div class="content-diskusi d-flex flex-row mb-4">
+                    <button class="d-flex justify-content-center align-items-center m-0 text-light p-1 px-3 rounded-4 me-3 text-decoration-none border-0 cursor-pointer" style="height: 100%; font-size: 14px; background-color: #D4A216;">Semua</button>
+                    <button class="background-content d-flex justify-content-center align-items-center m-0 p-1 px-3 rounded-4 me-3 text-decoration-none cursor-pointer" style="height: 100%; font-size: 14px; color: #D4A216; border: 1px solid #D4A216;">Terjawab</button>
+                    <button class="background-content d-flex justify-content-center align-items-center m-0 p-1 px-3 rounded-4 me-3 text-decoration-none cursor-pointer" style="height: 100%; font-size: 14px; color: #D4A216; border: 1px solid #D4A216;">Belum Terjawab</button>
+                </div>
+            </div>
+            <?php if ($this->skor_mentoring->skor_akhir != ""): ?>
+                <section>
+                        <div class="background-content d-flex flex-column justify-content-center rounded-4 p-3 mb-5" style="background-color: #E5E7E9; border: 1px solid #D4A216;">
+                            <p class="m-0 mb-1 text-center fs-3">Sesi Mentoring Telah Berakhir</p>
+                            <p class="m-0 text-center fs-3">Anda dapat melanjutkan ke tahap selanjutnya</p>
+                        </div>
+                </section>
+            <?php endif; ?>
+
+            <?php if ($this->skor_mentoring->skor_akhir == "") : ?>
+                <!-- content message coach / mentor -->
+                <p class="m-1 fs-5 fw-bold"><?= $this->nama_pelatihan ?></p>
+                <div class="background-content d-flex flex-column justify-content-center rounded-4 p-3 mb-5" style="background-color: #E5E7E9; border: 1px solid #D4A216;">
+                    <div class="d-flex flex-row mb-3">
+                        <div class="d-flex flex-column justify-content-center align-items-center text-center bg-light rounded-circle mb-3 me-3" style="box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">
+                            <img src="https://berkas.dpr.go.id/mooc/fotocoach/<?= $this->fotocoach_uri ?>" alt="" style="width: 40px; height: 40px;">
+                        </div>
+
+                        <div class="d-flex flex-column justify-content-start" style="width: 100%;">
+                            <p class="m-0 fw-bold"><?= $this->nama_coach ?></p>
+                            <p class="m-0 text-secondary"><?= formatTime($this->mentorings->tanggal_input) ?></p>
+                        </div>
+
+                        <div>
+                            <button type="button" class="copy1 border-0 bg-transparent">
+                                <i class="bi bi-clipboard fs-5"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <?php
+                        if($this->mentorings->file_mentoring != "") {
+                            echo'<div class="d-flex flex-row justify-content-between align-items-center mb-1 rounded-3 p-2" style="width: 100%; background-color: #F4F6F6;">
+                                    <input readonly class="background-content fs-6 border-0" style="width: 100%; outline: white; background-color: #F4F6F6;" value="'. $this->mentorings->file_mentoring .'">
+                                    <button type="button" class="border-0 bg-transparent" onclick="downloadFile(\'https://berkas.dpr.go.id/mooc/mentoring/'. $this->mentorings->file_mentoring .'\')">
+                                        <i class="bi bi-download fs-5 fw-bold"></i>
+                                    </button>
+                                </div>';
+                            } else {
+                                echo "";
+                            }
+                    ?>
+
+                    <div class="d-flex flex-row justify-content-between align-items-center">
+                        <input readonly class="background-content div-text input1 m-0 fs-6 border-0" style="width: 80%; background-color: #E5E7E9; outline: white" value="<?= $this->mentorings->title ?>">
+                        <div class="d-flex flex-row justify-content-end align-items-center pe-2" style="width: 10%">
+                            <a href="#mentoring" class="toggles p-0 fs-7 text-decoration-none text-dark fw-bold">Reply</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- end content message coach / mentor -->
+            <?php endif; ?>
+        </section>
+        
+        <?php if ($this->skor_mentoring->skor_akhir == "") : ?>
+            <?php
+                $auth = Zend_Auth::getInstance()->getIdentity();
+                $this->ChatMentoringService = new ChatMentoringService();
+
+                $replies = [];
+                // mendapatkan data chat 
+                foreach ($this->chat_mentorings as $key => $chat) {
+                    
+                    $nama2 = "-";
+            
+                    if ($chat->role_user == "Mentor") {
+                        foreach ($this->mentor as $m) {
+                            if ($m->id == $chat->id_user) {
+                                $nama2 = $m->nama_mentor;
+                                break;
+                            }
+                        }
+                    } else if ($chat->role_user == "Peserta") {
+                        foreach ($this->peserta as $p) {
+                            if ($p->id == $chat->id_user) {
+                                $nama2 = $p->nama;
+                                break;
+                            }
+                        }
+                    } else if ($chat->role_user == "Coach") {
+                        foreach ($this->coach as $c) {
+                            if ($c->id == $chat->id_user) {
+                                $nama2 = $c->nama_coach;
+                                break;
+                            }
+                        }
+                    }
+            
+                    $data_chat = "";
+            
+                    if($chat->id_user == $auth->id_peserta) {
+                        echo'<section id="' . $chat->id . '" class="container-mentoring-user d-flex flex-column rounded-4 my-0 ps-5" style="max-width: 80vw; margin-left: 8.2%;">';
+                    } else {
+                        echo'<section id="' . $chat->id . '" class="container-mentoring-other d-flex flex-column rounded-4 my-0 pe-5" style="max-width: 80vw; margin-left: 8.2%;">';
+                    }
+            
+                        $data_chat .= '<div class="background-content d-flex flex-column justify-content-center rounded-3 p-3 mb-5" style="width: 100%; background-color: #E5E7E9; border: 1px solid #D4A216;">        
+                            <div class="d-flex flex-row mb-3">
+                                <div class="d-flex flex-column justify-content-start" style="width: 100%;">
+                                    <p class="m-0 fw-bold">'. $nama2 .'</p>
+                                    <p class="m-0 text-secondary">'. formatTime($chat->tanggal_input) .'</p>
+                                </div>
+            
+                                <div>
+                                    <button type="button" class="copy2 border-0 bg-transparent">
+                                        <i class="bi bi-clipboard fs-5 div-text"></i>
+                                    </button>
+                                </div>
+                            </div>';
+                    
+                            // looping data reply
+                            $balasan = '';
+            
+                            if($chat->id_reply_mentoring != 0) {
+                                foreach ($replies as $reply) {
+                                    if ($reply['id'] == $chat->id_reply_mentoring) {
+                                        $balasan .= $reply['isi'];
+                                        break; 
+                                    }
+                                }
+                            }
+                            // End looping data reply
+                            $data_chat .= $balasan . '<div class="content-message d-flex flex-column justify-content-between align-items-center">';
+                                if($chat->file_mentoring != '') {
+                                    $data_chat .= '<div class="sub-background-content d-flex flex-row justify-content-between align-items-center mb-1 rounded-3 p-2" style="width: 100%; background-color: #F4F6F6;">
+                                            <input readonly class="sub-background-content fs-6 border-0" style="width: 100%; outline: white; background-color: #F4F6F6;" value="'. $chat->file_mentoring .'">
+                                            <button type="button" class="border-0 bg-transparent" onclick="downloadFile(\'https://berkas.dpr.go.id/mooc/mentoring/'. $chat->file_mentoring .'\')">
+                                                <i class="bi bi-download fs-5 fw-bold"></i>
+                                            </button>
+                                        </div>';
+                                } 
+                                $data_chat .= '<div class="d-flex flex-row justify-content-between" style="width: 100%;">
+                                    <input readonly class="background-content div-text input2 m-0 fs-6 border-0" style="width: 90%; background-color: #E5E7E9; outline: white;" value="'. $chat->isi .'">
+                                    <a href="#mentoring" class="toggles p-0 fs-7 text-decoration-none text-dark fw-bold" cursor: pointer" onclick="addInput(\'' . $nama2 . '\',\'' . $chat->id . '\')">Reply</a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>';
+                    
+                    // reply chat
+                    $data_reply = '<div class="rounded-3 mb-3 p-3" style="background-color: #FFC55C;">
+                                <div class="d-flex flex-column justify-content-start mb-3" style="width: 100%;">
+                                    <p class="m-0 fw-bold">' . $nama2 . '</p>
+                                    <p class="m-0">' . $chat->tanggal_input . '</p>
+                                </div>';
+            
+                                if ($chat->file_mentoring != "") {
+                                    $data_reply.= '<div class="d-flex flex-row justify-content-between align-items-center mb-1 rounded-3 p-2" style="width: 100%; background-color: #FFB52E;">
+                                        <input readonly class="div-text fs-6 border-0" style="width: 100%; outline: white; background-color: #FFB52E;" value="' . $chat->file_mentoring . '">
+                                        <button type="button" class="border-0 bg-transparent" onclick="downloadFile(\'https://berkas.dpr.go.id/mooc/mentoring/' . $chat->file_mentoring . '\')">
+                                            <i class="bi bi-download fs-5 fw-bold"></i>
+                                        </button>
+                                    </div>';
+                                }
+                                $data_reply.='<p class="m-0 fs-6" style="width: 80%">' . $chat->isi . '</p> 
+                            </div>';
+                    
+                    $replies[] = ['id' => $chat->id, 'isi' => $data_reply];
+                    //end reply chat
+            
+                    echo $data_chat;
+                }
+            ?>
+        <?php endif; ?>
+    </div>
+</nav>
+
+<!-- popup message -->
+<form method="post" action="" enctype="multipart/form-data">
+    <section id="mentoring" class="popup-message message background-content position-fixed p-2 rounded-4" style="width: 81%; margin-left: 9.5%; height: 100px; bottom: -50px; background-color: #E5E7E9;">
+        <legend style="font-size: 15px;"><b class="div-text" id="balasan"> Komentar </b></legend>
+        <div style="width: 100%;">
+            <?php
+                $id_peserta = "-";
+
+                foreach ($this->peserta_batch as $pb) {
+                    $id_peserta = $pb->id_peserta;
+                }
+
+            ?>
+
+            <div id="daftar-peserta" class="daftar-user" style="display:none;">
+                <label style="width: 15%" for="id_reply_mentoring">Id Reply Mentoring</label>
+                <input type="hidden" id="id_reply_mentoring" name="id_reply_mentoring" value="0" />
+            </div>
+
+            <div id="daftar-peserta" class="daftar-user" style="display:none;">
+                <label style="width: 15%" for="role_user">Role User</label>
+                <input type="hidden" id="role_user" autocomplete="disable" name="role_user" class="px-3 rounded-5 border-0" style="width: 50%; height:30px;" value="Peserta" />
+            </div>
+
+            <div id="daftar-peserta" class="daftar-user" style="display:none;">
+                <label style="width: 15%" for="id_user">Id User</label>
+                <input type="hidden" id="id_user" autocomplete="disable" name="id_user" class="px-3 rounded-5 border-0" style="width: 50%; height:30px;" value="<?= $id_peserta ?>" />
+            </div>
+
+            <div class="position-relative mb-2" style="width: 100%; height: 50px;">
+                <button type="button" class="btn-popup-link position-absolute m-0 border-0 bg-transparent" style="width: 5em; height: 50px; left: 0; z-index: 10">
+                    <i class="bi bi-link-45deg fs-3"></i>
+                </button>
+
+                <input type="text" id="isi" name="isi" class="sub-background-content div-text position-absolute m-0 rounded-5" style="width: 100%; height: 50px; padding-left: 4em; border: 2px solid #D4A216; outline: #D4A216;" placeholder="Ketik pesan">
+
+                <button type="submit" class="position-absolute m-0 border-0" style="width: 5em; height: 50px; right: 0; background-color: #D4A216; border-top-right-radius: 50px; border-bottom-right-radius: 50px;">
+                    <i class="bi bi-send-fill fs-5 text-light"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+</form>
+<!-- end popup message -->
+
+<form method="post" action="" enctype="multipart/form-data"> 
+    <input type="hidden" id="id_user" autocomplete="disable" name="id_user" class="px-3 rounded-5 border-0" style="width: 50%; height:30px;" value="<?= $id_peserta ?>" />
+    <input type="hidden" id="role_user" autocomplete="disable" name="role_user" class="px-3 rounded-5 border-0" style="width: 50%; height:30px;" value="Peserta" />
+    <input type="hidden" id="id_reply_mentoringx" name="id_reply_mentoring" value="0" />
+    <!-- popup tautan -->
+    <div class="content-popup-link popup-link background-content" style="background-color: #E5E7E9;">
+        <header>
+            <span></span>
+            <div class="close-popup-link" style="background-color: #F4F6F6"><i class="bi bi-x text-dark"></i></div>
+        </header>
+        <div class="content">
+            <ul class="icons">
+                <!-- foto -->
+                <div class="d-flex flex-column align-items-center">
+                    <div class="position-relative d-flex justify-content-center align-items-center rounded-circle" style="width: 50px; height: 50px; background-color: #ba55d3;">
+                        <input type="file" name="file-mentoring" id="foto" class="position-absolute" style="width: 100%; height: 50px; opacity: 0; outline: white; cursor: pointer;" accept="image/*">
+                        <i class="bi bi-image-fill fs-5 text-light"></i>
+                    </div>
+                    <label for="foto">Foto</label>
+                </div>
+
+                <!-- video -->
+                <div class="d-flex flex-column align-items-center">
+                    <div class="position-relative d-flex justify-content-center align-items-center rounded-circle" style="width: 50px; height: 50px; background-color: #9ecfc1;">
+                        <input type="file" name="file-mentoring" id="video" class="position-absolute" style="width: 100%; height: 50px; opacity: 0; outline: white; cursor: pointer;" accept="video/*">
+                        <i class="bi bi-camera-reels-fill fs-5 text-light"></i>
+                    </div>
+                    <label for="video">Video</label>
+                </div>
+
+                <!-- audio -->
+                <div class="d-flex flex-column align-items-center">
+                    <div class="position-relative d-flex justify-content-center align-items-center rounded-circle" style="width: 50px; height: 50px; background-color: #ff6347;">
+                        <input type="file" name="file-mentoring" id="audio" class="position-absolute" style="width: 100%; height: 50px; opacity: 0; outline: white; cursor: pointer;" accept="audio/*">
+                        <i class="bi bi-headset fs-5 text-light"></i>
+                    </div>
+                    <label for="audio">Audio</label>
+                </div>
+
+                <!-- document -->
+                <div class="d-flex flex-column align-items-center">
+                    <div class="position-relative d-flex justify-content-center align-items-center rounded-circle" style="width: 50px; height: 50px; background-color: #4682b4;">
+                        <input type="file" name="file-mentoring" id="document" class="position-absolute" style="width: 100%; height: 50px; opacity: 0; outline: white; cursor: pointer;" accept=".doc, .docx, .pdf">
+                        <i class="bi bi-file-earmark-fill fs-5 text-light"></i>
+                    </div>
+                    <label for="document">Dokumen</label>
+                </div>
+
+                <!-- camera -->
+                <div class="d-flex flex-column align-items-center">
+                    <div class="position-relative d-flex justify-content-center align-items-center rounded-circle" style="width: 50px; height: 50px; background-color: #fa8072;">
+                        <input type="file" name="file-mentoring" id="camera" class="position-absolute" style="width: 100%; height: 50px; opacity: 0; outline: white; cursor: pointer;" accept="image/*">
+                        <i class="bi bi-camera fs-5 text-light"></i>
+                    </div>
+                    <label for="camera">Kamera</label>
+                </div>
+            </ul>
+        </div>
+    </div>
+    <!-- popup tautan -->
+
+    <!-- popup send -->
+    <div class="content-popup-send popup-send background-content" style="background-color: #E5E7E9;">
+        <div class="content">
+            <header>
+                <p class="fs-5 fw-bold">Kirim sebagai file</p>
+            </header>
+           
+            <div>
+                <div class="d-flex flex-column mb-3">
+                    <label for="file_mentoring" class="mb-2 fw-bold">Nama file</label>
+                    <input type="file" name="file_mentoring" class="sub-background-content div-text border-bottom border-dark border-0 p-1 px-2 rounded-3" id="file_mentoring">
+                </div>
+
+                <div class="d-flex flex-column mb-3">
+                    <label for="isi" class="mb-2 fw-bold">Keterangan</label>
+                    <input type="text" name="isi" class="sub-background-content div-text border-bottom border-dark border-0 p-1 px-2 rounded-3" style="background-color: #E5E7E9; outline: white;" id="isi" placeholder="Ketik pesan">
+                </div>
+            </div>
+            <div class="my-2 p-2 text-end" style="width: 100%;">
+                <button type="button" class="close-popup-send fw-bold fs-6 mx-2 bg-transparent border-0">Cancel</button>
+                <button type="submit" class="fw-bold fs-6 mx-2 bg-transparent border-0">Send</button>
+            </div>
+        </div>
+    </div>
+    <!-- end popup send -->
+</form>
+<!-- end mentoring -->
+
+<script>
+     function menyerahClicked() {
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: 'Ketik "MENYERAH" (dengan huruf besar) untuk menyerah',
+                input: 'text',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                cancelButtonText: 'Batal',
+                inputValidator: (value) => {
+                    if (value !== 'MENYERAH') {
+                        return 'Tulisan tidak cocok';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/peserta/pelatihan-saya/menyerah',
+                        type: 'POST',
+                        data: {
+                            id: '<?=$this->progress->id?>',
+                            id_peserta: '<?=$this->progress->id_peserta?>',
+                            id_batch: '<?=$this->progress->id_batch?>',
+                            status_progress: '<?=$this->progress->status_progress?>',
+                            status_riwayat: 'Menyerah',
+                            // status_progress: 'Menyerah',
+                        },
+                        success: function (response) {
+                            window.location.href = '/peserta/riwayat';
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log('Failed: ' + textStatus);
+                            console.log(errorThrown);
+                        }
+                    });
+                }
+            });
+    }
+
+    window.onscroll = function() {
+        scrollFunction() 
+    };
+
+    function scrollFunction() {
+        var button = document.getElementById("nav-icon");
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            button.style.display = "flex";
+        } else {
+            button.style.display = "flex";
+        }
+    }
+
+    function toggleNav() {
+        var sidebar = document.getElementById("mySidebar");
+        var navIcon = document.getElementById("nav-icon");
+
+        if (window.innerWidth < 768) {
+            if (sidebar.style.width == "100%") {
+                sidebar.style.width = "0";
+                navIcon.innerHTML = "&#8250;";
+            } else {
+                sidebar.style.width = "100%";
+                navIcon.innerHTML = "&#8249;";
+            }
+        } else {
+            if (sidebar.style.width == "250px") {
+                sidebar.style.width = "0";
+                document.getElementById("main").style.marginLeft = "0";
+                navIcon.innerHTML = "&#8250;";
+            } else {
+                sidebar.style.width = "250px";
+                document.getElementById("main").style.marginLeft = "250px";
+                navIcon.innerHTML = "&#8249;";
+            }
+        }
+    }
+
+    function closeNav() {
+        document.getElementById("mySidebar").style.width = "0";
+        document.getElementById("main").style.marginLeft = "0";
+    }
+
+    // reply mentoring
+    function changeRole(val) {
+        document.querySelectorAll(".daftar-user").forEach(function (el) {
+            el.style.display = "none";
+        });
+        if (val === "Mentor") {
+            document.querySelector("#daftar-mentor").style.display = "block";
+        } else if (val === "Peserta") {
+            document.querySelector("#daftar-peserta").style.display = "block";
+        }
+
+        if (val === "Coach") {
+            document.querySelector("#daftar-coach").style.display = "block";
+            document.querySelector('#id_user').value = '<?= $this->id_coach; ?>';
+        }
+    }
+
+    function addInput(user, id) {
+        document.querySelector('#balasan').textContent = 'Komentar balasan ke ' + user;
+        document.querySelector('#id_reply_mentoring').value = id;
+        document.querySelector('#id_reply_mentoringx').value = id;
+    }
+    // end reply mentoring
+
+    // popup message
+    let show = function (element) {
+        element.style.display = 'block';
+    };
+
+    let hide = function (element) {
+        element.style.display = 'none';
+    };
+
+    let toggleChat = function (element) {
+        if (window.getComputedStyle(element).display === 'block') {
+            hide(element);
+            return;
+        }
+
+        show(element);
+    };
+
+    document.addEventListener('click', function (event) {
+        let popupMessage = document.querySelector('.popup-message');
+        let popupLink = document.querySelector(".popup-link");
+        let popupSend = document.querySelector(".popup-send");
+        let isPopupMessageVisible = window.getComputedStyle(popupMessage).display === 'block';
+        let isPopupLinkVisible = window.getComputedStyle(popupLink).display === 'block';
+        let isPopupSendVisible = window.getComputedStyle(popupSend).display === 'block';
+
+        if (event.target.classList.contains('toggles')) {
+            event.preventDefault();
+
+            let target = event.target.hash ? document.querySelector(event.target.hash) : null;
+            if (target) {
+                toggleChat(target);
+            }
+
+            return;
+        }
+
+        if (!popupLink.contains(event.target) && !popupSend.contains(event.target)) {
+            show(popupMessage)
+            if(!popupMessage.contains(event.target)) {
+                hide(popupMessage);
+            }
+        }
+    });
+    // end popup message
+
+    // popup link
+    const popupMessage = document.querySelector('.popup-message');
+    const btnPopupLink = document.querySelector(".btn-popup-link");
+    const popupLink = document.querySelector(".popup-link");
+    const popupSend = document.querySelector('.popup-send');
+    const closePopupLink = popupLink.querySelector(".close-popup-link");
+    const closePopupSend = popupSend.querySelector(".close-popup-send");
+
+    btnPopupLink.onclick = () => {
+        popupLink.classList.toggle("show");
+    }
+
+    closePopupLink.onclick = () => {
+        btnPopupLink.click();
+    }
+
+    closePopupSend.onclick = () => {
+        // kosongkan value input ketika close popup send
+        modalFileInput.value = '';
+        modalTextInput.value = '';
+
+        popupSend.classList.remove("show");
+    }
+
+    // end popup link
+
+    // popup send
+    const fileInputPopups = document.querySelectorAll('.popup-link input[type="file"]');
+    const TextInputMessage = document.querySelector('.message input[type="text"]');
+    
+    // Menyalin text dan file dari input popup ke input popupSend
+    const modalFileInput = document.querySelector('.popup-send input[name="file_mentoring"]');
+    const modalTextInput = document.querySelector('.popup-send input[name="isi"]');
+
+    fileInputPopups.forEach((fileInputPopup, index) => {
+        fileInputPopup.addEventListener('change', function() {
+            // Memeriksa apakah file telah dipilih
+            if (fileInputPopup.files.length > 0) {
+                // Memunculkan popupSend
+                popupSend.classList.add('show');
+    
+                // salin value dan files input ke input popupSend
+                modalFileInput.files = fileInputPopup.files;
+                modalTextInput.value = TextInputMessage.value;
+            }
+        });
+    });
+    // end popup send
+
+    // copy
+    const copy1 = document.querySelectorAll(".copy1");
+    const input1 = document.querySelectorAll(".input1");
+    const copy2 = document.querySelectorAll(".copy2");
+    const input2 = document.querySelectorAll(".input2");
+    const copy3 = document.querySelectorAll(".copy3");
+    const input3 = document.querySelectorAll(".input3");
+    const copy4 = document.querySelectorAll(".copy4");
+    const input4 = document.querySelectorAll(".input4");
+
+    copy1.forEach((element, index) => {
+        element.addEventListener("click", () => {
+            input1[index].select();
+            document.execCommand("copy");
+            element.innerText = "Copied";
+            element.style.backgroundColor = "transparent";
+
+            setTimeout(() => {
+                element.innerText = "Copy";
+            }, 3000);
+        });
+    });
+
+    copy2.forEach((element, index) => {
+        element.addEventListener("click", () => {
+            input2[index].select();
+            document.execCommand("copy");
+            element.innerText = "Copied";
+            element.style.backgroundColor = "transparent";
+
+            setTimeout(() => {
+                element.innerText = "Copy";
+            }, 3000);
+        });
+    });
+
+    copy3.forEach((element, index) => {
+        element.addEventListener("click", () => {
+            input3[index].select();
+            document.execCommand("copy");
+            element.innerText = "Copied";
+            element.style.backgroundColor = "transparent";
+
+            setTimeout(() => {
+                element.innerText = "Copy";
+            }, 3000);
+        });
+    });
+
+    copy4.forEach((element, index) => {
+        element.addEventListener("click", () => {
+            input4[index].select();
+            document.execCommand("copy");
+            element.innerText = "Copied";
+            element.style.backgroundColor = "transparent";
+
+            setTimeout(() => {
+                element.innerText = "Copy";
+            }, 3000);
+        });
+    });
+    // end copy
+
+    // download file
+    function downloadFile(url) {
+        var link = document.createElement('a');
+        link.href = url;
+        link.download = true;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    // end download file
+</script>

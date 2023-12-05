@@ -1,0 +1,20 @@
+<div class="container_soal" id="container_soal_1">
+    <p class="sub_container_soal" id="soal_1">
+        <label class="left" for="soal_1">Soal 1</label>
+        <input id="soal_1" class="input_soal" wrap="soft" name="soal[]">
+        <button type="button" class="tambah_soal"> + </button>
+    </p>
+
+    <div class="container_jawaban_1" id="container_jawaban_1">
+        <p class="sub_container_jawaban_1" id="jawaban_1_1">
+            <label class="left" for="input_jawaban_1_1">Jawaban 1</label>
+            <input id="input_jawaban_1_1" name="jawaban_1[]" class="event-message" wrap="soft">
+            <button type="button" class="tambah_jawaban_1"> + </button>
+        </p>
+    </div>
+
+    <p class="container_kunci_jawaban_1">
+        <label class="left" for="kunci_jawaban_1">Kunci Jawaban Soal 1</label>
+        <input type="radio" name="kunci_jawaban_1" value="1" required checked="check"> <b>Jawaban 1</b>
+    </p>
+</div>

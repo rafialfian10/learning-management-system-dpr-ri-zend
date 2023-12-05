@@ -1,0 +1,85 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+	});
+	$(function() {
+		$("#tanggal_lahir").datepicker({
+			yearRange: "-11:+0",
+			changeYear: "true",
+			changeMonth: "true",
+			dateFormat: "dd-mm-yy"
+		});
+		
+	});
+</script>
+
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>Edit Peserta Selain ASN DPR RI</h1>
+	<div class="header_nav_links"><a href="/admin/pesertanonasn/edit">Back to Daftar Peserta Selain ASN DPR RI</a></div>
+</div>
+<div class="clear"></div>
+
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p>
+			<label class="left" for="username">Username</label>
+			<input type="text" id="username" class="event-message" wrap="soft" name="username" value="<?= $this->row->username ?>" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+		<p>
+			<label class="left" for="password">Password</label>
+			<input type="password" id="password" class="event-message" wrap="soft" name="password" value="<?= $this->row->password ?>" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+		<p>
+			<label class="left" for="nama">Nama</label>
+			<input type="text" id="nama" class="event-message" wrap="soft" name="nama" value="<?= $this->row->nama ?>" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+		<p>
+			<label class="left" for="identitas">NIK</label>
+			<input type="number" id="identitas" class="event-message" wrap="soft" name="identitas" value="<?= $this->row->identitas ?>" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+		<p>
+			<label class="left" for="tanggal_lahir">Tanggal Lahir</label>
+			<input type="text" id="tanggal_lahir" class="datepicker required" wrap="soft" name="tanggal_lahir" value="<?= date('d-m-Y', strtotime($this->row->tanggal_lahir)); ?>" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+		<p>
+			<label class="left" for="tempat_lahir">Tempat Lahir</label>
+			<input type="text" id="tempat_lahir" class="event-message" wrap="soft" name="tempat_lahir" value="<?= $this->row->tempat_lahir ?>" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+		<p>
+			<label class="left" for="pekerjaan">Pekerjaan</label>
+			<input type="text" id="pekerjaan" class="event-message" wrap="soft" name="pekerjaan" value="<?= $this->row->pekerjaan ?>" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+		<p>
+			<label class="left" for="kewarganegaraan">Kewarganegaraan</label>
+			<input type="text" id="kewarganegaraan" class="event-message" wrap="soft" name="kewarganegaraan" value="<?= $this->row->kewarganegaraan ?>" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+		<p>
+			<label class="left" for="email">Email</label>
+			<input type="email" id="email" class="event-message" wrap="soft" name="email" value="<?= $this->row->email ?>" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+		<p>
+			<label class="left" for="no_telp">No Telp</label>
+			<input type="number" id="no_telp" class="event-message" wrap="soft" name="no_telp" value="<?= $this->row->no_telp ?>" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<p>
+			<label class="left" for="fotopesertanonasn_uri">Foto Peserta Non ASN</label> 
+			<?
+			if ($this->row->fotopesertanonasn_uri != '') {
+				echo '<img src="https://berkas.dpr.go.id/mooc/fotopesertanonasn/' . $this->row->fotopesertanonasn_uri . '" height="100" />';
+				echo '<a href="/admin/pesertanonasn/hapusfoto/id/' . $this->row->id . '  ">Hapus</a>';
+				//echo var_dump($this->row->fotopesertanonasn_uri);
+				echo '<input type="hidden" id="file_name" autocomplete="disable" name="file_name" value="'.$this->row->fotopesertanonasn_uri.'"/>';
+			} else {
+				echo '<input type="file" accept="image/*" id="file_name" autocomplete="disable" name="file_name"/>';
+			}
+			?>
+		</p>
+
+
+	    <p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Simpan" class="" /></label><a href="/admin/pesertanonasn/index" class="UIbutton-small">Batal</a></p>
+	</div>
+</form>
+<div style="clear:both"></div>

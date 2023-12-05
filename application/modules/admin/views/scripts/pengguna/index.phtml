@@ -1,0 +1,69 @@
+<script type="text/javascript">
+$(function(){
+	$("table")
+		.tablesorter({theme: 'blue', widthFixed: true, widgets: ['zebra', 'filter']})
+		.tablesorterPager({container: $(".pager"), 
+							output: '{startRow} - {endRow} / {filteredRows} ({totalRows})', 
+							fixedHeight: true, 
+							removeRows: false, 
+							cssGoto: '.gotoPage' });
+});
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>  Daftar Pengguna</h1>
+	<div class="header_nav_links">
+		<span class="right context_menu"><a href="/admin/pengguna/add/jenis/1" class="UIlink-button small right">Tambah Pengguna (Internal)</a> <a href="/admin/pengguna/add/jenis/0" class="UIlink-button small right">Tambah Pengguna (Eksternal)</a></span>
+	</div>
+</div>
+<div class="clear"></div>
+<br>
+<? if (count($this->rows) > 0) { ?>
+	<?=$this->pager;?>
+
+	<table class="tablesorter">
+		<thead>
+			<tr>
+				<th align="center" width="40">No.</th>
+				<th align="center">Jenis</th>
+				<th align="center">Nama</th>
+				<th align="center">Username</th>
+				<th align="center">Peran</th>
+				<th align="center">Aksi</th>
+			</tr>
+		</thead>
+		<tbody>
+		<?php
+			$arrPeran = array('admin' => 'Admin', 'super' => 'Super Persipar', 'user' => 'User Persipar', 'guest' => 'User Unit Kerja');
+
+			$indeks = 1;
+			foreach($this->rows as $row) 
+			{
+				$jenis = ($row->jenis == 0) ? 'Eksternal' : 'Internal';
+				echo '<tr>';
+				echo '<td align="center">'.$indeks.'.</td>';
+				echo '<td>'.$jenis . '</td>';
+				echo '<td>'.$row->nama . '</td>';
+				echo '<td>'.$row->email . '</td>';
+				echo '<td>'.$arrPeran[$row->peran] . '</td>';
+				echo '<td align="center"><a href="/admin/pengguna/edit/id/'.$row->id.'">EDIT</a>';
+				if ($this->getRole() == 'admin' || $this->getRole() == 'super' || $this->getRole() == 'user') {
+					echo '&nbsp;|&nbsp;<a href="/admin/pengguna/delete/id/'.$row->id.'" onclick="return confirmDelete();">DELETE</a>';
+
+					if ($row->jenis == 0)
+						echo '<br><a href="/admin/pengguna/change-password/id/'.$row->id.'">CHANGE-PASSWORD</a>';
+				}
+				echo "</td>";
+				echo '</tr>';
+
+				$indeks++;
+			}
+		?>
+		
+		</tbody>
+	</table>
+<? } else {
+	echo 'Data tidak ditemukan.';
+}
+?>

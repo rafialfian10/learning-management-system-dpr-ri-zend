@@ -1,0 +1,308 @@
+<?php
+    // rating
+    $totalStars = 0;
+    $maxStars = count($this->ratings) * 5;
+    $penilaian = 0;
+
+    foreach($this->ratings as $rating) {
+        if($rating->id_pelatihan == $this->batch->id) {
+            $totalStars += $rating->star;
+            $penilaian = count($rating);
+        }
+    }
+
+    $percentage = ($totalStars / $maxStars) * 100;
+
+    // Membatasi persentase agar tidak melebihi 100%
+    if ($percentage > 100) {
+        $percentage = 100;
+    }
+    // end rating
+?>
+
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://berkas.dpr.go.id/mooc/assets/css/detail-pelatihan.css">
+<style>
+    .star-ratings {
+        unicode-bidi: bidi-override;
+        color: #ccc;
+        font-size: 20px;
+        position: relative;
+        margin: 0;
+        padding: 0;
+
+        .fill-ratings {
+            color: #D4A216;
+            padding: 0;
+            position: absolute;
+            z-index: 1;
+            display: block;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            
+            span {
+                display: inline-block;
+            }
+        }
+
+        .empty-ratings {
+            padding: 0;
+            display: block;
+            z-index: 0;
+        }
+    }
+</style>
+
+<section class="container-detail-pelatihan d-flex flex-column justify-content-evenly" style="max-width: 100vw; padding-top: 150px; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">
+    <div class="row content-detail-pelatihan m-0 px-5">
+        <!-- content, agenda, & mata pelatihan -->
+        <div class="col-md-7 container-content-pelatihan">
+
+            <div class="sub-container-content-pelatihan d-flex flex-column px-5 mb-5">
+                <div class="d-flex flex-row justify-content-start align-items-center mb-3">
+                    <img src='https://berkas.dpr.go.id/mooc/thumbkelas/<?php echo $this->batch->sampul_pelatihan ?>' alt="..." class="rounded-3 me-3" style="height: 150px; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">
+                    <p class="text-title mb-2 fs-3 fw-bold"><?php echo $this->batch->nama_pelatihan ?></p>
+                </div>
+                
+                <div class="d-flex flex-column">
+                    <p style="text-align: justify"><?php echo $this->batch->deskripsi ?>.</p>
+                    <div class="d-flex flex-row justify-content-start align-items-center">
+                        <div class="sub-container-content-pelatihan-1 d-flex flex-row align-items-center">
+                            <div class="m-0 rounded-3 text-center text-light fw-bold me-5 py-1 px-3" style="border: 1px solid #D4A216; background-color: #D4A216"><?= ($this->batch->tipe_pelatihan == "nonclassical" ? "online" : $this->batch->tipe_pelatihan) ?></div>
+                            <div class="star-ratings">
+                                <div class="fill-ratings" style="width: <?= $percentage ?>%;">
+                                    <span>★★★★★</span>
+                                </div>
+                                <div class="empty-ratings">
+                                    <span>★★★★★</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sub-container-content-pelatihan-2 d-flex flex-row align-items-center">
+                            <div class="text-secondary m-0 mx-5"><?= $penilaian ?> Penilaian</div>
+                            <div class="text-secondary m-0 me-5"><?= ($this->batch->kuota_peserta ? $this->batch->kuota_peserta : 0 ) ?> Peserta</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="sub-container-content-pelatihan d-flex flex-column px-5 mb-4">
+                <p class="mb-2 fs-3 fw-bold">Tentang Pelatihan</p>
+                <p style="text-align: justify"><?php echo $this->batch->deskripsi ?>.</p>
+            </div>
+    
+            <div class="sub-container-content-pelatihan d-flex flex-column px-5 mb-4">
+                <p class="mb-2 fs-3 fw-bold">Daftar Mata Pelatihan</p>
+                <div class="myDropdown" style="border-top: 1px solid black;">
+                    <ul>
+                        <li><a class="fw-normal">Pre-test</a></li>
+                    </ul>
+                </div>
+    
+                <?php
+                    foreach($this->silabus as $s) {
+                        echo'<div class="myDropdown" style="border-top: 1px solid black;">
+                                <ul class="cf">
+                                    <li>
+                                        <a class="dropdown fw-normal" href="#">'. $s->nama_silabus .'</a>
+                                        <ul class="background-content d-flex flex-column bg-light" style="box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);">';
+                                            foreach($this->materi as $m) {
+                                                if($s->id == $m->id_silabus) {
+                                                    echo '<li style="border-bottom: 1px solid grey"><a class="text-secondary fw-normal">'. $m->nama_materi .'</a></li>';
+                                                }
+                                            };
+                                        echo'</ul>
+                                    </li>
+                                </ul>
+                            </div>';
+                    }  
+                ?>
+                    
+                <div class="myDropdown" style="border-top: 1px solid black;">
+                    <ul class="cf">
+                        <li><a class="fw-normal">Quiz</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- end content, agenda, & mata pelatihan -->
+
+        <!-- card -->
+        <div class="col-md-5 container-card px-5">
+            <div class="content-card d-flex justify-content-center rounded-4" style="height: 520px;">
+                <div class="card background-content rounded-4" style="width: 100%; height: 100%; background-color: #E5E7E9; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">
+                    <img src='https://berkas.dpr.go.id/mooc/thumbkelas/<?php echo $this->batch->sampul_pelatihan ?>' alt="..." class="rounded-3" style="height: 250px; object-fit: cover;">
+                    <div class="card-body">
+                        <p class="fs-5 fw-bold">Yang kamu dapatkan:</p>
+                        <div class="d-flex flex-row mb-1 align-items-center">
+                            <img src="https://berkas.dpr.go.id/mooc/assets/images/pretest.png" alt="" class="rounded" style="width: 15px; height: 15px;">
+                            <p class="text-secondary m-0 ms-2" style="font-size: 12px;">Pre-test</p>
+                        </div>
+                        <div class="d-flex flex-row mb-1 align-items-center">
+                            <img src="https://berkas.dpr.go.id/mooc/assets/images/materi.png" alt="" class="rounded" style="width: 15px; height: 15px;">
+                            <p class="text-secondary m-0 ms-2" style="font-size: 12px;"><?= count($this->silabus) ?> Mata Pelatihan</p>
+                        </div>
+                        <div class="d-flex flex-row mb-1 align-items-center">
+                            <img src="https://berkas.dpr.go.id/mooc/assets/images/quiz.png" alt="" class="rounded" style="width: 15px; height: 15px;">
+                            <p class="text-secondary m-0 ms-2" style="font-size: 12px;">Quiz</p>
+                        </div>
+                        <div class="d-flex flex-row mb-1 align-items-center">
+                            <img src="https://berkas.dpr.go.id/mooc/assets/images/mentoring.png" alt="" class="rounded" style="width: 15px; height: 15px;">
+                            <p class="text-secondary m-0 ms-2" style="font-size: 12px;">Mentoring</p>
+                        </div>
+                        <div class="d-flex flex-row mb-1 align-items-center">
+                            <img src="https://berkas.dpr.go.id/mooc/assets/images/tugas-akhir.png" alt="" class="rounded" style="width: 15px; height: 15px;">
+                            <p class="text-secondary m-0 ms-2" style="font-size: 12px;">Tugas akhir</p>
+                        </div>
+                        <div class="d-flex flex-row mb-3 align-items-center">
+                            <img src="https://berkas.dpr.go.id/mooc/assets/images/sertifikat.png" alt="" class="rounded" style="width: 15px; height: 15px;">
+                            <p class="text-secondary m-0 ms-2" style="font-size: 12px;">Klaim sertifikat</p>
+                        </div>
+    
+                        <?php
+                            $auth = Zend_Auth::getInstance()->getIdentity();
+                            if(!$auth) {
+                                echo'<button type="button" class="btn-have-login2 d-flex flex-row mb-1 justify-content-center align-items-center rounded-3 fw-bold fs-5 text-light" style="width:100%; height: 50px; border: 1px solid #D4A216; background-color: #D4A216;">Ikuti Pelatihan
+                                    </button>';
+                            } else {
+                                if(count($this->progress) > 2){
+                                    echo'<button type="button" class="btn-have-progress d-flex flex-row mb-1 justify-content-center align-items-center rounded-3 fw-bold fs-5 text-light" style="width:100%; height: 50px; border: 1px solid #D4A216; background-color: #D4A216;">Ikuti Pelatihan</button>';
+                                } else if($this->peserta_batch){
+                                    echo'<button type="button" onclick="haveProgress();" class="d-flex flex-row mb-1 justify-content-center align-items-center rounded-3 fw-bold fs-5 text-light" style="width:100%; height: 50px; border: 1px solid #D4A216; background-color: #D4A216;">Ikuti Pelatihan</button>';
+                                } else {
+                                    echo'<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+                                        <button type="submit" class="btn-success-pelatihan d-flex flex-row mb-1 justify-content-center align-items-center rounded-3 fw-bold fs-5 text-light" style="width:100%; height: 50px; border: 1px solid #D4A216; background-color: #D4A216;">Ikuti Pelatihan</button>
+                                    </form>';    
+                                }
+                            }
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end card -->    
+    </div>
+
+    <!-- pengajar -->
+    <div class="container-pengajar mb-4 d-flex flex-column px-5">
+        <?php 
+            $id_pengajar = explode(",", $this->batch->id_pengajar) 
+        ?>
+                
+        <div class="row content-pengajar px-5">
+            <p class="text-pengajar m-0 mb-2 fs-3 fw-bold">Pengajar</p>
+            <?  foreach($id_pengajar as $val){
+                    foreach($this->pengajar as $p){
+                        if($p->id == $val){
+                            echo'<div class="col-md-3">
+                                <div class="background-content d-flex justify-content-center align-items-center border border-0 rounded-circle mb-3" style="width: 60px; height: 60px; background-color: #E5E7E9; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">
+                                    <img src="https://berkas.dpr.go.id/mooc/assets/images/username-orange.png" alt="" style="width: 30px; height: 30px;">
+                                </div>
+                            
+                                <p class="fs-6">'.$p->nama_pengajar.'</p>
+                            </div>';
+                            break;
+                        }
+                    }
+                }
+            ?>
+        </div>          
+    </div>
+    <!-- end pengajar -->
+
+<script>
+    // rating star
+    $(document).ready(function() {
+        let star_rating_width = $('.fill-ratings span').width();
+        $('.star-ratings').width(star_rating_width);
+    });
+    // end rating star
+
+    // btn maksimal kelas
+    let btnHaveProgress = document.querySelector(".btn-have-progress");
+    if (btnHaveProgress) {
+        btnHaveProgress.addEventListener("click", () => {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            html: 'Anda sudah mencapai batas mengikuti maksimal 3 kelas sedang berjalan.',
+            confirmButtonColor: '#4CAF50',
+            customClass: {
+              popup: 'my-custom-popup-class',
+              title: 'my-custom-title-class',
+              content: 'my-custom-content-class',
+              confirmButton: 'confirm-button-class'
+            }
+          });
+        });
+    }
+    // end btn maksimal kelas
+
+    // btn have login
+    let btnHaveLogin2 = document.querySelector(".btn-have-login2")
+    if (btnHaveLogin2) {
+      btnHaveLogin2.addEventListener("click", function() {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          html: 'Anda belum login, silahkan login terlebih dahulu',
+          confirmButtonColor: '#4CAF50',
+          customClass: {
+            popup: 'my-custom-popup-class',
+            title: 'my-custom-title-class',
+            content: 'my-custom-content-class',
+            confirmButton: 'confirm-button-class'
+          }
+        });
+      });
+    }
+    // end btn have login
+
+    // btn success pelatihan
+    let btnSuccessPelatihan = document.querySelector(".btn-success-pelatihan");
+    let pesertaBatch = <?= json_encode(count($this->peserta_batchs)) ?>;
+    let kuotaPeserta = <?= json_encode($this->batch->kuota_peserta) ?>;
+
+
+    if (btnSuccessPelatihan) {
+        btnSuccessPelatihan.addEventListener("click", function(event) {
+            event.preventDefault();
+
+            if (pesertaBatch >= kuotaPeserta) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Maaf, kuota peserta sudah habis!',
+                    confirmButtonColor: '#D4A216',
+                    customClass: {
+                        popup: 'my-custom-popup-class',
+                        title: 'my-custom-title-class',
+                        content: 'my-custom-content-class',
+                        confirmButton: 'confirm-button-class'
+                    }
+                });
+            } else {
+                document.getElementById("compose").submit();
+            }
+        });
+    }
+    // end btn success pelatihan
+
+    function haveProgress(){
+        Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        html: 'Anda sudah berada di dalam kelas pelatihan ini.',
+        confirmButtonColor: '#D4A216',
+        customClass: {
+          popup: 'my-custom-popup-class',
+          title: 'my-custom-title-class',
+          content: 'my-custom-content-class',
+          confirmButton: 'confirm-button-class'
+        }
+      });
+    }
+    
+</script>

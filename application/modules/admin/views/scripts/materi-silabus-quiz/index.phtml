@@ -1,0 +1,102 @@
+<script id="js">
+$(function(){
+	$("table")
+		.tablesorter({theme: 'blue', widthFixed: true, widgets: ['zebra', 'filter']})
+		.tablesorterPager({container: $(".pager"), 
+							output: '{startRow} - {endRow} / {filteredRows} ({totalRows})', 
+							fixedHeight: true, 
+							removeRows: false, 
+							cssGoto: '.gotoPage' });
+});
+</script>
+
+<script>
+	$(document).ready(function() {
+		$("#filter-materi").change(function() {
+			var selected = $(this).val();
+			if(selected) {
+				$("tbody tr").hide();
+				$("tbody tr[data-id='" + selected + "']").show();
+			} else {
+				$("tbody tr").show();
+			}
+		});
+	});
+</script>
+
+<div class="content-header"></div>
+	<div class="UI_Header_Title">
+		<h1><?=$this->avatar;?> Daftar Materi Silabuz Quiz</h1>
+		<div class="header_nav_links"><span class="right context_menu"><a href="/admin/materi-silabus-quiz/add" class="UIlink-button small right">Tambah Materi Silabus Quiz</a></span>
+	</div>
+</div>
+<div class="clear"></div>
+<br>
+
+<? if (count($this->rows) > 0) { ?>
+	<?=$this->pager;?>
+
+
+	<select id="filter-materi">
+		<option value="">Pilih Filter</option>
+		<?php foreach($this->rows2 as $item){ ?>
+			<option value="<?= $item->id ?>"><?= $item->nama_materi ?></option>
+		<?php } ?>
+	</select>
+	
+		<table class="tablesorter">
+			<thead>
+				<tr>
+					<th width="5px">No.</th>
+					<th>Nama Pengajar</th>
+					<th>Materi Silabus</th>
+					<th>Pertanyaan</th>
+					<th>Jawaban</th>
+					<th>Kunci Jawaban</th>
+					<th>Aksi</th>
+				</tr>
+			</thead>
+			<tbody>
+		<?php
+		$index = 1;
+		foreach($this->rows as $row) {
+
+			$nama_materi = '-';
+			foreach($this->rows2 as $item){
+				if ($item->id == $row->id_materi_silabus) {
+					$nama_materi = $item->nama_materi;
+				}
+			}
+
+			$nama_pengajar = '-';
+			foreach($this->rows3 as $item){
+				if ($item->id == $row->id_pengajar) {
+					$nama_pengajar = $item->nama_pengajar;
+				}
+			}
+			echo '<tr data-id="' . $row->id_materi_silabus . '">';
+			echo '<tr data-id="' . $row->id_pengajar . '">';
+			echo '<td align="center">'. $index++ .'.</td>';
+			echo '<td>'. $nama_pengajar .'</td>';
+			echo '<td>'. $nama_materi .'</td>';
+			echo '<td align="center">'.$row->pertanyaan.'</td>';
+			echo '<td align="left">'. 	'Jawaban 1 :' . $row->jawaban1 . '<br>' . 
+										'Jawaban 2 :' . $row->jawaban2 . '<br>' .
+										'Jawaban 3 :' . $row->jawaban3 . '<br>' .
+										'Jawaban 4 :' . $row->jawaban4 . '<br>' .
+										'Jawaban 5 :' . $row->jawaban5 . '<br>' .
+				'</td>';
+			echo '<td align="center">'.$row->kunci_jawaban.'</td>';
+			echo '<td align="center"><a href="/admin/materi-silabus-quiz/edit/id/'. $row->id .'">EDIT</a>';
+			echo '&nbsp;|&nbsp;<a href="/admin/materi-silabus-quiz/delete/id/'. $row->id .'" onclick="return confirmDelete();">DELETE</a>';
+			echo '</td>';
+			echo '</tr>';
+		}
+		?>
+	</tbody>
+
+	</table>
+<? } else {
+	echo 'Data tidak ditemukan.';
+}
+?>

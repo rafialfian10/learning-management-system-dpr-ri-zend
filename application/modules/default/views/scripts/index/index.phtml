@@ -1,0 +1,286 @@
+<link rel="stylesheet" href="https://berkas.dpr.go.id/mooc/assets/css/index.css">
+<!-- bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+<!-- swiper -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
+<!-- swiper grid -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.1/css/swiper.css">
+
+<!-- Swiper batch -->
+<h1 class="m-auto my-3 fw-bold fs-3 text-start" style="max-width: 90vw; margin-top: 120px !important;"></h1>
+<? if(count($this->banners) > 0) { ?>
+    <swiper-container class="pb-5 rounded-4" pagination="true" pagination-clickable="true" slides-per-view="auto" centered-slides="true" space-between="30" autoplay="true" loop="true" style="max-width: 100vw;">
+      <?php
+        foreach ($this->banners as $banner) {
+          echo '<swiper-slide class="swiper-batch rounded-4 overflow-hidden" style="max-width: 70%; height: 100%; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">' . ($banner->gambar_uri == '' ? '' : '<img style="width: 100%; height: 100%;" src="https://berkas.dpr.go.id/mooc/banner/' . $banner->gambar_uri . '">') . ' </swiper-slide>';
+        }
+        ?>
+    </swiper-container>
+<? } else {
+    echo 'Courses tidak ditemukan.';
+  }
+?>
+<br><br><br>
+<!-- End swiper batch -->
+
+<!-- Info belajar -->
+<div id="container-info-belajar" class="container-info-belajar background-content m-auto d-flex flex-row align-items-center rounded px-4 py-3" style="width: 70vw; background-color: #E5E7E9; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">
+  <img src="https://berkas.dpr.go.id/mooc/assets/images/mooc.png" alt="" class="d-flex align-items-center me-5" style="width: 150px;">
+  <div class="content-info-belajar d-flex flex-row justify-content-evenly align-items-center" style="width: 100%;">
+    <p class="m-0 text-start fs-5 fw-bold text-dark" style="width: 55%; height: 100%;">Siap untuk belajar menjadi profesional?</p>
+    <div class="button-info-belajar d-flex flex-row justify-content-center m-0" style="width: 45%;">
+    <?php
+      $auth = Zend_Auth::getInstance()->getIdentity();
+      if (!($auth->id)) {
+        echo'<a href="#" class="btn-mulai-belajar m-0 me-3 rounded text-light fs-6 p-2 text-decoration-none" style="background-color: #D4A216; border: 1px solid #D4A216;">Mulai belajar</a>
+        <a href="#" class="background-content m-0 rounded border-3 fs-6 p-2 text-decoration-none" style="background-color: #E5E7E9; border: 1px solid #D4A216; color: #D4A216">Tanya dulu?</a>';
+      } else {
+        echo'<a href="/peserta/index" class="m-0 me-3 rounded text-light fs-6 p-2 text-decoration-none" style="background-color: #D4A216; border: 1px solid #D4A216;">Mulai belajar</a>
+        <a href="#" class="background-content m-0 rounded border-3 fs-6 p-2 text-decoration-none" style="background-color: #E5E7E9; border: 1px solid #D4A216; color: #D4A216">Tanya dulu?</a>';
+      }
+    ?>
+    </div>
+  </div>
+</div>
+<br><br><br>
+<!-- End info belajar -->
+
+<!-- swiper pelatihan yang telah dibuka -->
+<div class="header-open-pelatihan m-auto mb-4 d-flex flex-row justify-content-between" style="max-width: 80vw;">
+  <p class="m-0 fw-bold fs-4 text-start">Pelatihan yang telah di buka</p>
+  <p class="btn-all-class m-0 d-flex align-items-center justify-content-end"><a href="" style="color: #D4A216;">Lihat Semua</a></p>
+</div>
+<?  if(count($this->batchs) > 0) { ?>
+      <swiper-container id="swiper-container-pelatihan-dibuka" class="m-auto rounded-4" pagination="true" pagination-clickable="true" slides-per-view="auto" slides-per-group="1" space-between="10" loop="true" style="max-width: 80vw; height: 350px; padding-bottom: 30px !important;">
+        <?php
+          foreach($this->batchs as $batch) {
+            echo'<swiper-slide class="swiper-open-pelatihan d-flex justify-content-center align-items-center text-center fs-3 bg-dark rounded-4 overflow-hidden p-0" style="width: 24.3%; height: 100%; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">';
+                  echo'<div class="d-flex flex-column align-items-start m-0 overflow-hidden" style="width: 100%; height: 100%; position: relative;">'.
+                  ($batch->sampul_pelatihan == "" ? '<img class="rounded-4 overflow-hidden" src="" style="width: 100%; height: 100%;">' : '<img class="rounded-4 overflow-hidden" src="https://berkas.dpr.go.id/mooc/thumbkelas/' . $batch->sampul_pelatihan . '" style="width: 100%; height: 100% !important; position: absolute;">');
+                    echo'<a href="/default/detail-batch/index/id/'. $batch->id_batch .'" class="shadow-text ps-3 text-light text-start fs-4 fw-bold text-decoration-none" style="width: 100%; margin-top: 230px; z-index: 1">' . (strlen($batch->nama_pelatihan) > 12 ? substr($batch->nama_pelatihan, 0, 13) . '...' : $batch->nama_pelatihan) . '</a>
+                    <div class="d-flex flex-row align-items-center ps-3" style="z-index: 1;">
+                      <img src="https://berkas.dpr.go.id/mooc/assets/images/book-variant-white.png" alt="" class="me-2" style="width: 20px; height: 20px;">
+                      <p class="shadow-text m-0 fs-6 text-light text-start me-2">'. count($batch->nama_pelatihan) . ' Kelas' .'</p>
+                      <img src="https://berkas.dpr.go.id/mooc/assets/images/account-multiple-white.png" alt="" class="me-2" style="width: 20px; height: 20px;">
+                      <p class="shadow-text m-0 fs-6 text-light text-start">'. (($batch->kuota_peserta != null) ? $batch->kuota_peserta : '0') .' Peserta</p>
+                    </div>
+                  </div>
+                </swiper-slide>';
+          }
+        ?>
+        <!-- content pelatihan yang telah dibuka -->
+      </swiper-container>
+<?  } else {
+      echo 'Courses tidak ditemukan.';
+    }
+?>
+<br><br><br>
+<!-- end swiper pelatihan yang telah dibuka  -->
+
+<!-- swiper all class -->
+<div class="m-auto mb-4 d-flex flex-row text-start justify-content-start" style="max-width: 80vw;">
+  <p class="title-all-class m-0 fw-bold fs-4 text-start">Eksplorasi Materi MOOC</p>
+</div>
+<?  if (count($this->batchs) > 0) { ?>
+    <div pagination="true" class="swiper-container m-auto rounded-4" style="max-width: 80vw; padding-bottom: 30px !important;">
+      <div class="swiper-wrapper" style="width: 100% !important;">
+        <?php
+          foreach ($this->batchs as $batch) {
+            echo'<div class="swiper-slide background-content d-flex justify-content-start align-items-start rounded-4" style="width: 100% !important; height: 80px; background-color: #E5E7E9; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">';
+              echo($batch->sampul_pelatihan == '<img class="me-2 rounded-4" style="width: 100px !important; height: 100%;" src="">' ? '-' : '<img class="me-2 rounded-4 overflow-hidden" style="width: 100px; height: 100%;" src="https://berkas.dpr.go.id/mooc/thumbkelas/'. $batch->sampul_pelatihan .'">');
+                echo'<div class="sub-content-all-class d-flex flex-column justify-content-center" style="width: 90%">
+                  <a href="/default/detail-batch/index/id/'. $batch->id_batch .'" class="m-1 text-dark fs-3 fw-bold text-decoration-none">
+                  <p class="text-p m-0 mb-1 fs-6 text-start" style="color: #D4A216;">'. (strlen($batch->nama_pelatihan) > 15 ? substr($batch->nama_pelatihan, 0, 14) . '...' : $batch->nama_pelatihan) .'</p>
+                  </a>
+                  <div class="d-flex flex-row">
+                    <img class="me-1" style="width: 20px; height: 20px;" src="https://berkas.dpr.go.id/mooc/assets/images/book-variant-grey.png">
+                    <p class="m-0 text-start text-secondary" style="font-size: 14px;">'. count($batch->nama_pelatihan). 'Kelas' .'</p>
+                  </div>
+                </div>
+              </div>';
+          }
+        ?>
+      </div>
+      <!-- <div class="swiper-pagination"></div> -->
+      <!-- <div class="swiper-button-prev rounded-circle bg-warning border border-warning text-light fw-bold" style="width: 40px; height: 40px; padding: 20px; top: 45%;"></div>
+      <div class="swiper-button-next rounded-circle bg-warning border border-warning text-light fw-bold" style="width: 40px; height: 40px; padding: 20px; top: 45%;"></div> -->
+    </div>
+<?  } else {
+      echo 'Courses tidak ditemukan.';
+    }
+?>
+<br><br><br>
+<!-- end swiper all class -->
+
+<!-- swiper pelatihan populer -->
+<div class="m-auto mb-4 d-flex flex-row justify-content-start info" style="max-width: 80vw;">
+  <p class="m-0 fw-bold fs-4 text-start w-100">Pelatihan Yang Populer</p>
+</div>
+<? if(count($this->batchs) > 0) { ?>
+  <swiper-container class="m-auto rounded-4 px-2" pagination="true" pagination-clickable="true" slides-per-view="auto" slides-per-group="1" space-between="15" loop="true" style="max-width: 80vw; padding-bottom: 30px !important;">
+    <?php
+      foreach ($this->batchs as $batch) {
+        $nama_pengajar = '-';
+        $kuota_peserta = 0;
+
+        foreach($this->batch as $b) {
+          if($b->id_pelatihan == $batch->id) {
+            $kuota_peserta = $b->kuota_peserta;
+          }
+        }
+
+        foreach ($this->pengajars as $pengajar) {
+          if ($pengajar->id == $batch->id_pengajar) {
+            $nama_pengajar = $pengajar->nama_pengajar;
+          }
+        }
+
+        $totalStars = 0;
+        $maxStars = 0;
+        $percentage = 0;
+    
+        foreach($this->ratings as $rating) {
+          if($rating->id_batch == $batch->id_batch) {
+            $totalStars += $rating->star;
+            $maxStars += 5;
+          }
+        }
+        
+        // Memastikan $maxStars tidak bernilai 0 untuk menghindari division by zero
+        if ($maxStars > 0) {
+            $percentage = ($totalStars / $maxStars) * 100;
+        }
+
+        // Memastikan persentase tidak melebihi 100%
+        if ($percentage > 100) {
+            $percentage = 100;
+        }
+
+        if($percentage >= 80) {
+          echo'<swiper-slide class="swiper-populer-pelatihan background-content rounded-4 d-flex justify-content-center align-items-center text-center fs-3 rounded-4 p-0" style="width: 24%; height: 400px; background-color: #E5E7E9; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);">
+                <div class="m-0 overflow-hidden d-flex flex-column align-items-start" style="width: 100%; padding-bottom: 60px;">';
+                  echo ($batch->sampul_pelatihan == '<img class="rounded-4 overflow-hidden" src="" style="width: 100%; height: 200px; object-fit: cover">' ? '' : '<img class="mb-2 rounded-4" src="https://berkas.dpr.go.id/mooc/thumbkelas/' . $batch->sampul_pelatihan . ' "style="width: 100%; height: 200px; object-fit: cover;">');
+                  echo '<p class="text-start text-secondary m-1 ps-2" style="font-size: 14px;">'. $nama_pengajar .'</p>
+                  <a href="/default/detail-batch/index/id/'. $batch->id_batch .'" class="m-1  ps-2 text-dark fs-4 fw-bold text-decoration-none">' . (strlen($batch->nama_pelatihan) > 12 ? substr($batch->nama_pelatihan, 0, 15) . '...' : $batch->nama_pelatihan) . '</a>
+                  <div class="d-flex flex-row align-items-center ps-2 my-2">
+                    <img src="https://berkas.dpr.go.id/mooc/assets/images/book-variant-grey.png" alt="" class="me-2" style="width: 20px; height: 20px;">
+                    <p style="font-size: 14px" class="m-0 text-secondary text-start me-4">' . count($batch->nama_pelatihan) . ' Kelas' . '</p>
+                    <img src="https://berkas.dpr.go.id/mooc/assets/images/account-multiple-black.png" alt="" class="me-2" style="width: 20px; height: 20px;">
+                    <p style="font-size: 14px" class="m-0 text-secondary text-start">' . ($kuota_peserta == '' ? '0 Peserta' : $kuota_peserta.' Peserta')  . '</p>
+                  </div>
+                  <div class="d-flex flex-row align-items-center ps-2 mb-2">
+                    <img src="https://berkas.dpr.go.id/mooc/assets/images/equalizer.png" alt="" class="me-2" style="width: 20px; height: 20px;">
+                    <p style="font-size: 14px" class="m-0 text-secondary text-start me-3">' . 'Beginner' . '</p>
+                    <img src="https://berkas.dpr.go.id/mooc/assets/images/clock.png" alt="" class="me-2" style="width: 20px; height: 20px;">
+                    <p style="font-size: 14px" class="m-0 text-secondary text-start">' . ($batch ? '20 Jam' : '-') . '</p>
+                  </div>
+                </div>
+            </swiper-slide>';
+        }
+      }
+    ?>
+  </swiper-container>
+<? } else {
+      echo 'Courses tidak ditemukan.';
+    }
+?>
+<br><br><br>
+<!-- end swiper pelatihan populer  -->
+
+<!-- -------------------------------------------------------------------------------------------------------------------- -->
+<?= $this->layout()->content; ?>
+
+<!-- swiper js -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-element-bundle.min.js"></script>
+<!-- swiper grid -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.1/js/swiper.js"></script>
+
+<script>
+  // swiper grid all class responsive 
+  function initSwiper() {
+    let screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    let swiperContainer = document.querySelector('.swiper-container');
+
+    let slidesPerView = 4;
+    let slidesPerGroup = 2;
+    let slidesPerColumn = 3;
+    let spaceBetween = 20;
+
+    if (screenWidth <= 768) {
+      swiperContainer.style.maxWidth = '80%';
+      slidesPerView = 2;
+      slidesPerGroup = 1;
+      slidesPerColumn = 1;
+    } else {
+      swiperContainer.style.maxWidth = '80%';
+    }
+
+    if (screenWidth < 768) {
+      // Mengubah teks pada paragraf dengan class "text-p"
+      let textElements = document.querySelectorAll('.text-p');
+        textElements.forEach(function (element) {
+          let text = element.textContent;
+          if (text.length > 14) {
+            element.textContent = text.substring(0, 9) + '...';
+          }
+      });
+    }
+
+    let swiper = new Swiper('.swiper-container', {
+      slidesPerView: slidesPerView,
+      slidesPerGroup: slidesPerGroup,
+      slidesPerColumn: slidesPerColumn,
+      spaceBetween: spaceBetween,
+      slidesPerColumnFill: 'row',
+    });
+
+    // Perbarui swiper pada ukuran window
+    window.addEventListener('resize', function () {
+      let newScreenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+      if ((screenWidth < 768 && newScreenWidth >= 768) || (screenWidth >= 768 && newScreenWidth < 768)) {
+        screenWidth = newScreenWidth;
+        swiper.destroy(); // hancurkan instance swiper yang ada
+        initSwiper(); // Inisialisasi ulang penggesek dengan konfigurasi yang diperbarui
+      }
+    });
+  }
+
+  initSwiper(); 
+  // end swiper grid all class responsive 
+
+  // btn mulai belajar
+  let btnMulaiBelajar = document.querySelector(".btn-mulai-belajar");
+  if (btnMulaiBelajar) {
+    btnMulaiBelajar.addEventListener("click", () => {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        html: 'Anda belum login, silahkan login terlebih dahulu',
+        confirmButtonColor: '#4CAF50',
+        customClass: {
+          popup: 'my-custom-popup-class',
+          title: 'my-custom-title-class',
+          content: 'my-custom-content-class',
+          confirmButton: 'confirm-button-class'
+        }
+      });
+    });
+  }
+  // end btn mulai belajar
+
+  // scroll btn view all class
+  let btnAllClass = document.querySelector('.btn-all-class');
+  let swiperContainerAllClass = document.querySelector('.title-all-class');
+
+  btnAllClass.addEventListener('click', function(event) {
+    event.preventDefault();
+      
+    let paddingTop = 20; 
+    let offset = 70;
+    let scrollTo = swiperContainerAllClass.offsetTop - paddingTop - offset;
+    window.scrollTo({ top: scrollTo, behavior: 'smooth' });
+  });
+  // end scroll btn view all class
+</script>
+

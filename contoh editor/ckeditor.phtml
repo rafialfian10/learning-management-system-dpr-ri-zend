@@ -1,0 +1,204 @@
+<script type="text/javascript">
+$(function() {
+	$("#compose").validate();
+	$("#tanggal_berita").datepicker({yearRange:"-1:+0",changeYear:"true",changeMonth:"true",dateFormat:"dd-mm-yy"});
+
+	$(".addRow").btnAddRow({maxRow:250, inputBoxAutoNumber:true, displayRowCountTo:"rowCount", rowNumColumn:"rowNumber"});
+	$(".cancelRow").btnDelRow();
+
+	$("table")
+		.tablesorter({theme: 'blue', widthFixed: true, widgets: ['zebra', 'filter']})
+		.tablesorterPager({container: $(".pager"), 
+							output: '{startRow} - {endRow} / {filteredRows} ({totalRows})', 
+							fixedHeight: true, 
+							removeRows: false, 
+							cssGoto: '.gotoPage' });
+});
+</script>
+
+<style>
+#myTable
+{
+font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+width:100%;
+border-collapse:collapse;
+}
+#myTable td, #customers th
+{
+font-size:1.0em;
+border:1px solid #98bf21;
+padding:3px 7px 2px 7px;
+vertical-align: top;
+}
+#myTable th
+{
+font-size:1.0em;
+text-align:center;
+padding-top:5px;
+padding-bottom:4px;
+background-color:#A7C942;
+color:#fff;
+}
+#myTable tr.alt td
+{
+color:#000;
+background-color:#EAF2D3;
+}
+</style>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>  Edit Berita <?=$this->category_title;?></h1>
+	<div class="header_nav_links"><a href="/admin/newsind/index/category/<?=$this->category;?>">Back to Daftar Berita <?=$this->category_title;?></a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p><label>Judul Berita</label><input class="required" type="text" id="title" autocomplete="disable" name="title" value="<?=$this->row->title;?>"/> <font color="red">*</font></p>
+		<p><label>Tanggal</label><input class="datepicker required" type="text" id="tanggal_berita" autocomplete="disable" name="tanggal_berita" value="<?=$this->FormatDate($this->row->tanggal_berita);?>"/> <font color="red">*</font></p>
+		<p><label> &nbsp; </label><font color="blue">Silakan input Nama Redaktur, Reporter, Fotografer di bawah dengan menekan tombol <b>Tambah Pegawai</b> </font></p>
+<?/*
+		<p><label>Reporter</label><input readonly class="" type="text" id="penulis" autocomplete="disable" name="penulis" value="<?=$this->row->user_input;?>"/> <font color="red">*</font></p>
+		<p><label>Fotografer</label><input class="" type="text" id="fotografer" autocomplete="disable" name="fotografer" value="<?=$this->row->fotografer;?>"/> <font color="red">*</font></p>
+*/?>
+		<p><label>Editor</label></p>
+		<div style="padding-left:150px;"><textarea id="content" wrap="soft" rows="6" cols="60" name="content" style="overflow: hidden;"><?=$this->row->content_draft;?></textarea> </div>
+		<p><label>Kode Youtube</label><input class="" type="text" id="url" autocomplete="disable" name="url" value="<?=$this->row->url;?>"/></p>
+		<p><label>Category</label><input readonly class="required" type="text" id="category" autocomplete="disable" name="category" value="<?=$this->row->category;?>"/> <font color="red">*</font></p>
+		<p><label>Status</label>
+		<?
+		if ($this->row->status == 1)
+		{
+			$checked1 = 'checked';
+			$checked2 = '';
+		} else {
+			$checked1 = '';
+			$checked2 = 'checked';
+		}
+		?>
+		<input class="required" type="radio" id="active" name="active" value="1"<?=$checked1;?>>Show
+		<input class="required" type="radio" id="active" name="active" value="0"<?=$checked2;?>>Hide
+		<font color="red">*</font></p>
+
+		<p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Simpan" class=""/></label> <a href="/admin/newsind/add-pegawai/id/<?=$this->row->id;?>/category/<?=$this->category;?>" class="UIbutton-small">Tambah Pegawai</a> <a href="/admin/newsind/index/category/<?=$this->category;?>" class="UIbutton-small">Batal</a></p>
+		<br>
+		<? if (count($this->PegawaiRows) > 0) { ?>
+			<?=$this->pager;?>
+
+			<table class="tablesorter">
+				<thead>
+					<tr>
+						<th align="center" width="40px">No.</th>
+						<th align="center">NIP</th>
+						<th align="center">Nama</th>
+						<th align="center">Jabatan</th>
+						<th align="center">Aksi</th>
+					</tr>
+				</thead>
+				<tbody>
+				<?php
+					$arrJabatan = array('Fotografer' , 'Reporter' , 'Redaktur Berita', 'Redaktur Foto', 'Pengelola Media Cetak');
+					$indeks = 1;
+					foreach($this->PegawaiRows as $row) 
+					{
+						$jabatan = '<select id="jabatan' . $indeks . '" name="jabatan' . $indeks . '">';
+						$jabatan .= '<option value="">Pilih Data...</option>';
+						foreach($arrJabatan as $key)
+						{
+							$selected = ($row->jabatan == $key) ? ' selected' : '';
+							$jabatan .= '<option value="' . $key . '"' . $selected . '>' . $key . '</option>';
+						}
+						$jabatan .= '</select>';
+
+						echo '<tr>';
+						echo '<td align="center">'.$indeks.'. <input type="hidden" id="id_newsind_data' . $indeks . '" name="id_newsind_data' . $indeks . '" value="' . $row->id . '"></td>';
+						echo '<td align="center">'.$row->nip . '</td>';
+						echo '<td>'.$row->nama . '</td>';
+						echo '<td align="center">'.$jabatan . '</td>';
+						echo '<td align="center"><a href="/admin/newsind/delete-pegawai/id/'.$row->id.'/category/' . $this->category . '" onclick="return confirmDelete();">DELETE</a></td>';
+						echo '</tr>';
+
+						$indeks++;
+					}
+				?>				
+				</tbody>
+			</table>
+			<input type="hidden" id="numRow2" name="numRow2" value="<?=count($this->PegawaiRows);?>">
+		<? } else {
+			echo 'Data tidak ditemukan.';
+		}
+		?>
+		<br>
+		<label>Foto Berita Terkait</label>
+		<br>
+		<table id="myTable">
+			<tr>
+				<th>No.</th>
+				<th>Judul</th>
+				<th>Deskripsi</th>
+				<th>Foto</th>
+				<th>&nbsp;</th>
+			</tr>
+			<?php
+			foreach ($this->rows as $row) {
+				$filenotfound = $this->url_statik . '/images/filenotfound.jpg';
+				$url_path = $this->url_berkas . '/photo-per-news/thumbs';
+
+				$thumbnails = ($row->file_name != '') ? $url_path . '/' . $row->file_name : $filenotfound;
+			?>
+				<tr>
+					<td><span class="rowNumber"></span>.</td>
+					<td><input type="text" id="title" autocomplete="disable" name="title" value="<?=$row->title;?>" style="width: 200px;"/></td>
+					<td><textarea id="description" cols="30" rows="2" name="description"><?=$row->description;?></textarea></td>
+					<td>
+						<? 
+						if ($row->file_name == "") {
+							echo '<input type="file" id="file_name" autocomplete="disable" name="file_name"/>';
+						} else {
+							echo '<img src="' . $thumbnails . '" width="75"><br>' . $row->file_name . '(' . $this->ByteFormat($row->file_size) . ') [<a href="/admin/newsind/delete-file/category/' . $this->category . '/id/' . $row->id . '">Delete</a>]';
+						} 
+						?>
+					</td>
+					<td>
+						<input type="hidden" id="id_photo_per_news" name="id_photo_per_news" value="<?=$row->id;?>">
+						<input type="button" class="cancelRow" value="Batal"/>
+					</td>
+				</tr>
+			<?php 
+			} 
+			if (count($this->rows) == 0) {
+			?>
+				<tr>
+					<td><span class="rowNumber"></span>.</td>
+					<td><input type="text" id="title" autocomplete="disable" name="title" value="" style="width: 200px;"/></td>
+					<td><textarea id="description" cols="30" rows="2" name="description"></textarea></td>
+					<td><input type="file" id="file_name" name="file_name"></td>
+					<td>
+						<input type="hidden" id="id_photo_per_news" name="id_photo_per_news" value="">
+						<input type="button" class="cancelRow" value="Batal"/>
+					</td>
+				</tr>
+			<?
+			}
+			?>
+			<tr>
+				<td colspan="5" align="right">
+					<? if ($this->getRole() == "admin" || $this->getRole() == "super" || $this->getRole() == "user") { ?>
+						<input type="button" class="addRow" value="Tambah Baris"/>
+					<? } ?>
+					<input type="hidden" class="rowCount" id="numRow" name="numRow">
+				</td>
+			</tr>
+		</table>
+	</div>
+</form>
+<div style="clear:both"></div>
+<script type="text/javascript" src="/cxedit0r_pemberitaan/ckeditor.js"></script>
+<script type="text/javascript">
+	CKEDITOR.replace( 'content' ,{
+			filebrowserBrowseUrl: '/cxedit0r_pemberitaan/kcfinder/browse.php?type=files',
+			filebrowserImageBrowseUrl: '/cxedit0r_pemberitaan/kcfinder/browse.php?type=images',
+			filebrowserUploadUrl: '/cxedit0r_pemberitaan/kcfinder/upload.php?type=files',
+			filebrowserImageUploadUrl: '/cxedit0r_pemberitaan/kcfinder/upload.php?type=images'
+		});
+</script>

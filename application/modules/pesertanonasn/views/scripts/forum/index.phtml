@@ -1,0 +1,148 @@
+<link rel="stylesheet" href="https://berkas.dpr.go.id/mooc/assets/css/forum.css">
+
+<!-- sidebar -->
+<div class="area"></div>
+<nav class="main-menu background-content" style="max-width: 100vw;" onmouseover="changeMarginLeft(20)" onmouseout="changeMarginLeft(0)">
+    <ul class="background-content">
+        <li class="has-subnav">
+            <a href="/pesertanonasn/index">
+                <img src="https://berkas.dpr.go.id/mooc/assets/images/dashboardblack.png" alt="" class="icon" style="width: 20px; height: 20px;">
+                <span class="nav-text">Dashboard</span>
+            </a>
+        </li>
+
+        <li class="has-subnav">
+            <a href="/pesertanonasn/pelatihan">
+                <img src="https://berkas.dpr.go.id/mooc/assets/images/pelatihan-black.png" alt="" class="icon" style="width: 20px; height: 20px;">
+                <span class="nav-text">Pelatihan</span>
+            </a>    
+        </li>
+
+        <li class="has-subnav active">
+            <a href="/pesertanonasn/forum">
+                <img src="https://berkas.dpr.go.id/mooc/assets/images/forum-white.png" alt="" class="icon" style="width: 20px; height: 20px;">
+                <span class="nav-text">Forum</span>
+            </a>    
+        </li>
+
+        <li class="has-subnav">
+            <a href="/pesertanonasn/riwayat">
+                <img src="https://berkas.dpr.go.id/mooc/assets/images/hourglass-split.svg" alt="" class="icon" style="width: 20px; height: 20px;">
+                <span class="nav-text">Riwayat</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+<!-- end sidebar -->
+
+<!-- forum -->
+<section class="container-forum d-flex flex-column rounded-4 my-5" style="max-width: 80vw; margin-left: 10%; margin-top: 150px !important;">
+    <div class="d-flex flex-column">
+        <p class="mb-2 fs-3 fw-bold">Ruang diskusi</p>
+        <div class="content-diskusi d-flex flex-row mb-4">
+            <a href="" class="d-flex justify-content-center align-items-center m-0 text-light fs-6 p-1 px-3 rounded-4 me-3 text-decoration-none cursor-pointer" style="height: 100%; background-color: #D4A216;">Semua</a>
+            <a href="" class="d-flex background-content justify-content-center align-items-center m-0 fs-6 p-1 px-3 rounded-4 me-3 text-decoration-none cursor-pointer" style="height: 100%; background-color: #E5E7E9; color: #D4A216; border: 1px solid #D4A216;">Terjawab</a>
+            <a href="" class="d-flex background-content justify-content-center align-items-center m-0 fs-6 p-1 px-3 rounded-4 me-3 text-decoration-none cursor-pointer" style="height: 100%; background-color: #E5E7E9; color: #D4A216; border: 1px solid #D4A216;">Belum Terjawab</a>    
+        </div>
+    </div>
+
+    <?php
+        $auth = Zend_Auth::getInstance()->getIdentity();
+        $nama_coach = "-";
+        $foto_coach = "-";
+       
+        
+        foreach($this->forums as $forum) {
+            foreach($this->peserta_batchs as $peserta_batch) {
+                $totalChat= 0;
+                $nama_pelatihan = "-";
+
+                foreach($this->coachs as $coach) {
+                    if($coach->id == $forum->id_coach) {
+                        $nama_coach = $coach->nama_coach;
+                        $foto_coach = $coach->fotocoach_uri;
+                        break;
+                    }
+                }
+
+                foreach($this->chats as $chat) {
+                    if($chat->id_forum == $forum->id) {
+                        $totalChat++;
+                    }
+                }
+    
+                if($peserta_batch->id_batch == $forum->id_batch && $peserta_batch->status == 1) {
+                    foreach($this->pelatihans as $pelatihan) {
+                        if($pelatihan->id == $peserta_batch->id_pelatihan && $peserta_batch->id_batch == $forum->id_batch) {
+                            $nama_pelatihan = $pelatihan->nama_pelatihan;
+                            break;
+                        }
+                    }
+
+                    echo'<p class="m-1 fs-5 fw-bold">'. $nama_pelatihan .'</p>
+                        <div class="background-content d-flex flex-column justify-content-center rounded-3 p-3 mb-5" style="background-color: #E5E7E9; border: 1px solid #D4A216;">
+                                <div class="d-flex flex-row mb-3">
+                                    <div class="d-flex flex-column justify-content-center align-items-center text-center border border-0 rounded-circle mb-3 me-3" style="width: 50px; height: 50px; box-shadow: 4.0px 8.0px 8.0px hsl(0deg 0% 0% / 0.38);">
+                                        <img src="https://berkas.dpr.go.id/mooc/fotocoach/'.$foto_coach.'" alt="" style="width: 25px; height: 25px;">
+                                    </div>
+        
+                                    <div class="d-flex flex-column justify-content-start" style="width: 100%;">
+                                        <p class="m-0 fw-bold">'. $nama_coach .'</p>
+                                        <p class="m-0 text-secondary">'. $forum->tanggal_input .'</p>
+                                    </div>
+        
+                                    <div>
+                                        <button type="button" class="copy1 bg-transparent border-0">
+                                            <i class="bi bi-clipboard fs-5 div-text"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="content-message d-flex flex-row justify-content-between align-items-center">
+                                    <input class="background-content div-text input1 m-0 fs-6 border-0" style="width: 80%; background-color: #E5E7E9; outline: white;" value="'. $forum->title .'">
+                                    <div class="d-flex flex-row justify-content-end align-items-center" style="width: 10%";>
+                                        <p class="m-0 pe-1">'. $totalChat .'</p>
+                                        <a href="/pesertanonasn/forum/reply/id/'. $forum->id .'" class="p-0 fs-7 text-decoration-none" style="color: #D4A216">
+                                            <img src="https://berkas.dpr.go.id/mooc/assets/images/forum-black.png" alt="" style="width: 25px; height: 25px;">
+                                        </a>
+                                    </div>
+                                </div>
+                        </div>';
+                        break;
+                }
+            }
+        }
+    ?>
+</section>
+<!-- end forum -->
+
+<script>
+    // copy
+    const copy1 = document.querySelectorAll(".copy1");
+    const input1 = document.querySelectorAll(".input1");
+
+    copy1.forEach((element, index) => {
+        element.addEventListener("click", () => {
+            input1[index].select();
+            document.execCommand("copy");
+            element.innerText = "Copied";
+            element.style.backgroundColor = "transparent";
+
+            setTimeout(() => {
+                element.innerText = "Copy";
+            }, 3000);
+        });
+    });
+    // end copy
+
+    // animation sidebar
+    function changeMarginLeft(margin) {
+        let containerForum = document.querySelector('.container-forum');
+      
+        if (margin === 0) {
+            containerForum.classList.remove('margin-left-20');
+        } else {
+            containerForum.classList.add('margin-left-20');
+        }
+    }
+    // end animation sidebar
+</script>

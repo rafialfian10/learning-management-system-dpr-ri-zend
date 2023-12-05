@@ -1,0 +1,117 @@
+<script src="<?=$this->url_statik;?>/tinymce/tinymce.min.js"></script>
+<script src="/vendor/FileSaver.js"></script>
+<script src="/build/html-docx.js"></script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>  Cetak Catatan Rapat</h1>
+	<div class="header_nav_links"><a href="/admin/catatan-rapat/edit/id/<?=$this->id;?>">Back to Edit Catatan Rapat</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p><label>Enter/paste your document here:</label></p>
+		  <textarea id="content" cols="60" rows="40">
+			<? 
+			foreach($this->rows as $row)
+			{
+				$konten[$row->judul] .= $row->konten.'<br>';
+			}
+
+			echo '<center><div><img src="/images_ksap/images/logo-garuda-hd-emas.png"></div>DEWAN PERWAKILAN RAKYAT<br>
+			<u>REPUBLIK INDONESIA</u><br><br>
+			<b>CATATAN RAPAT<br>
+			' . strtoupper($this->row->akd).' (BIDANG '. strtoupper($this->row->bidang) .')</b></center><br>'.
+			'<table width="100%"><tr><td width="20%">Tahun Sidang</td><td>:</td><td>'.$this->row->tahun_sidang.'</td></tr>'.	
+			'<tr><td>Masa Persidangan</td><td>:</td><td>'.$this->row->masa_persidangan.'</td></tr>'.
+			'<tr><td>Rapat Ke-</td><td>:</td><td>'.$this->row->rapat_ke.'</td></tr>'.
+			'<tr><td>Jenis Rapat</td><td>:</td><td>'.$this->row->jenis_rapat.'</td></tr>'.
+			'<tr><td>Sifat Rapat</td><td>:</td><td>'.$this->row->sifat_rapat.'</td></tr>'.
+			'<tr><td>Hari/Tanggal</td><td>:</td><td>'.$this->FormatDate($this->row->tanggal, '%d %B %Y').'</td></tr>'.
+			'<tr><td>Waktu</td><td>:</td><td>'.$this->row->waktu.'</td></tr>'.
+			'<tr><td>Tempat</td><td>:</td><td>'.$this->row->tempat.'</td></tr>'.
+			'<tr><td>Ketua Rapat</td><td>:</td><td>'.$this->row->nama_ketua_rapat.'</td></tr>'.
+			'<tr><td>Acara</td><td>:</td><td>'.$this->row->acara.'</td></tr>'.
+			'<tr><td>Sekretaris Rapat</td><td>:</td><td>'.$this->row->nama_sekretaris_rapat.'</td></tr>'.
+			'<tr><td valign="top">Hadir</td><td valign="top">:</td><td>'.$konten['1'].'</td></tr></table><br>'.
+			$konten['2'].'<br>'.
+			$konten['3'].'<br>'.
+			'<center>KESIMPULAN/KEPUTUSAN</center>'.
+			$konten['4'].'<br>
+			<table width="100%">
+				<tr><td width="50%">&nbsp;</td><td width="50%"><center>KETUA RAPAT,<br><br><br><u>' . $this->row->nama_ketua_rapat . '</u><br>atau<br>a.n. KETUA RAPAT<br>SEKRETARIS RAPAT,<br><br><br><u>' . $this->row->nama_sekretaris_rapat . '</u></center></td></tr>
+			</table>';
+			?>
+		  </textarea>
+			
+		<p><label>Page orientation:</label></p>
+		  <div class="page-orientation">
+			<label><input type="radio" name="orientation" value="portrait" checked>Portrait</label>
+			<label><input type="radio" name="orientation" value="landscape">Landscape</label>
+		  </div>
+		  
+		  <div id="download-area"></div>
+
+		<p class="savecancel"><button id="convert" class="UIbutton-small">Ekspor</button> <a href="/admin/catatan-rapat/edit/id/<?=$this->id;?>" class="UIbutton-small">Batal</a></p>
+	</div>
+</form>
+<div style="clear:both"></div>
+
+  <script>
+    tinymce.init({
+		font_formats: "Andale Mono=andale mono,times; Arial=arial,helvetica,sans-serif; Arial Black=arial black,avant garde; Book Antiqua=book antiqua,palatino; Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; Helvetica=helvetica; Impact=impact,chicago; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats",
+		content_style: "@import url('https://fonts.googleapis.com/css2?family=Oswald&display=swap'); body, td, th { font-family: Times New Roman !important; font-size: 12pt !important; }",
+      selector: '#content',
+      plugins: [
+        "advlist autolink lists link image charmap print preview anchor",
+        "searchreplace visualblocks code fullscreen fullpage",
+        "insertdatetime media table contextmenu paste"
+      ],
+      toolbar: "insertfile undo redo | styleselect | bold italic | " +
+        "alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | " +
+        "link image"
+    });
+    document.getElementById('convert').addEventListener('click', function(e) {
+      e.preventDefault();
+      convertImagesToBase64()
+      // for demo purposes only we are using below workaround with getDoc() and manual
+      // HTML string preparation instead of simple calling the .getContent(). Becasue
+      // .getContent() returns HTML string of the original document and not a modified
+      // one whereas getDoc() returns realtime document - exactly what we need.
+      var contentDocument = tinymce.get('content').getDoc();
+      var content = '<!DOCTYPE html>' + contentDocument.documentElement.outerHTML;
+      var orientation = document.querySelector('.page-orientation input:checked').value;
+      var converted = htmlDocx.asBlob(content, {orientation: orientation});
+
+      saveAs(converted, 'test.docx');
+
+      var link = document.createElement('a');
+      link.href = URL.createObjectURL(converted);
+      link.download = 'document.docx';
+      link.appendChild(
+        document.createTextNode('Click here if your download has not started automatically'));
+      var downloadArea = document.getElementById('download-area');
+      downloadArea.innerHTML = '';
+      downloadArea.appendChild(link);
+    });
+
+    function convertImagesToBase64 () {
+      contentDocument = tinymce.get('content').getDoc();
+      var regularImages = contentDocument.querySelectorAll("img");
+      var canvas = document.createElement('canvas');
+      var ctx = canvas.getContext('2d');
+      [].forEach.call(regularImages, function (imgElement) {
+        // preparing canvas for drawing
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.width = imgElement.width;
+        canvas.height = imgElement.height;
+
+        ctx.drawImage(imgElement, 0, 0);
+        // by default toDataURL() produces png image, but you can also export to jpeg
+        // checkout function's documentation for more details
+        var dataURL = canvas.toDataURL();
+        imgElement.setAttribute('src', dataURL);
+      })
+      canvas.remove();
+    }
+  </script>

@@ -1,0 +1,90 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+	});
+	$(function() {
+		$("#tgl_awal").datepicker({
+			yearRange: "-1:+5",
+			changeYear: "true",
+			changeMonth: "true",
+			dateFormat: "dd-mm-yy"
+		});
+		$("#tgl_akhir").datepicker({
+			yearRange: "-1:+5",
+			changeYear: "true",
+			changeMonth: "true",
+			dateFormat: "dd-mm-yy"
+		});
+	});	
+</script>
+
+<script src="<?= $this->url_statik; ?>/js/tinymce/tinymce.min.js"></script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?= $this->avatar; ?>Tambah Kegiatan</h1>
+	<div class="header_nav_links"><a href="/admin/kegiatan/index">Back to Daftar Kegiatan</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p>
+			<label class="left" for="title">Judul Kegiatan</label>
+			<input id="title" class="event-message" wrap="soft" name="title" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<p>
+			<label>Tipe Kegiatan</label>
+			<select class="required" id="tipe_kegiatan" name="tipe_kegiatan" style="width: 360px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+				<option value="" disabled>Pilih Tipe Kegiatan ...</option>
+				<option value="Workshop">Workshop</option>
+				<option value="FGD">Forum Group Discussion</option>
+				<option value="Webinar">Webinar</option>
+				<option value="Seminar">Seminar</option>
+				<option value="CBTW">Character Building and Team Work</option>
+			</select>  <font color="red">*</font>
+		<p>
+
+		<p>
+			<label class="left" for="konten">Konten </label>
+			<textarea id="konten" class="event-message" wrap="soft" rows="6" name="konten" style="overflow: hidden; display: block; width: 350px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"></textarea>
+		</p>
+
+		<p id="tanggal_awal"><label>Tanggal Awal</label>
+			<input type="text" id="tgl_awal" autocomplete="disable" name="tgl_awal" value="<?= date('d-m-Y'); ?>" name="nama_coach" style="width:350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" />
+			<font color="red">*</font>
+		</p>
+
+		<p id="tanggal_akhir"><label>Tanggal Akhir</label>
+			<input type="text" id="tgl_akhir" autocomplete="disable" name="tgl_akhir" value="<?= date('d-m-Y'); ?>" name="nama_coach" style="width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" />
+			<font color="red">*</font>
+		</p>
+
+		<p>
+			<label class="left" for="deskripsi">Deskripsi </label>
+			<textarea id="deskripsi" class="event-message" wrap="soft" rows="6" name="deskripsi" style="overflow: hidden; display: block; width: 350px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"></textarea>
+		</p>
+
+		<p>
+			<label class="left" for="sampul">Sampul Kegiatan</label> 
+			<input type="file" accept="image/*" id="file_name" name="file_name" id="sampul">
+		</p>
+
+		<p>
+			<label class="left" for="kuota_peserta">Kuota Peserta</label>
+			<input type="text" class="required" id="kuota_peserta" name="kuota_peserta" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"/> 
+		</p>
+
+		<p>
+			<label class="left" for="penyelenggara">Penyelenggara</label>
+			<input id="penyelenggara" class="event-message" wrap="soft" name="penyelenggara" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+
+		<p class="savecancel"><label class="UIbutton-small">
+			<input type="submit" value="Simpan" class="" /></label>
+			<a href="/admin/kegiatan/index" class="UIbutton-small">Batal</a>
+		</p>
+	</div>
+</form>
+<div style="clear:both"></div>

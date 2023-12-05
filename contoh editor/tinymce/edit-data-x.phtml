@@ -1,0 +1,39 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose_facebox").validate();
+	});
+</script>
+		<?
+		$struktur = array(
+			'hadir' => 'Hadir',
+			'I' => 'I. PENDAHULUAN',
+			'II' => 'II. KESIMPULAN / KEPUTUSAN',
+			'III' => 'III. PENUTUP'
+		);
+		?>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>  Edit Catatan Rapat (<?=$struktur[$this->col];?>)</h1>
+	<div class="header_nav_links"><a href="#" onclick="$(document).trigger('close.facebox');">Back to Edit Catatan Rapat</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose_facebox" name="compose_facebox" method="post" action="/admin/catatan-rapat/edit-data" enctype="multipart/form-data">
+	<div class="tabular">
+		<p><label><?=$struktur[$this->col];?></label><div style="padding-left:150px;"><textarea name="konten" id="konten" cols="51" rows="6" wrap="soft" class="event-message"><?=$this->row[$this->col];?></textarea> <font color="red">*</font></div></p>
+	
+		<p class="savecancel"><input type="hidden" id="id" name="id" value="<?=$this->id;?>"><input type="hidden" id="col" name="col" value="<?=$this->col;?>"><label class="UIbutton-small"><input type="submit" value="Simpan" class=""/></label><a href="#" class="UIbutton-small" onclick="$(document).trigger('close.facebox'); ">Batal</a></p>
+	</div>
+</form>
+<div style="clear:both"></div>
+
+<script type="text/javascript" src="/cxedit0r_ksap/ckeditor.js"></script>
+<script type="text/javascript">
+	CKEDITOR.replace( 'konten' ,{
+			filebrowserBrowseUrl: '/cxedit0r_ksap/kcfinder/browse.php?type=files',
+			filebrowserImageBrowseUrl: '/cxedit0r_ksap/kcfinder/browse.php?type=images',
+			filebrowserUploadUrl: '/cxedit0r_ksap/kcfinder/upload.php?type=files',
+			filebrowserImageUploadUrl: '/cxedit0r_ksap/kcfinder/upload.php?type=images'
+		});
+	
+</script>

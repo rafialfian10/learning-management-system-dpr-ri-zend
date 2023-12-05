@@ -1,0 +1,44 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+	})
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>Nilai Penugasan</h1>
+	<div class="header_nav_links"><a href="/admin/penugasan/index">Back to Daftar Penugasan</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p>
+			<label class="left" for="nama_peserta">Nama Peserta</label>
+			<input readonly disabled type="text" id="nama_peserta" class="event-message" wrap="soft" name="nama_peserta"  style="width: 450px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"  value="<?= $this->nama_peserta ?>">
+		</p>
+		<p>
+			<label class="left" for="skor_akhir">Skor Akhir</label>
+			<input type="text" id="skor_akhir" class="event-message" wrap="soft" name="skor_akhir"  style="width: 450px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;" value="<?= $this->row->skor_akhir ?>">
+			<font color="red">*</font>
+		</p>
+		<p>
+			<label class="left" for="file_pdf">File Tugas</label> 
+			<?php
+				if($this->row->ekstensi_tugas == 'Pdf'){
+					echo '<embed src="https://berkas.dpr.go.id/mooc/penugasan/'. $this->row->file_tugas .'" width="460px" />';
+				} else if($this->row->ekstensi_tugas == 'Image'){
+					echo '<img src="https://berkas.dpr.go.id/mooc/penugasan/' . $this->row->file_tugas . '" width="460" />';
+				} else if($this->row->ekstensi_tugas == 'Video'){
+					echo '<video width="460" controls>
+					<source src="https://berkas.dpr.go.id/mooc/penugasan/'. $this->row->file_tugas .'" type="video/mp4">
+					</video>';
+					echo '<input type="hidden" accept="video/*" id="file_video" autocomplete="disable" name="file_video" value="'.$this->row->file_tugas.'"/>';
+				} 
+			?>
+		
+		</p>
+		
+		<p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Simpan" class=""/></label><a href="/admin/penugasan/index" class="UIbutton-small">Batal</a></p>
+	</div>
+</form>
+<div style="clear:both"></div>

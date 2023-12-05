@@ -1,0 +1,86 @@
+<script type="text/javascript">
+	$(function() {
+		$("table")
+			.tablesorter({
+				theme: 'blue',
+				widthFixed: true,
+				widgets: ['zebra', 'filter']
+			})
+			.tablesorterPager({
+				container: $(".pager"),
+				output: '{startRow} - {endRow} / {filteredRows} ({totalRows})',
+				fixedHeight: true,
+				removeRows: false,
+				cssGoto: '.gotoPage'
+			});
+	});
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?= $this->avatar; ?>Pilih Peserta Batch</h1>
+</div>
+<div class="clear"></div>
+<br>
+
+<? if (count($this->rows) > 0) { ?>
+	<?= $this->pager; ?>
+
+	<form id="composed" name="composed">
+		<?php
+		$inputValues = $_GET['inputValues'];
+		?>
+
+		<table class="tablesorter" id="table1">
+			<thead>
+				<tr>
+					<td align="center" width=5%>
+						<script language="javascript">
+							checked = false;
+
+							function checkedAll(form) {
+								if (checked == false) {
+									checked = true;
+								} else {
+									checked = false;
+								}
+								for (var i = 0; i < form.elements.length; i++) {
+									var name = form.elements[i].name;
+									if (name.indexOf("cbDelete", 0) == 0)
+										form.elements[i].checked = checked;
+								}
+							}
+						</script>
+						<input type="checkbox" onclick="checkedAll(this.form);">
+					</td>
+					<th align="center">Nama Peserta</th>
+
+				</tr>
+			</thead>
+			<tbody>
+				<?
+				foreach ($this->rows as $row) {
+					echo
+					'<tr>
+							<td align="center">
+							<input type="checkbox" name="cbAdd[]" id="cbAdd' . $row->id . '" data-nama="' . $row->nama . '" value="' . $row->id . '">
+							</td>
+							<td align="center"> <label for="cbAdd' . $row->id . '"> ' . $row->nama . ' </label> </td>
+						</tr>';
+				}
+				?>
+			</tbody>
+		</table>
+
+	</form>
+	<div class="tabular">
+		<p class="savecancel">
+			<label class="UIbutton-small">
+				<a class="btn-primary" style="text-decoration:none; color:white; padding:10px;" href="javascript:selectFields3()">Tambahkan</a>
+			</label>
+		</p>
+	</div>
+<? } else {
+	echo 'Data tidak ditemukan.';
+}
+?>

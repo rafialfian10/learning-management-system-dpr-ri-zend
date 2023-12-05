@@ -1,0 +1,90 @@
+<script id="js">
+	$(function(){
+		$("table")
+			.tablesorter({
+				theme: 'blue', 
+				widthFixed: true, 
+				widgets: ['zebra', 'filter']
+			})
+			.tablesorterPager({
+				container: $(".pager"), 
+				output: '{startRow} - {endRow} / {filteredRows} ({totalRows})', 
+				fixedHeight: true, 
+				removeRows: false, 
+				cssGoto: '.gotoPage' 
+			});
+	});
+</script>
+
+<div class="content-header"></div>
+	<div class="UI_Header_Title">
+		<h1><?=$this->avatar;?> Daftar Nilai Mentoring</h1>
+		<div class="header_nav_links">
+			<!-- <span class="right context_menu"><a href="/mentor/nilai-mentoring/add" class="UIlink-button small right">Tambah Nilai</a></span> -->
+	</div>
+</div>
+<div class="clear"></div>
+<br>
+
+<? if (count($this->rows) > 0) { ?>
+	<?=$this->pager;?>
+
+	<table class="tablesorter">
+		 <thead>
+			 <tr>
+			 	<th width="5px">No.</th>
+				<th>Nama Peserta</th>
+				<th>Pelatihan</th>
+				<th>Nilai Keaktifan</th>
+				<th>Nilai Pemahaman</th>
+				<th>Nilai Tugas</th>
+				<th>Nilai Forum</th>
+				<th>Nilai Akhir</th>
+				<th>Aksi</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+			$index = 1;
+			foreach($this->rows as $row) {
+				echo '<tr>';
+				echo '<td align="center">'. $index++ .'.</td>';
+				foreach($this->peserta as $x){
+					if($x->id == $row->id_peserta){
+						echo '<td align="center">'. $x->nama .'</td>';
+						break;
+					}
+				}
+
+				foreach($this->batch as $y){
+					if($y->id == $row->id_batch){
+						foreach($this->pelatihan as $z){
+							if($z->id == $y->id_pelatihan){
+								echo '<td align="center">'. $z->nama_pelatihan .'</td>';
+								break;
+							}
+						}
+						break;
+					}
+				}
+				echo '<td align="center">'. $row->skor_keaktifan .'</td>';
+				echo '<td align="center">'. $row->skor_pemahaman .'</td>';
+				echo '<td align="center">'. $row->skor_tugas .'</td>';
+				echo '<td align="center">'. $row->skor_forum .'</td>';
+				echo '<td align="center">'. $row->skor_akhir .'</td>';
+			
+				echo '<td align="center">
+				<a href="/mentor/nilai-mentoring/edit/id/'. $row->id .'">NILAI</a>';
+				// if ($this->getRole() == 'admin' || $this->getRole() == 'super') {
+				// echo '&nbsp;|&nbsp;<a href="/mentor/nilai-mentoring/delete/id/'. $row->id .'" onclick="return confirmDelete();">DELETE</a>';
+				// }
+				echo '</td>';
+				echo '</tr>';
+			}
+			?>
+		</tbody>
+	</table>
+<? } else {
+	echo 'Data tidak ditemukan.';
+}
+?>

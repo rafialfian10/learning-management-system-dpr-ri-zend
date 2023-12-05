@@ -1,0 +1,256 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+	});
+	$(function() {
+		$("#tgl_awal").datepicker({
+			yearRange: "-1:+5",
+			changeYear: "true",
+			changeMonth: "true",
+			dateFormat: "dd-mm-yy"
+		});
+		$("#tgl_akhir").datepicker({
+			yearRange: "-1:+5",
+			changeYear: "true",
+			changeMonth: "true",
+			dateFormat: "dd-mm-yy"
+		});
+	});
+	
+	console.log(jQuery.fn.jquery);
+</script>
+
+<script id="js">
+$(function(){
+	$("table")
+		.tablesorter({theme: 'blue', widthFixed: true, widgets: ['zebra', 'filter']})
+		.tablesorterPager({container: $(".pager"), 
+			output: '{startRow} - {endRow} / {filteredRows} ({totalRows})', 
+			fixedHeight: true, 
+			removeRows: false, 
+			cssGoto: '.gotoPage' });
+});
+</script>
+
+<script>
+	
+	function formatDate(date) {
+		var day = date.getDate();
+		var month = date.getMonth() + 1;
+		var year = date.getFullYear();
+		return (day < 10 ? '0' : '') + day + '-' + (month < 10 ? '0' : '') + month + '-' + year;
+	}
+	function selectFields1(id, id, nama_pelatihan, tipe_pelatihan) {
+		$('#id_pelatihan').val(id);
+		$('#nama_pelatihan').val(nama_pelatihan);
+		$('#tipe_pelatihan').val(tipe_pelatihan);
+		// get the current date
+		var today = new Date();
+
+		// get the date one year from now
+		var nextYear = new Date();
+		nextYear.setFullYear(nextYear.getFullYear() + 1);
+
+		// format the dates as "dd-mm-yyyy"
+		var formattedToday = formatDate(today);
+		var formattedNextYear = formatDate(nextYear);
+
+		if(tipe_pelatihan == 'nonclassical'){
+			$('#kuota_peserta').attr('disabled', true).attr('readonly', true);
+			$('#tgl_awal').attr('readonly', true).val(formattedToday);
+			$('#tgl_akhir').attr('readonly', true).val(formattedNextYear);
+		} else {
+			$('#kuota_peserta').attr('disabled', false).attr('readonly', false);
+			$('#tgl_awal').attr('readonly', false);
+			$('#tgl_akhir').attr('readonly', false);
+	    }
+		$.facebox.close();
+	}
+
+	function ClearFields1() {
+		document.getElementById("id_pelatihan").value = "";
+		document.getElementById("nama_pelatihan").value = "";
+	}
+
+	function selectFields2(id, id, nama_coach) {
+		$('#id_coach').val(id);
+		$('#nama_coach').val(nama_coach);
+		$.facebox.close();
+	}
+	function ClearFields2() {
+		document.getElementById("id_coach").value = "";
+		document.getElementById("nama_coach").value = "";
+	}
+
+</script>
+
+<script src="<?= $this->url_statik; ?>/js/tinymce/tinymce.min.js"></script>
+
+<script>
+	// create changeBatch function
+	function changeBatch() {
+		var tipe_batch = document.getElementById("tipe_batch").value;
+		if (tipe_batch == 1) {
+			// show tgl_awal and tgl_akhir
+			document.getElementById("tanggal_awal").style.display = "block";
+			document.getElementById("tanggal_akhir").style.display = "block";
+			document.getElementById("tgl_awal").style.display = "block";
+			document.getElementById("tgl_akhir").style.display = "block";
+
+		} else {
+			// hide tgl_awal and tgl_akhir
+			document.getElementById("tanggal_awal").style.display = "none";
+			document.getElementById("tanggal_akhir").style.display = "none";
+			document.getElementById("tgl_awal").style.display = "none";
+			document.getElementById("tgl_akhir").style.display = "none";
+		}
+	}
+
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?= $this->avatar; ?>Tambah Batch</h1>
+	<div class="header_nav_links"><a href="/admin/batch/index">Back to Daftar Batch</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p>
+			<label class="left" for="judul_batch">Judul Batch</label>
+			<input id="judul_batch" class="event-message" wrap="soft" name="judul_batch" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<p><label>Nama Pelatihan</label>
+			<input readonly type="text" id="nama_pelatihan" autocomplete="disable" name="nama_pelatihan" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" />
+			<input type="hidden" id="id_pelatihan" autocomplete="disable" name="id_pelatihan" value="<?= $this->row->id_pelatihan; ?>" />
+			<input type="hidden" id="tipe_pelatihan" autocomplete="disable" name="tipe_pelatihan" />
+			<input type="button" value="..." id="btnpelatihan" style="height:30px;" onclick="jQuery.facebox({ ajax: '/admin/batch/search-pelatihan'});">
+			<input type="button" style="height:30px;" onclick="ClearFields1();" value="Clear">
+			<font color="red">*</font>
+		</p>
+
+		<p><label>Nama Coach</label>
+			<input readonly type="text" id="nama_coach" autocomplete="disable" name="nama_coach" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" />
+			<input type="hidden" id="id_coach" autocomplete="disable" name="id_coach" value="<?= $this->row->id_coach; ?>" />
+			<input type="button" value="..." id="btncoach" style="height:30px;" onclick="jQuery.facebox({ ajax: '/admin/batch/search-coach'});">
+			<input type="button" style="height:30px;" onclick="ClearFields2();" value="Clear">
+			<font color="red">*</font>
+		</p>
+
+		<!-- <p><label>Peserta Batch</label>
+			<input readonly value="Daftar Peserta" type="text" id="tambah_peserta" autocomplete="disable" name="tambah_peserta" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" />
+			<input type="button" value="Tambah" id="btnpeserta" style="height:30px;" onclick="jQuery.facebox({ ajax: '/admin/batch/search-peserta'});">
+		</p> -->
+
+		<!-- <p><label>Tambah Peserta</label>
+			<input readonly class="required" type="text" id="nama_peserta" autocomplete="disable" name="nama_peserta" />
+			<input class="required" type="hidden" id="id_peserta" autocomplete="disable" name="id_peserta" value="<?= $this->row->id_peserta; ?>" />
+			<input type="button" value="..." id="btnpeserta" onclick="jQuery.facebox({ ajax: '/admin/batch/search-peserta'});">
+			<input type="button" onclick="ClearFields3();" value="Clear">
+			<font color="red">*</font>
+		</p> -->
+
+		<!-- <p>
+			<label class="left" for="deskripsi">Tipe Batch</label>
+			<select name="tipe_batch" id="tipe_batch" onchange="changeBatch()">
+				<option value="freebatch">Free Batch</option>
+				<option value="offline">Offline</option>
+			</select>
+
+		</p>
+		 -->
+		<p>
+			<label class="left" for="kuota_peserta">Kuota Peserta</label>
+			<input type="text" class="required" id="kuota_peserta" name="kuota_peserta" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"/> 
+		</p>
+
+		<p id="tanggal_awal"><label>Tanggal Awal</label>
+			<input type="text" id="tgl_awal" autocomplete="disable" name="tgl_awal" value="<?= date('d-m-Y'); ?>" name="nama_coach" style="width:350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" />
+			<font color="red">*</font>
+		</p>
+		<p id="tanggal_akhir"><label>Tanggal Akhir</label>
+			<input type="text" id="tgl_akhir" autocomplete="disable" name="tgl_akhir" value="<?= date('d-m-Y'); ?>" name="nama_coach" style="width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" />
+			<font color="red">*</font>
+		</p>
+
+		<br>
+		<p id="peserta"> <label>Pilih Peserta dan Mentor</label>
+		<!-- Tabel Peserta  -->
+		<? if (count($this->peserta) > 0) { ?>
+			<?=$this->pager;?>
+
+			<table class="tablesorter" id="tabel-peserta">
+				<thead>
+					<tr>
+						<th align="center">
+							<script language="javascript">
+								checked=false;
+								function checkedAll(form) {
+									if (checked == false){checked = true;}
+									else{checked = false;}
+									for (var i=0; i < form.elements.length; i++){
+										var name = form.elements[i].name;
+										if(name.indexOf("cbDelete",0) == 0)
+											form.elements[i].checked = checked;
+									}
+								}
+								</script> 
+
+								<input type="checkbox" onclick="checkedAll(this.form);">
+						</th>
+						<th>ID</th>
+						<th>Nama Peserta</th>
+						<th>Mentor</th>
+					</tr>
+				</thead>
+				<tbody id="daftar-peserta">
+				<?php
+					$index = 0;
+					foreach($this->peserta as $row)
+					{
+						echo '<script>
+								function selectFields4'. $row->id .'(id, id, nama_mentor, id_peserta) {
+									$("#id_mentor_'. $row->id .'").val(id);
+									$("#nama_mentor_'. $row->id .'").val(nama_mentor);
+									$.facebox.close();
+								}
+
+								function ClearFields4_'. $row->id .'() {
+									document.getElementById("id_mentor_'. $row->id .'").value = "";
+									document.getElementById("nama_mentor_'. $row->id .'").value = "";
+								}
+							</script>';
+
+							// $index++;
+							echo '<tr>';
+							echo '<td align="center"><input type="checkbox" name="cbDelete[]" id="cbDelete' . $row->id  . '" value="' . $row->id . '"></td>';
+							echo '<td align="center">'. $row->id .'.</td>';
+							echo '<td>'. $row->nama .'</td>';
+							echo '<td> 
+									<input readonly type="text" id="nama_mentor_'. $row->id .'" placeholder="Pilih Mentor untuk Peserta" autocomplete="disable" name="nama_mentor_'. $row->id .'" />
+									<input type="hidden" id="id_mentor_'. $row->id .'" autocomplete="disable" name="id_mentor['. $row->id .']" value="<?= $this->row->id_mentor; ?>" />
+									<input type="button" value="..." id="btnmentor_'. $row->id .'" onclick="jQuery.facebox({ ajax: \' /admin/batch/search-mentor/'. $row->id .'\' });">
+									<input type="button" onclick="ClearFields4_'. $row->id .'();" value="Clear">
+									<font color="red">*</font>
+								</td>';
+							echo '</tr>';
+					}
+				?>
+				</tbody>
+			</table>
+		<? } else {
+			echo 'Data tidak ditemukan.';
+		}
+		?>
+		<!-- End of Tabel Peserta  -->
+		</p>
+		<p class="savecancel"><label class="UIbutton-small">
+			<input type="submit" value="Simpan" class="" /></label>
+			<a href="/admin/batch/index" class="UIbutton-small">Batal</a>
+		</p>
+	</div>
+</form>
+<div style="clear:both"></div>
+
+

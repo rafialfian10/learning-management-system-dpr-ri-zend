@@ -1,0 +1,103 @@
+<script id="js">
+	$(function() {
+		$("table")
+			.tablesorter({
+				theme: 'blue',
+				widthFixed: true,
+				widgets: ['zebra', 'filter']
+			})
+			.tablesorterPager({
+				container: $(".pager"),
+				output: '{startRow} - {endRow} / {filteredRows} ({totalRows})',
+				fixedHeight: true,
+				removeRows: false,
+				cssGoto: '.gotoPage'
+			});
+	});
+</script>
+
+<div class="content-header"></div>
+
+<div class="UI_Header_Title">
+	<h3><?= $this->avatar; ?>Edit Agenda</h3>
+	<div class="header_nav_links"><a href="/admin/pelatihan/edit/id/<?= $this->row->id_pelatihan ?>">Kembali ke Agenda <?= $this->row->nama_silabus ?></a></div>
+</div>
+
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p>
+			<label class="left" for="nama_silabus">Nama Agenda</label>
+			<input type="hidden" readonly name="id_pelatihan" value="<?= $this->row->id_pelatihan ?>">
+			<input id="nama_silabus" class="event-message" wrap="soft" name="nama_silabus" value="<?= $this->row->nama_silabus ?>" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<p>
+			<label class="left" for="deskripsi">Nama Pengampu</label>
+			<input id="deskripsi" class="event-message" wrap="soft" name="deskripsi" value="<?= $this->row->deskripsi ?>" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p>
+
+		<!-- <p>
+			<label class="left" for="nama_silabus">Urutan Agenda</label>
+			<input type="hidden" readonly name="urutan_old" value="<?= $this->row->urutan ?>">
+			<input type="number" id="urutan" class="event-message" wrap="soft" name="urutan" value="<?= $this->row->urutan ?>" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;">
+		</p> -->
+
+		<p class="savecancel"><label class="UIbutton-small"><input type="submit" value="Simpan" class="" /></label><a href="/admin/pelatihan/edit/id/<?= $this->row->id_pelatihan ?>" class="UIbutton-small">Batal</a></p>
+		<br><br><br><br>
+		
+		<div style="width: 90%; margin: auto; text-align: right;">
+			<button class="header_nav_links"><a style="color: black; padding: 5px;" href="/admin/materi-silabus/add/id/<?= $this->row->id ?>/pelatihan/<?= $this->row->id_pelatihan ?>"> Tambah Mata Pelatihan</a></button>
+		</div>
+	
+	</div>
+</form>
+<div style="clear:both"></div>
+
+
+<? 	if (count($this->rows) > 0) { ?>
+	<?=$this->pager;?>
+
+	<table class="tablesorter">
+		 <thead>
+			 <tr>
+			 	<th width="5px">No.</th>
+				<!-- <th>Nama Agenda</th> -->
+				<th>Nama Mata Pelatihan</th>
+				<th>Deskripsi</th>
+				<th>Aksi Mata Pelatihan</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php		
+				$rowspanx = count($this->rows);
+
+				if ($this->rows == 0) {
+						echo '<tr>';
+							echo '<td align="center">'. $index++ .'</td>';
+							echo '<td align="center">-</td>';
+							echo '<td align="center">-</td>';
+							echo '<td align="center">-</td>';
+							echo '<td align="center">- </td>';
+						echo '</tr>';
+				} else {
+
+					$index = 1;
+					foreach ($this->rows4 as $materi => $val) {
+						
+						echo '<tr>';
+							echo '<td align="center">' . $index++ . '</td>';
+							echo '<td align="center">' . $val->nama_materi .'</td>';
+							echo '<td align="center">' . $val->deskripsi_materi .'</td>';
+							echo '<td align="center"><a href="/admin/materi-silabus/edit/id/' . $val->id . '">EDIT</a> | <a href="/admin/materi-silabus/delete/id/' . $val->id . '">DELETE</a></td>';
+						echo '</tr>';
+						
+					}
+				}
+			?>
+		</tbody>
+	</table>
+<? 	} else {
+		echo 'Data tidak ditemukan.';
+	}
+?>

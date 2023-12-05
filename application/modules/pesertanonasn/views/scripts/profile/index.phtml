@@ -1,0 +1,20 @@
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<link rel="stylesheet" href="https://berkas.dpr.go.id/mooc/assets/css/profile.css">
+
+<!-- penugasan -->
+<section class="container-penugasan rounded-4 m-auto" style="max-width: 80vw; margin-top: 150px !important;">
+    <div class="mb-4" style="width: 100%;">
+        <h3>Edit Profile</h3>
+    </div>
+
+    <div class="background-content d-flex flex-column justify-content-center rounded-4 p-3 mb-5" style="border: 1px solid #D4A216; background-color: #E5E7E9;">
+        <form method="post" action="" enctype="multipart/form-data">
+            <div class="d-flex flex-column mb-3" style="width: 100%;">
+                <label for="nama" class="mb-2 fs-6 fw-bold ps-1">Nama</label>
+                <input type="text" id="nama" class="sub-background-content px-3 rounded-3 text-secondary" style="height: 40px; border: 1px solid #D4A216; outline: #D4A216;" placeholder="Nama...." value="<?= $this->peserta->nama ?>">
+            </div>
+            <button type="submit" class="p-2 rounded-3 border border-0 text-center text-light fw-bold" style="width: 100%; background-color: #D4A216;">Edit Profile</button>
+        </form>
+    </div>
+</section>
+<!-- end penugasan -->

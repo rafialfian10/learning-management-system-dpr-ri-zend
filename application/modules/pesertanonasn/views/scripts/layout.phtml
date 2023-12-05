@@ -1,0 +1,233 @@
+<?php
+	$session = new Zend_Session_Namespace('loggedInUser');
+	$auth= $session->user;
+	// $peran = $auth->peran;
+	// $username = $auth->nama;
+	
+	$this->PesertaNonAsnService = new PesertaNonAsnService();
+	$peserta = $this->PesertaNonAsnService->getData($auth->id_peserta);	
+?>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title><?= $this->page ?> Peserta</title>
+    <link rel="shortcut icon" type="image/x-icon" href="https://berkas.dpr.go.id/mooc/favicon.ico" />
+
+	<!-- CSS -->
+	<link rel="stylesheet" href="https://berkas.dpr.go.id/mooc/assets/css/layout-peserta.css">
+	<link rel="stylesheet" href="https://berkas.dpr.go.id/mooc/assets/css/darkmode.css">
+
+	<!-- bootstrap -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
+	<!-- bootstrap icon -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+	<!-- navbar -->
+	<nav class="navbar navbar-expand-lg background-content fixed-top" style="max-width: 100vw; background-color: #E5E7E9; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38); z-index: 100">
+		<div class="container-fluid background-content" style="background-color: #E5E7E9">
+			<a href="/default/index/" class="mooc navbar-brand text-center mx-3" style="width: 200px;"
+				href="/home/home/index">
+				<img src="https://berkas.dpr.go.id/mooc/assets/images/mooc.png" alt="MOOC">
+			</a>
+			<br><br><br>
+
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+
+			<div class="collapse navbar-collapse" style="max-width: 100vw" id="navbarSupportedContent">
+				<ul class="navbar-nav mb-lg-0 d-flex justify-content-start me-5 my-navbar" style="width: 80%;">
+					<div class="dropdown-animation"> 
+						<a href="/pesertanonasn/index" class="text-decoration-none text-black">KELAS</a>
+					</div>
+
+					<div  class=" dropdown-animation div-text">KEGIATAN
+                      <ul class=" p-3 background-content dropdown-animation-menu">
+                        <hr>
+                        <li class="m-3"><a class="m-0" href="#">Seminar</a></li>
+                        <hr>
+                        <li class="m-3"><a class="m-0" href="#">Webinar</a></li>
+                        <hr>
+                        <li class="m-3"><a class="m-0" href="#">Workshop</a></li>
+                        <hr>
+                        <li class="m-3"><a class="m-0" href="#">Forum Grup Discussion</a></li>
+                        <hr>
+                        <li class="m-3"><a class="m-0" href="#">Character Building & Teamwork</a></li>
+                        <hr>
+                      </ul>
+                    </div>
+
+                    <div class="dropdown-animation"> 
+                      <a href="/default/panduan" class="text-decoration-none text-black">PANDUAN</a>
+                    </div>
+                  
+                    <div class="dropdown-animation div-text">BANTUAN
+                    <ul class=" p-3 background-content dropdown-animation-menu">
+                    <hr>
+                    <li class="m-3"><a class="m-0" href="/default/faq">FAQ</a></li>
+                    <hr>
+                    <li class="m-3"><a class="m-0" href="/default/about-us">Tentang Kami</a></li>
+                    <hr>
+                    <li class="m-3"><a class="m-0" href="/default/contact-us">Hubungi Kami</a></li>
+                    <hr>
+                    <li class="m-3"><a class="m-0" href="/default/privacy-policy">Kebijakan Privasi</a></li>
+                    <hr>
+                    </ul>
+				</div>
+				</ul>
+
+				<ul class="nav-item container-profile d-flex flex-row align-items-center justify-content-end p-0 m-0" style="width: 20%;"> 
+					<!-- profile -->
+					<li class="btn-group list-unstyled d-flex justify-content-center align-items-center position-relative">
+						<button type="button" class="background-content btn d-flex justify-content-center align-items-center rounded-circle" style="width: 40px; height: 40px; background-color: #E5E7E9; box-shadow: 2.0px 4.0px 4.0px hsl(0deg 0% 0% / 0.38);" data-bs-toggle="dropdown" aria-expanded="false">
+							<img src="https://berkas.dpr.go.id/mooc/assets/images/username-orange.png" alt="" class="rounded-circle" style="width: 30px; height: 30px;">
+						</button>
+						
+						<ul class="dropdown-menu background-content position-absolute" style="left: -200px; z-index: 99999999999; margin-top: 14px; padding: 10px; min-width: 300px;">
+							<li class="text-center"> <p class="fs-4"> <?= $peserta->nama ?></p></li>
+							<li class="text-center"><a class="dropdown-item view-profile btn border" href="/pesertanonasn/profile/index/id/<?= $auth->id_peserta ?>">View Profile</a></li>
+							<div class="dropdown-divider"></div>
+							<li><a class="dropdown-item logout" href="/loginselainasn/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+						</ul>
+					</li>
+					<!-- end profile -->
+
+					<!-- announcement -->
+					<li class="list-unstyled d-flex justify-content-center align-items-center" style="width: 50px;">
+						<button type="button" class="background-content btn position-relative d-flex justify-content-center align-items-center rounded-circle" style="width: 40px; height: 40px; background-color: #E5E7E9;">
+							<img src="https://berkas.dpr.go.id/mooc/assets/images/bell.png" alt="" class="rounded-circle position-absolute" style="width: 25px; height: 25px;">
+							<span class="position-absolute m-0 bg-danger rounded-circle" style="width: 10px; height: 10px; right: 3px; top: 3px;"></span>
+						</button>
+					</li>
+					<!-- end announcement -->
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<!-- end navbar -->
+
+	<!-- dark & light mode -->
+	<div class="container-dark-mode position-absolute" style="top: 100px; right: 1.5em; z-index: 99; cursor: pointer;">
+		<div class="sun sun-logo" style="fill: #D4A216;">
+			<svg viewBox="0 0 512 512" width="40" title="sun">
+				<path d="M256 160c-52.9 0-96 43.1-96 96s43.1 96 96 96 96-43.1 96-96-43.1-96-96-96zm246.4 80.5l-94.7-47.3 33.5-100.4c4.5-13.6-8.4-26.5-21.9-21.9l-100.4 33.5-47.4-94.8c-6.4-12.8-24.6-12.8-31 0l-47.3 94.7L92.7 70.8c-13.6-4.5-26.5 8.4-21.9 21.9l33.5 100.4-94.7 47.4c-12.8 6.4-12.8 24.6 0 31l94.7 47.3-33.5 100.5c-4.5 13.6 8.4 26.5 21.9 21.9l100.4-33.5 47.3 94.7c6.4 12.8 24.6 12.8 31 0l47.3-94.7 100.4 33.5c13.6 4.5 26.5-8.4 21.9-21.9l-33.5-100.4 94.7-47.3c13-6.5 13-24.7.2-31.1zm-155.9 106c-49.9 49.9-131.1 49.9-181 0-49.9-49.9-49.9-131.1 0-181 49.9-49.9 131.1-49.9 181 0 49.9 49.9 49.9 131.1 0 181z" />
+			</svg>
+		</div>
+		<div class="moon moon-logo">
+			<svg viewBox="0 0 512 512" width="40" title="moon">
+				<path d="M283.211 512c78.962 0 151.079-35.925 198.857-94.792 7.068-8.708-.639-21.43-11.562-19.35-124.203 23.654-238.262-71.576-238.262-196.954 0-72.222 38.662-138.635 101.498-174.394 9.686-5.512 7.25-20.197-3.756-22.23A258.156 258.156 0 0 0 283.211 0c-141.309 0-256 114.511-256 256 0 141.309 114.511 256 256 256z" />
+			</svg>
+		</div>
+	</div>
+  	<!-- end dark & light mode -->
+	<!-- -------------------------------------------------------------------------------------------------------------------- -->
+	<?= $this->layout()->content; ?>
+
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+	
+	<script>
+		function hideShowPasswordLogin() {
+			var passwordLogin = document.getElementById("login_password");
+			if (passwordLogin.type === "password") {
+				passwordLogin.type = "text";
+			} else {
+				passwordLogin.type = "password";
+			}
+		}
+
+		function hideShowPasswordRegister() {
+			var passwordRegister = document.getElementById("register_password");
+			if (passwordRegister.type === "password") {
+				passwordRegister.type = "text";
+			} else {
+				passwordRegister.type = "password";
+			}
+		}
+
+		function hideShowPasswordRegisterConfirm() {
+			var passwordRegisterConfirm = document.getElementById("confirm_password");
+			if (passwordRegisterConfirm.type === "password") {
+				passwordRegisterConfirm.type = "text";
+			} else {
+				passwordRegisterConfirm.type = "password";
+			}
+		}
+
+		// dark mode
+		// Mengecek apakah terdapat nilai dark mode di local storage saat halaman dimuat
+		document.addEventListener("DOMContentLoaded", function() {
+		let darkMode = localStorage.getItem("darkMode");
+		if (darkMode === "true") {
+			// Jika darkMode bernilai "true", terapkan dark mode pada elemen yang diperlukan
+			document.querySelector(".sun-logo").classList.add("animate-sun");
+			document.querySelector(".moon-logo").classList.add("animate-moon");
+			document.querySelector("body").classList.add("dark");
+			toggleTextColor();
+		}
+		});
+
+		document.querySelector(".container-dark-mode").addEventListener("click", function() {
+		// Toggle class animate-sun, animate-moon, dan dark pada elemen yang diperlukan
+		document.querySelector(".sun-logo").classList.toggle("animate-sun");
+		document.querySelector(".moon-logo").classList.toggle("animate-moon");
+		document.querySelector("body").classList.toggle("dark");
+		toggleTextColor();
+		// Mengecek apakah elemen body memiliki class dark setelah perubahan
+		let isDarkMode = document.querySelector("body").classList.contains("dark");
+		// Menyimpan status mode gelap ke dalam local storage
+		localStorage.setItem("darkMode", isDarkMode);
+		});
+
+		function toggleTextColor() {
+			let tagP = document.getElementsByTagName("p");
+			for (let i = 0; i < tagP.length; i++) {
+				tagP[i].classList.toggle("white-text");
+			}
+
+			let tagA = document.getElementsByTagName("a");
+			for (let i = 0; i < tagA.length; i++) {
+				tagA[i].classList.toggle("white-text");
+			}
+
+			let button = document.querySelectorAll("button");
+			for (let i = 0; i < button.length; i++) {
+				button[i].classList.toggle("white-text");
+			}
+
+			let label = document.querySelectorAll("label");
+			for (let i = 0; i < label.length; i++) {
+				label[i].classList.toggle("white-text");
+			}
+
+			let span = document.querySelectorAll("span");
+			for (let i = 0; i < span.length; i++) {
+				span[i].classList.toggle("white-text");
+			}
+
+			let textDiv = document.querySelectorAll(".div-text");
+			for (let i = 0; i < textDiv.length; i++) {
+				textDiv[i].classList.toggle("white-text");
+			}
+
+			let backgroundContent = document.querySelectorAll(".background-content");
+			for (let i = 0; i < backgroundContent.length; i++) {
+				backgroundContent[i].classList.toggle("background-dark");
+			}
+
+			let subBackgroundContent = document.querySelectorAll(".sub-background-content");
+			for (let i = 0; i < subBackgroundContent.length; i++) {
+				subBackgroundContent[i].classList.toggle("sub-background-dark");
+			}
+		}
+		// end dark mode
+	</script>
+</body>
+</html>

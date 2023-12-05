@@ -1,0 +1,86 @@
+<script id="js">
+$(function(){
+	$("table")
+		.tablesorter({theme: 'blue', widthFixed: true, widgets: ['zebra', 'filter']})
+		.tablesorterPager({container: $(".pager"), 
+			output: '{startRow} - {endRow} / {filteredRows} ({totalRows})', 
+			fixedHeight: true, 
+			removeRows: false, 
+			cssGoto: '.gotoPage' 
+		});
+});
+</script>
+
+<div class="content-header"></div>
+	<div class="UI_Header_Title">
+		<h1><?=$this->avatar;?> Daftar Forum Mentoring</h1>
+		
+		<!-- <div class="header_nav_links"><span class="right context_menu"><a href="/coach/row-diskusi/add" class="UIlink-button small right">Tambah Forum Diskusi</a></span>
+	</div> -->
+</div>
+<div class="clear"></div>
+<br>
+
+<? if (count($this->mentoring) > 0) { ?>
+	<?=$this->pager;?>
+
+	<table class="tablesorter">
+		 <thead>
+			 <tr>
+			 	<th width="5px" align="center">No.</th>
+				<th align="center">Title</th>
+				<th align="center">Judul Batch</th>
+				<th align="center">Nama Pelatihan</th>
+				<th align="center">Aksi</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+
+				$auth = Zend_Auth::getInstance()->getIdentity();
+				$index = 1;
+				
+				foreach($this->mentoring as $row) {
+				
+					foreach($this->coach_batchs as $coach_batch) {
+					
+						$judul_batch = "-";
+						$nama_pelatihan = "-";
+			
+						
+						if($coach_batch->id_batch == $row->id_batch && $coach_batch->status == 1) {
+							
+							foreach($this->pelatihans as $pelatihan) {
+								if($pelatihan->id == $coach_batch->id_pelatihan && $coach_batch->id_batch == $row->id_batch) {
+									
+									$nama_pelatihan = $pelatihan->nama_pelatihan;
+									break;
+								}
+								
+							}
+
+				echo '<tr>';
+				echo '<td align="center">'. $index++ .'.</td>';
+				echo '<td align="center">'. $row->title .'</td>';
+				
+				foreach($this->batchs as $y){
+					if($y->id == $row->id_batch){
+						echo '<td align="center">'. $y->judul_batch .'</td>';
+						break;
+					}
+				}
+				echo '<td align="center">'. $nama_pelatihan .'</td>';
+				echo '<td align="center"><a href="/coach/forum-mentoring/reply/id/'. $row->id .'">VIEW</a>';
+				echo '</td>';
+				echo '</tr>';
+				break;
+			}
+		}
+	}
+			?>
+		</tbody>
+	</table>
+<? } else {
+	echo 'Data tidak ditemukan.';
+}
+?>

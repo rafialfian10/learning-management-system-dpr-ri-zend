@@ -1,0 +1,82 @@
+<script id="js">
+	$(function(){
+		$("table")
+			.tablesorter({
+				theme: 'blue', 
+				widthFixed: true, 
+				widgets: ['zebra', 'filter']
+			})
+			.tablesorterPager({
+				container: $(".pager"), 
+				output: '{startRow} - {endRow} / {filteredRows} ({totalRows})', 
+				fixedHeight: true, 
+				removeRows: false, 
+				cssGoto: '.gotoPage' 
+			});
+	});
+</script>
+
+<div class="content-header"></div>
+	<div class="UI_Header_Title">
+		<h1><?=$this->avatar;?> Daftar Jawaban Nontes</h1>
+		<div class="header_nav_links"><a href="/admin/nontes/index">Back to Daftar Nontes</a></div>
+		<div class="header_nav_links">
+	</div>
+</div>
+<div class="clear"></div>
+<br>
+
+	<? if (count($this->skor_nontest) > 0) { ?>
+	<?=$this->pager;?>
+
+	<table class="tablesorter">
+	<thead>
+			 <tr>
+			 	<th width="5px">No.</th>
+				<th>Nama Peserta</th>
+				<th>Nama Pelatihan</th>
+				<th>Title</th>
+				<th>Soal Nontes</th>
+				<th>Jawaban Nontes</th>
+				<th>Skor</th>
+				<th>Aksi</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+			$index = 1;
+			foreach($this->skor_nontest as $sn) {
+				$nama_pelatihan = "";
+				$id_pelatihan = "";
+
+				if($this->pelatihan->id == $sn->id_pelatihan) {
+					$nama_pelatihan = $this->pelatihan->nama_pelatihan;
+				}
+
+				foreach($this->pesertas as $peserta) {
+					if($peserta->id == $sn->id_peserta) {
+						$nama_peserta = $peserta->nama;
+					}
+				}
+
+				if($sn->id_pelatihan == $this->pelatihan->id) {
+					echo '<tr>';
+					echo '<td align="center">'. $index++ .'.</td>';
+					echo '<td align="center">'. $nama_peserta .'</td>';
+					echo '<td align="center">'. $nama_pelatihan .'</td>';
+					echo '<td align="center">'. $sn->title .'</td>';
+					echo '<td align="center"><a href="https://berkas.dpr.go.id/mooc/soalpretest/'. ($sn->soal_nontes == '' ? '-': $sn->soal_nontes) .'" target="_blank">'.($sn->soal_nontes == '' ? '-': $sn->soal_nontes).'</a></td>';
+					echo '<td align="center"><a href="https://berkas.dpr.go.id/mooc/jawabanpretest/'. ($sn->jawaban_nontes == '' ? '-': $sn->jawaban_nontes) .'" target="_blank">'.($sn->jawaban_nontes == '' ? '-': $sn->jawaban_nontes).'</a></td>';
+					echo '<td align="center">'. $sn->skor_akhir .'</td>';
+					echo '<td align="center">
+							<a href="/admin/skor-nontest/nilai/id/'. $sn->id .'">NILAI</a>';
+					echo '</td>';
+					echo '</tr>';
+				}
+			}
+			?>
+		</tbody>
+	</table>
+<? } else {
+	echo 'Data tidak ditemukan.';
+}

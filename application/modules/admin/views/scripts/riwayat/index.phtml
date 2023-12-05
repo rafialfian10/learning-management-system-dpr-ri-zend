@@ -1,0 +1,80 @@
+<script id="js">
+$(function(){
+	$("table")
+		.tablesorter({theme: 'blue', widthFixed: true, widgets: ['zebra', 'filter']})
+		.tablesorterPager({container: $(".pager"), 
+							output: '{startRow} - {endRow} / {filteredRows} ({totalRows})', 
+							fixedHeight: true, 
+							removeRows: false, 
+							cssGoto: '.gotoPage' });
+});
+</script>
+
+<div class="content-header"></div>
+	<div class="UI_Header_Title">
+		<h1><?=$this->avatar;?> Daftar Riwayat Pelatihan</h1>
+		
+		<div class="header_nav_links">
+			<!-- <span class="right context_menu"><a href="/admin/progress/add" class="UIlink-button small right">Tambah Progres</a></span> -->
+	</div>
+</div>
+<div class="clear"></div>
+<br>
+
+<? if (count($this->rows) > 0) { ?>
+	<?=$this->pager;?>
+
+	<table class="tablesorter">
+		 <thead>
+			 <tr>
+			 	<th width="5px">No.</th>
+				<th align="center">Nama Peserta</th>
+				<th align="center">Judul Batch</th>
+				<th align="center">Progres</th>
+				<th align="center">Status Riwayat</th>
+				<th align="center">Tanggal</th>
+				<!-- <th align="center">Aksi</th> -->
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+			$index = 1;
+			foreach($this->rows as $row)
+			{
+				$id_peserta = $row->id_peserta;
+				$judul_batch = '';
+				$nama = ''; // Inisialisasi $nama di sini agar tidak terjadi error jika tidak ada peserta dengan $id_peserta yang sesuai
+				
+			
+				foreach($this->peserta as $peserta){
+					if ($peserta->id == $id_peserta) {
+						$nama = $peserta->nama; 
+						break; 
+					}
+				}
+
+				foreach($this->batch as $batch){
+					if ($batch->id == $row->id_batch) { 
+						$judul_batch = $batch->judul_batch; 
+						break; 
+					}
+				}
+
+				echo '<tr>';
+				echo '<td align="center">'. $index++ .'.</td>';
+				echo '<td align="center">'. $nama .'</td>';
+				echo '<td>'. $judul_batch .'</td>';
+				echo '<td align="center">'. $row->status_progress .'</td>';
+				echo '<td align="center">'. $row->status_riwayat .'</td>';
+				echo '<td align="center">'. $row->tanggal_input .'</td>';
+				// echo '<td align="center"><a href="/admin/progress/view/id/'. $row->id .'/batch/'. $row->id_batch .'/peserta/'. $row->id_peserta .'">View</a>';
+				echo '</td>';
+				echo '</tr>';
+			}
+			?>
+		</tbody>
+	</table>
+<? } else {
+	echo 'Data tidak ditemukan.';
+}
+?>

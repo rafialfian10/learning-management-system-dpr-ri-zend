@@ -1,0 +1,234 @@
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#compose").validate();
+	})
+</script>
+
+<script>
+	function selectFields1(id, id, nama_pengajar) {
+		$('#id_pengajar').val(id);
+		$('#nama_pengajar').val(nama_pengajar);
+		$.facebox.close();
+	}
+
+	function ClearFields1() {
+		document.getElementById("id_pengajar").value = "";
+		document.getElementById("nama_pengajar").value = "";
+	}
+</script>
+
+<div class="content-header"></div>
+<div class="UI_Header_Title">
+	<h1><?=$this->avatar;?>Edit Pelatihan</h1>
+	<div class="header_nav_links"><a href="/admin/pelatihan/index">Back to Daftar Pelatihan</a></div>
+</div>
+<div class="clear"></div>
+<form id="compose" name="compose" method="post" action="" enctype="multipart/form-data">
+	<div class="tabular">
+		<p>
+			<label class="left" for="nama_pelatihan">Nama Pelatihan</label>
+			<input id="nama_pelatihan" class="event-message" wrap="soft" name="nama_pelatihan" value="<?=$this->row->nama_pelatihan;?>" style="overflow: hidden; display: block; width: 350px; height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"> 
+		</p>
+		<p>
+			<label class="left" for="deskripsi">Deskripsi</label>
+			<textarea id="deskripsi" class="event-message" wrap="soft" rows="6" name="deskripsi" style="overflow: hidden; display: block; width: 350px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px;"><?=$this->row->deskripsi;?></textarea>
+		</p>
+		<p>
+			<label>Tipe Pelatihan</label>
+			<select class="required" id="tipe_pelatihan" name="tipe_pelatihan">
+				<option value="" disabled>Pilih Tipe...</option>
+				<option value="classical" <?= ($this->row->tipe_pelatihan == 'classical') ? ' selected' : ''; ?>>Classical</option>
+				<option value="nonclassical" <?= ($this->row->tipe_pelatihan == 'nonclassical') ? ' selected' : ''; ?>>Non Classical</option>
+				<option value="blended" <?= ($this->row->tipe_pelatihan == 'blended') ? ' selected' : ''; ?>>Blended</option>
+			</select>  <font color="red">*</font></p>
+		<p>
+		<p>
+			<label class="left" for="nama_pelatihan">Sampul Pelatihan</label> 
+			<?
+				if ($this->row->sampul_pelatihan != "") {
+					echo '<img src="https://berkas.dpr.go.id/mooc/thumbkelas/' . $this->row->sampul_pelatihan . '" height="200" />';
+					echo '<input type="hidden" id="cek_file" name="cek_file" value="1">';
+					echo '&nbsp; &nbsp;<a href="/admin/pelatihan/delete-files/id/' . $this->row->id . '  ">Hapus</a>';
+				} else {
+					echo '<input type="file" id="file_name" autocomplete="disable" name="file_name"/>';
+				}
+			?>
+		</P>
+		<p>
+			<label>Nama Pengajar</label>
+			<input readonly class="required" type="text" id="nama_pengajar" autocomplete="disable" name="nama_pengajar" value="<?= $this->nama_pengajar ?>" style="height:30px; padding: 0px; padding-left: 10px; border: 1px solid grey; border-radius: 2px; background-color: white;" />
+			<input class="required" type="hidden" id="id_pengajar" autocomplete="disable" name="id_pengajar" value="<?= $this->row->id_pengajar; ?>" />
+			<input type="button" value="..." id="btnmpengajar" style="height:30px;" onclick="jQuery.facebox({ ajax: '/admin/pelatihan/search-pengajar'});">
+			<input type="button" style="height:30px;" onclick="ClearFields1();" value="Clear">
+			<font color="red">*</font>
+		</p>
+		
+		<input type="hidden" id="id" name="id" value="<?=$this->row->id;?>">
+	    
+		<p class="savecancel">
+			<?
+			//if ($this->getRole() == "admin" || $this->getRole() == "super" || $this->getRole() == "user") {
+				echo '<label class="UIbutton-small"><input type="submit" value="Simpan" class=""/></label>';
+			//}
+			?>
+			<a href="/admin/pelatihan/index" class="UIbutton-small">Batal</a>
+		</p>
+	</div>
+</form>
+<div style="clear:both"></div>
+<br><br><br><br><br>
+
+<!-- Table data silabus, materi dan quiz -->
+<script id="js">
+	$(function(){
+		$("table")
+			.tablesorter({theme: 'blue', widthFixed: true, widgets: ['zebra', 'filter']})
+			.tablesorterPager({container: $(".pager"), 
+								output: '{startRow} - {endRow} / {filteredRows} ({totalRows})', 
+								fixedHeight: true, 
+								removeRows: false, 
+								cssGoto: '.gotoPage' });
+	});
+</script>
+
+<div style="width: 90%; margin: auto; text-align: right;">
+	<button class="header_nav_links"><a style="color: black; padding: 5px;" href="/admin/silabus/add">Tambah Silabus</a></button>
+</div>
+
+<? if (count($this->row) > 0) { ?>
+	<h1 style="width: 100%; text-align: center;">Daftar silabus, materi, quiz</h1>
+	<?=$this->pager;?>
+	<table class="tablesorter">
+		 <thead>
+			 <tr>
+				<th>No.</th>
+				<th>Nama silabus</th>
+				<th>Materi</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+				$index = 1;
+					echo '<tr>';
+						echo '<td rowspan="4" align="center">'. $index++ .'</td>';
+						echo '<td rowspan="4" align="center">'. "Laravel 10" .'</td>';
+						echo '<td align="center">'. "set up laravel 10" .'</td>';
+						echo '<td align="center"><a href="/admin/pelatihan/edit/id/'. $row->id .'">EDIT</a>';
+						if ($this->getRole() == 'admin' || $this->getRole() == 'super') {
+							echo '&nbsp;|&nbsp;<a href="/admin/pelatihan/delete/id/'. $row->id .'" onclick="return confirmDelete();">DELETE</a>';
+						}
+						echo '</td>';
+					echo '</tr>';
+					echo '<tr>';
+						// echo '<td>' . '</td>';
+						// echo '<td>' . '</td>';
+						echo '<td align="center">'. "laravel 10 dasar" .'</td>';
+						echo '<td align="center"><a href="/admin/pelatihan/edit/id/'. $row->id .'">EDIT</a>';
+						if ($this->getRole() == 'admin' || $this->getRole() == 'super') {
+							echo '&nbsp;|&nbsp;<a href="/admin/pelatihan/delete/id/'. $row->id .'" onclick="return confirmDelete();">DELETE</a>';
+						}
+						echo '</td>';
+					echo '</tr>';
+					echo '<tr>';
+						// echo '<td>' . '</td>';
+						// echo '<td>' . '</td>';
+						echo '<td align="center">'. "crud laravel 10" .'</td>';
+						echo '<td align="center"><a href="/admin/pelatihan/edit/id/'. $row->id .'">EDIT</a>';
+						if ($this->getRole() == 'admin' || $this->getRole() == 'super') {
+							echo '&nbsp;|&nbsp;<a href="/admin/pelatihan/delete/id/'. $row->id .'" onclick="return confirmDelete();">DELETE</a>';
+						}
+						echo '</td>';
+					echo '</tr>';
+			?>
+		</tbody>
+	</table>
+<? } else {
+	echo 'Data tidak ditemukan.';
+}
+
+			
+
+					// echo '<tr>';
+					// 	// echo '<td>' . '</td>';
+					// 	// echo '<td>' . '</td>';
+					// 	echo '<td align="center">'. "laravel 10 dasar" .'</td>';
+					// 	// echo '<td align="center"><a href="/admin/pelatihan/edit/id/'. $row->id .'">EDIT</a>';
+					// 	// if ($this->getRole() == 'admin' || $this->getRole() == 'super') {
+					// 	// 	echo '&nbsp;|&nbsp;<a href="/admin/pelatihan/delete/id/'. $row->id .'" onclick="return confirmDelete();">DELETE</a>';
+					// 	// }
+					// 	// echo '</td>';
+					// echo '</tr>';
+					// echo '<tr>';
+					// 	// echo '<td>' . '</td>';
+					// 	// echo '<td>' . '</td>';
+					// 	echo '<td align="center">'. "crud laravel 10" .'</td>';
+					// 	// echo '<td align="center"><a href="/admin/pelatihan/edit/id/'. $row->id .'">EDIT</a>';
+					// 	// if ($this->getRole() == 'admin' || $this->getRole() == 'super') {
+					// 	// 	echo '&nbsp;|&nbsp;<a href="/admin/pelatihan/delete/id/'. $row->id .'" onclick="return confirmDelete();">DELETE</a>';
+					// 	// }
+					// 	// echo '</td>';
+					// echo '</tr>';
+					// // end silabus
+
+					// echo '<tr> </tr>';
+					// echo '<tr> </tr>';
+					// echo '<tr> </tr>';
+					
+					// quiz
+					echo '<tr>';
+						echo '<td rowspan="5" align="center">3</td>';
+						echo '<td rowspan="5" align="center">'. "Quiz" .'</td>';
+						echo '<td align="center">'. "Pertanyaan 1" .'</td>';
+						echo '<td align="center">'. "Jawaban 1" .'</td>';
+						echo '<td rowspan="5" align="center"><a href="/admin/pelatihan/edit/id/'. $row->id .'">EDIT</a>';
+						if ($this->getRole() == 'admin' || $this->getRole() == 'super') {
+							echo '&nbsp;|&nbsp;<a href="/admin/pelatihan/delete/id/'. $row->id .'" onclick="return confirmDelete();">DELETE</a>';
+						}
+						echo '</td>';
+					echo '</tr>';
+					echo '<tr>';
+						// echo '<td align="center">'. "Quiz" .'</td>';
+						// echo '<td align="center">'. $indexQuiz++ .'</td>';
+						echo '<td align="center">'. "Pertanyaan 2" .'</td>';
+						echo '<td align="center">'. "Jawaban 1" .'</td>';
+						// echo '<td align="center"><a href="/admin/pelatihan/edit/id/'. $row->id .'">EDIT</a>';
+						// if ($this->getRole() == 'admin' || $this->getRole() == 'super') {
+						// 	echo '&nbsp;|&nbsp;<a href="/admin/pelatihan/delete/id/'. $row->id .'" onclick="return confirmDelete();">DELETE</a>';
+						// }
+						echo '</td>';
+					echo '</tr>';
+					echo '<tr>';
+						// echo '<td align="center">'. "Quiz" .'</td>';
+						// echo '<td align="center">'. $indexQuiz++ .'</td>';
+						echo '<td align="center">'. "Pertanyaan 3" .'</td>';
+						echo '<td align="center">'. "Jawaban 1" .'</td>';
+						// echo '<td align="center"><a href="/admin/pelatihan/edit/id/'. $row->id .'">EDIT</a>';
+						// if ($this->getRole() == 'admin' || $this->getRole() == 'super') {
+						// 	echo '&nbsp;|&nbsp;<a href="/admin/pelatihan/delete/id/'. $row->id .'" onclick="return confirmDelete();">DELETE</a>';
+						// }
+						echo '</td>';
+					echo '</tr>';
+					echo '<tr>';
+						// echo '<td align="center">'. "Quiz" .'</td>';
+						// echo '<td align="center">'. $indexQuiz++ .'</td>';
+						echo '<td align="center">'. "Pertanyaan 4" .'</td>';
+						echo '<td align="center">'. "Jawaban 1" .'</td>';
+						// echo '<td align="center"><a href="/admin/pelatihan/edit/id/'. $row->id .'">EDIT</a>';
+						// if ($this->getRole() == 'admin' || $this->getRole() == 'super') {
+						// 	echo '&nbsp;|&nbsp;<a href="/admin/pelatihan/delete/id/'. $row->id .'" onclick="return confirmDelete();">DELETE</a>';
+						// }
+						echo '</td>';
+					echo '</tr>';
+					echo '<tr>';
+						// echo '<td align="center">'. "Quiz" .'</td>';
+						// echo '<td align="center">'. $indexQuiz++ .'</td>';
+						echo '<td align="center">'. "Pertanyaan 5" .'</td>';
+						echo '<td align="center">'. "Jawaban 1" .'</td>';
+						// echo '<td align="center"><a href="/admin/pelatihan/edit/id/'. $row->id .'">EDIT</a>';
+						// if ($this->getRole() == 'admin' || $this->getRole() == 'super') {
+						// 	echo '&nbsp;|&nbsp;<a href="/admin/pelatihan/delete/id/'. $row->id .'" onclick="return confirmDelete();">DELETE</a>';
+						// }
+						echo '</td>';
+					echo '</tr>';
+					// end quiz?>

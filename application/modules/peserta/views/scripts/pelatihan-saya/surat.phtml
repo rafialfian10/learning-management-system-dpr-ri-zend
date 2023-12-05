@@ -1,0 +1,94 @@
+<?
+setlocale(LC_ALL, 'id_ID.UTF8', 'id_ID.UTF-8', 'id_ID.8859-1', 'id_ID', 'IND.UTF8', 'IND.UTF-8', 'IND.8859-1', 'IND', 'Indonesian.UTF8', 'Indonesian.UTF-8', 'Indonesian.8859-1', 'Indonesian', 'Indonesia', 'id', 'ID', 'en_US.UTF8', 'en_US.UTF-8', 'en_US.8859-1', 'en_US', 'American', 'ENG', 'English'); 
+
+
+$auth = Zend_Auth::getInstance()->getIdentity(); // Dapatkan id user yang login
+
+$this->BatchService = new BatchService();
+$this->PesertaService = new PesertaService();
+$this->PelatihanService = new PelatihanService();
+$this->PengajarService = new PengajarService();
+
+$peserta = $this->PesertaService->getData($auth->id_peserta);
+$batch = $this->BatchService->getData($this->id);
+$pelatihan = $this->PelatihanService->getData($batch->id_pelatihan);
+$pengajar = $this->PengajarService->getData($pelatihan->id_pengajar);
+
+$content = '<page backimg="https://berkas.dpr.go.id/mooc/assets/images/sertif4.jpg" orientation="l" style="font-family: Arial; font-size: 12px; line-height: 1.5;" backtop="20mm" backbottom="20mm" backleft="20mm" backright="20mm">
+<table style="width: 100%;">
+	<col style="width: 100%">
+	<tr><td align="center" style="font-size: 70px; font-family: Arial, Helvetica, sans-serif;">SERTIFIKAT</td></tr>
+	<tr> </tr>
+	<tr><td align="center" style="font-size: 20px;">Diberikan kepada</td></tr>
+</table>
+<br>
+<br>
+<table style="width: 100%;">
+	<col style="width: 100%">
+	<tr><td align="center" style="font-size: 30px;"><i><u>'. $peserta->nama .'</u></i></td></tr>
+	<tr><td> </td></tr>
+	<tr><td align="center" style="font-size: 15px;">Atas partisipasinya sebagai</td></tr>
+	<tr><td> </td></tr>
+	<tr><td align="center" style="font-size: 24px;"><i>Peserta</i></td></tr>
+</table>
+<br>
+
+
+<table style="width: 100%;">
+<col style="width: 100%">
+	<tr>
+		<td align="center" style="font-size: 15px;">Pada Kegiatan</td>
+	</tr>
+	
+	<tr><td> </td></tr>
+
+	<tr>
+		<td align="center" style="font-size: 20px;"><b>'. $pelatihan->nama_pelatihan .'</b></td>
+	</tr>
+	<tr>
+		<td>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" style="font-size: 14px;">31 Januari s.d. 2 Februari 2022</td>
+	</tr>
+</table>
+<br>
+<br>
+<br>
+<table style="width: 100%">
+	<col style="width: 50%">
+	<col style="width: 50%">
+	<tr>
+		<td align="center">
+			<table style="width:100%;">
+				<col style="width: 100%">
+				<tr><td align="center">Kepala Pusat Pendidikan dan Pelatihan</td></tr>
+				<tr><td align="center"><br><br></td></tr>
+				<tr><td align="center"><br><br></td></tr>
+				<tr><td align="center"><u>Nama KAPUSDIKLAT</u></td></tr>
+				<tr><td align="center">NIP. ______</td></tr>
+			</table>
+		</td>
+		<td align="center">
+			<table style="width:100%;">
+				<col style="width: 100%">
+				<tr><td align="center">Jakarta, _______</td></tr>
+				<tr><td align="center">Pengajar,</td></tr>
+				<tr><td align="center"><br><br></td></tr>
+				<tr><td align="center"><br><br><br></td></tr>
+				<tr><td align="center"><u>'. $pengajar->nama_pengajar .'</u></td></tr>
+				<tr><td align="center">NIP/NIK. '. $pengajar->identitas_pengajar .' </td></tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+</page>';
+
+
+
+$html2pdf = new HTML2PDF('L','A4','en');
+$html2pdf->WriteHTML($content);
+$html2pdf->Output('TEST.pdf');
+?>
